@@ -405,7 +405,7 @@ public class ApiContext {
      */
     public Set<DocMethod> handleMethod(Method[] methods, RequestMapping requestMapping) {
         Set<DocMethod> tempMethods = new TreeSet<>();
-        Set<String> modeSet = new TreeSet<>();
+        Set<String> parentModeSet = new TreeSet<>();
         Set<String> parentUriSet = new TreeSet<>();
         if (requestMapping != null) {
             if (requestMapping.value().length > 0) {
@@ -413,8 +413,17 @@ public class ApiContext {
             }
             if (requestMapping.method().length > 0) {
                 for (RequestMethod requestMethod : requestMapping.method()) {
-                    modeSet.add(requestMethod.name());
+                    parentModeSet.add(requestMethod.name());
                 }
+            } else {
+                parentModeSet.add(RequestMethod.GET.name());
+                parentModeSet.add(RequestMethod.HEAD.name());
+                parentModeSet.add(RequestMethod.POST.name());
+                parentModeSet.add(RequestMethod.PUT.name());
+                parentModeSet.add(RequestMethod.PATCH.name());
+                parentModeSet.add(RequestMethod.DELETE.name());
+                parentModeSet.add(RequestMethod.OPTIONS.name());
+                parentModeSet.add(RequestMethod.TRACE.name());
             }
         }
         if (parentUriSet.isEmpty()) {
@@ -422,6 +431,7 @@ public class ApiContext {
             parentUriSet.add("");
         }
         for (Method method : methods) {
+            Set<String> modeSet = new TreeSet<>(parentModeSet);
             if (method.getAnnotation(ApiIgnore.class) != null) {
                 //不处理添加过滤注解的方法
                 continue;
@@ -481,8 +491,19 @@ public class ApiContext {
                 }
             } else {
                 //加入到方法结果中
-                for (RequestMethod requestMethod : requestMappingAnnotation.method()) {
-                    modeSet.add(requestMethod.name());
+                if (requestMappingAnnotation.method().length > 0) {
+                    for (RequestMethod requestMethod : requestMappingAnnotation.method()) {
+                        modeSet.add(requestMethod.name());
+                    }
+                } else {
+                    modeSet.add(RequestMethod.GET.name());
+                    modeSet.add(RequestMethod.HEAD.name());
+                    modeSet.add(RequestMethod.POST.name());
+                    modeSet.add(RequestMethod.PUT.name());
+                    modeSet.add(RequestMethod.PATCH.name());
+                    modeSet.add(RequestMethod.DELETE.name());
+                    modeSet.add(RequestMethod.OPTIONS.name());
+                    modeSet.add(RequestMethod.TRACE.name());
                 }
                 for (String parentUri : parentUriSet) {
                     for (String value : requestMappingAnnotation.value()) {
