@@ -23,7 +23,7 @@ ip:端口/项目名/citrsw/index.html
 <dependency>
     <groupId>com.citrsw</groupId>
     <artifactId>java-api-docs</artifactId>
-    <version>1.0.0-beta</version>
+    <version>1.1.0-beta</version>
 </dependency>
 ```
 
