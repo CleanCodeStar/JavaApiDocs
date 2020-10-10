@@ -141,7 +141,7 @@ public class ApiContext {
                         return;
                     }
                     apiEnable.actives();
-                    if (apiEnable.actives().length > 0&&StringUtils.isNotBlank(this.active)) {
+                    if (apiEnable.actives().length > 0 && StringUtils.isNotBlank(this.active)) {
                         //适用环境
                         boolean pass = false;
                         for (String active : apiEnable.actives()) {
@@ -236,7 +236,7 @@ public class ApiContext {
                             " __  / / __ `/ | / / __ `/ /| | / __ \\/ / / / / __ \\/ ___/ ___/\n" +
                             "/ /_/ / /_/ /| |/ / /_/ / ___ |/ /_/ / / /_/ / /_/ / /__(__  ) \n" +
                             "\\____/\\__,_/ |___/\\__,_/_/  |_/ .___/_/_____/\\____/\\___/____/  \n" +
-                            "                             /_/                               \n"+
+                            "                             /_/                               \n" +
                             "                                                       1.0.0   \n");
                 }
             }
@@ -405,7 +405,6 @@ public class ApiContext {
      */
     public Set<DocMethod> handleMethod(Method[] methods, RequestMapping requestMapping) {
         Set<DocMethod> tempMethods = new TreeSet<>();
-        String uri = "";
         Set<String> modeSet = new TreeSet<>();
         Set<String> parentUriSet = new TreeSet<>();
         if (requestMapping != null) {
@@ -417,6 +416,10 @@ public class ApiContext {
                     modeSet.add(requestMethod.name());
                 }
             }
+        }
+        if (parentUriSet.isEmpty()) {
+            //如果类上没有配置则增加一个空的地址，从而保证下面的代码正常执行
+            parentUriSet.add("");
         }
         for (Method method : methods) {
             if (method.getAnnotation(ApiIgnore.class) != null) {
