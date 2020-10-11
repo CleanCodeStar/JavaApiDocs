@@ -415,15 +415,6 @@ public class ApiContext {
                 for (RequestMethod requestMethod : requestMapping.method()) {
                     parentModeSet.add(requestMethod.name());
                 }
-            } else {
-                parentModeSet.add(RequestMethod.GET.name());
-                parentModeSet.add(RequestMethod.HEAD.name());
-                parentModeSet.add(RequestMethod.POST.name());
-                parentModeSet.add(RequestMethod.PUT.name());
-                parentModeSet.add(RequestMethod.PATCH.name());
-                parentModeSet.add(RequestMethod.DELETE.name());
-                parentModeSet.add(RequestMethod.OPTIONS.name());
-                parentModeSet.add(RequestMethod.TRACE.name());
             }
         }
         if (parentUriSet.isEmpty()) {
