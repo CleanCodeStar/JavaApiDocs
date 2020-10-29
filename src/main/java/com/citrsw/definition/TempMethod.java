@@ -3,6 +3,8 @@ package com.citrsw.definition;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -68,6 +70,60 @@ public class TempMethod {
      */
     public String getReturnJson() {
         return returnDocModel.returnJson();
+    }
+
+    /**
+     * 生成入参安卓实体类代码
+     */
+    public String getParamAndroid() {
+        Set<String> strings = new TreeSet<>();
+        paramDocModel.android(strings);
+        StringBuilder builder = new StringBuilder();
+        for (String s : strings) {
+            builder.append(s);
+        }
+        return builder.toString();
+    }
+
+    /**
+     * 生成响应安卓实体类代码
+     */
+    public String getReturnAndroid() {
+        Set<String> strings = new TreeSet<>();
+        returnDocModel.android(strings);
+        StringBuilder builder = new StringBuilder();
+        for (String s : strings) {
+            builder.append(s);
+        }
+        return builder.toString();
+    }
+
+    /**
+     * 生成IOS实体类代码
+     */
+    public String getParamIos() {
+        Set<String> strings = new TreeSet<>();
+        paramDocModel.ios(strings);
+        StringBuilder builder = new StringBuilder();
+        for (String s : strings) {
+            builder.append(s);
+        }
+        return builder.toString();
+
+    }
+
+    /**
+     * 生成IOS实体类代码
+     */
+    public String getReturnIos() {
+        Set<String> strings = new TreeSet<>();
+        returnDocModel.ios(strings);
+        StringBuilder builder = new StringBuilder();
+        for (String s : strings) {
+            builder.append(s);
+        }
+        return builder.toString();
+
     }
 
     /**

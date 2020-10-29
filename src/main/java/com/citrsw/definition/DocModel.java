@@ -1,5 +1,6 @@
 package com.citrsw.definition;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.commons.lang3.StringUtils;
@@ -25,11 +26,15 @@ public class DocModel {
     private String description;
 
     /**
-     * 是否为基本数据类型
-     * 是：则取第一个ApiProperty
-     * 否：则取全部ApiProperty
+     * 是否为数组类型
      */
     private String type;
+
+    /**
+     * 类名称
+     */
+    @JsonIgnore
+    private String className;
 
     /**
      * 属性集合 包括只有get方法的虚拟属性
@@ -147,5 +152,50 @@ public class DocModel {
             builder.append("\r\n").append("]");
         }
         return builder.toString();
+    }
+
+    /**
+     * 生成安卓实体类代码
+     */
+    public void android(Set<String> strings) {
+        StringBuilder builder = new StringBuilder();
+        if (StringUtils.isNotBlank(className)) {
+            if (StringUtils.isNotBlank(description)) {
+                builder.append("/**\r\n * ").append(description).append("\r\n */\r\n");
+            }
+            builder.append("@Accessors(chain = true)\r\n").append("@Data\r\n");
+            builder.append("public class ").append(className).append(" {");
+        }
+        for (Iterator<DocProperty> it = apiProperties.iterator(); it.hasNext(); ) {
+            DocProperty docProperty = it.next();
+            String android = docProperty.android(strings);
+            builder.append(android);
+        }
+        if (StringUtils.isNotBlank(className) && builder.length() > 0) {
+            builder.append("\r\n}\r\n\r\n");
+        }
+        strings.add(builder.toString());
+    }
+
+    /**
+     * 生成IOS实体类代码
+     */
+    public void ios(Set<String> strings) {
+        StringBuilder builder = new StringBuilder();
+        if (StringUtils.isNotBlank(className)) {
+            if (StringUtils.isNotBlank(description)) {
+                builder.append("/**\r\n * ").append(description).append("\r\n */\r\n");
+            }
+            builder.append("struct ").append(className).append(" {");
+        }
+        for (Iterator<DocProperty> it = apiProperties.iterator(); it.hasNext(); ) {
+            DocProperty docProperty = it.next();
+            String android = docProperty.ios(strings);
+            builder.append(android);
+        }
+        if (StringUtils.isNotBlank(className) && builder.length() > 0) {
+            builder.append("\r\n}\r\n\r\n");
+        }
+        strings.add(builder.toString());
     }
 }

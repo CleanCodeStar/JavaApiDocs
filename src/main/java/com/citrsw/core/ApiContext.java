@@ -64,24 +64,64 @@ public class ApiContext {
     /**
      * java基本数据类型
      */
-    private final Map<Class<?>, String> baseTypeMap = new HashMap<>();
+    private final Map<Class<?>, String> baseTypeMap = new HashMap<>(256);
+
+    {
+        baseTypeMap.put(Integer.class, "int");
+        baseTypeMap.put(int.class, "int");
+        baseTypeMap.put(Long.class, "long");
+        baseTypeMap.put(long.class, "long");
+        baseTypeMap.put(Boolean.class, "boolean");
+        baseTypeMap.put(boolean.class, "boolean");
+        baseTypeMap.put(Float.class, "float");
+        baseTypeMap.put(float.class, "float");
+        baseTypeMap.put(Double.class, "double");
+        baseTypeMap.put(double.class, "double");
+        baseTypeMap.put(String.class, "string");
+        baseTypeMap.put(Date.class, "datetime");
+        baseTypeMap.put(LocalDateTime.class, "datetime");
+        baseTypeMap.put(LocalDate.class, "date");
+        baseTypeMap.put(LocalTime.class, "time");
+        baseTypeMap.put(short.class, "short");
+        baseTypeMap.put(Object.class, "");
+        baseTypeMap.put(MultipartFile.class, "file");
+    }
+
+    /**
+     * java基本数据类型
+     */
+    private final Map<String, String> typeReverseMap = new HashMap<>(256);
+
+    {
+        typeReverseMap.put("int", "Integer");
+        typeReverseMap.put("long", "Long");
+        typeReverseMap.put("boolean", "Boolean");
+        typeReverseMap.put("float", "Float");
+        typeReverseMap.put("double", "Double");
+        typeReverseMap.put("string", "String");
+        typeReverseMap.put("datetime", "LocalDateTime");
+        typeReverseMap.put("date", "LocalDate");
+        typeReverseMap.put("time", "LocalTime");
+        typeReverseMap.put("short", "short");
+        typeReverseMap.put("file", "MultipartFile");
+    }
 
     /**
      * 实体缓存
      */
-    private final Map<Class<?>, DocModel> apiModelMap = new HashMap<>();
+    private final Map<Class<?>, DocModel> apiModelMap = new HashMap<>(256);
 
     /**
      * 全局入参类注解
      */
-    private final Map<Class<?>, Map<String, ApiProperty>> paramGlobalClassMap = new HashMap<>();
-    private final Map<Class<?>, String> paramGlobalClassDescriptionMap = new HashMap<>();
+    private final Map<Class<?>, Map<String, ApiProperty>> paramGlobalClassMap = new HashMap<>(256);
+    private final Map<Class<?>, String> paramGlobalClassDescriptionMap = new HashMap<>(256);
 
     /**
      * 全局出参类注解
      */
-    private final Map<Class<?>, Map<String, ApiProperty>> returnGlobalClassMap = new HashMap<>();
-    private final Map<Class<?>, String> returnGlobalClassDescriptionMap = new HashMap<>();
+    private final Map<Class<?>, Map<String, ApiProperty>> returnGlobalClassMap = new HashMap<>(256);
+    private final Map<Class<?>, String> returnGlobalClassDescriptionMap = new HashMap<>(256);
 
     /**
      * 是否使用下滑线命名方式
@@ -110,25 +150,6 @@ public class ApiContext {
 
     @PostConstruct
     public void init() {
-        baseTypeMap.put(Integer.class, "int");
-        baseTypeMap.put(int.class, "int");
-        baseTypeMap.put(Long.class, "long");
-        baseTypeMap.put(long.class, "long");
-        baseTypeMap.put(Boolean.class, "boolean");
-        baseTypeMap.put(boolean.class, "boolean");
-        baseTypeMap.put(Float.class, "float");
-        baseTypeMap.put(float.class, "float");
-        baseTypeMap.put(Double.class, "double");
-        baseTypeMap.put(double.class, "double");
-        baseTypeMap.put(String.class, "string");
-        baseTypeMap.put(Date.class, "datetime");
-        baseTypeMap.put(LocalDateTime.class, "datetime");
-        baseTypeMap.put(LocalDate.class, "date");
-        baseTypeMap.put(LocalTime.class, "time");
-        baseTypeMap.put(short.class, "short");
-        baseTypeMap.put(Object.class, "");
-        baseTypeMap.put(MultipartFile.class, "file");
-
         log.info("======Api启动======");
         try {
             StackTraceElement[] stackTrace = new RuntimeException().getStackTrace();
@@ -140,7 +161,6 @@ public class ApiContext {
                     if (apiEnable == null) {
                         return;
                     }
-                    apiEnable.actives();
                     if (apiEnable.actives().length > 0 && StringUtils.isNotBlank(this.active)) {
                         //适用环境
                         boolean pass = false;
@@ -172,7 +192,7 @@ public class ApiContext {
                                         apiPropertyMap = paramGlobalClassMap.get(apiGlobalClass.name());
                                         apiPropertyMap.put(property.name(), property);
                                     } else {
-                                        apiPropertyMap = new HashMap<>();
+                                        apiPropertyMap = new HashMap<>(256);
                                         apiPropertyMap.put(property.name(), property);
                                         paramGlobalClassMap.put(apiGlobalClass.name(), apiPropertyMap);
                                     }
@@ -187,7 +207,7 @@ public class ApiContext {
                                         apiPropertyMap = returnGlobalClassMap.get(apiGlobalClass.name());
                                         apiPropertyMap.put(property.name(), property);
                                     } else {
-                                        apiPropertyMap = new HashMap<>();
+                                        apiPropertyMap = new HashMap<>(256);
                                         apiPropertyMap.put(property.name(), property);
                                         returnGlobalClassMap.put(apiGlobalClass.name(), apiPropertyMap);
                                     }
@@ -237,7 +257,7 @@ public class ApiContext {
                             "/ /_/ / /_/ /| |/ / /_/ / ___ |/ /_/ / / /_/ / /_/ / /__(__  ) \n" +
                             "\\____/\\__,_/ |___/\\__,_/_/  |_/ .___/_/_____/\\____/\\___/____/  \n" +
                             "                             /_/                               \n" +
-                            "                                                  1.2.0-beta   \n");
+                            "                                                  1.3.0-beta   \n");
                 }
             }
         } catch (Exception exception) {
@@ -404,7 +424,7 @@ public class ApiContext {
      * @return 处理后的方法结果
      */
     public Set<DocMethod> handleMethod(Method[] methods, RequestMapping requestMapping) {
-        Set<DocMethod> tempMethods = new TreeSet<>();
+        Set<DocMethod> docMethods = new TreeSet<>();
         Set<String> parentModeSet = new TreeSet<>();
         Set<String> parentUriSet = new TreeSet<>();
         if (requestMapping != null) {
@@ -562,11 +582,15 @@ public class ApiContext {
             docMethod.setParams(tempMethod.getParams());
             docMethod.setParamJson(tempMethod.getParamJson());
             docMethod.setParamExample(tempMethod.getParamExample());
+            docMethod.setParamAndroid(tempMethod.getParamAndroid());
+            docMethod.setParamIos(tempMethod.getParamIos());
             docMethod.setReturnJson(tempMethod.getReturnJson());
+            docMethod.setReturnAndroid(tempMethod.getReturnAndroid());
+            docMethod.setReturnIos(tempMethod.getReturnIos());
             docMethod.setDocCodes(tempMethod.getDocCodes());
-            tempMethods.add(docMethod);
+            docMethods.add(docMethod);
         }
-        return tempMethods;
+        return docMethods;
     }
 
     /**
@@ -581,7 +605,7 @@ public class ApiContext {
     public DocModel handleParam(ApiMapParam apiMapParam, ApiAppointParam
             apiAppointParam, ApiParamModelProperty[] apiModelProperties, Parameter[] parameters) throws ParamException {
         DocModel docModel = new DocModel();
-        Map<String, ApiParamModelProperty> apiModelPropertyMap = new HashMap<>();
+        Map<String, ApiParamModelProperty> apiModelPropertyMap = new HashMap<>(256);
         if (apiModelProperties != null && apiModelProperties.length > 0) {
             for (ApiParamModelProperty apiParamModelProperty : apiModelProperties) {
                 String name = apiParamModelProperty.name();
@@ -591,7 +615,7 @@ public class ApiContext {
         int num = 0;
         docModel.setForm("form-data");
         //自定义入参对象属性
-        Map<String, Boolean> propertyMap = new HashMap<>();
+        Map<String, Boolean> propertyMap = new HashMap<>(256);
         if (apiAppointParam != null) {
             String[] requires = apiAppointParam.require();
             String[] nonRequires = apiAppointParam.nonRequire();
@@ -614,7 +638,7 @@ public class ApiContext {
                 continue;
             }
             //对于map类型的入参 用ApiMapParam 来处理
-            Map<String, ApiParam> apiMapParamMap = new HashMap<>();
+            Map<String, ApiParam> apiMapParamMap = new HashMap<>(256);
             if (apiMapParam != null && apiMapParam.value().length > 0) {
                 for (ApiParam apiParam : apiMapParam.value()) {
                     String value = apiParam.name();
@@ -642,6 +666,10 @@ public class ApiContext {
                 //标记为非基本数据类型
                 docModel.setForm("json");
                 docModel.setType(docProperty.getType());
+                //类名
+                docModel.setClassName(docProperty.getClassName());
+                //类描述
+                docModel.setDescription(docProperty.getDocModel().getDescription());
             }
             if (num < 1) {
                 //非json则为form-data形式入参
@@ -702,6 +730,10 @@ public class ApiContext {
                     docModel.getApiProperties().addAll(docProperty.getDocModel().getApiProperties());
                     //标记为非基本数据类型
                     docModel.setType(docProperty.getType());
+                    //类名
+                    docModel.setClassName(docProperty.getDocModel().getClassName());
+                    //类描述
+                    docModel.setDescription(docProperty.getDocModel().getDescription());
                 }
             }
         }
@@ -720,7 +752,7 @@ public class ApiContext {
      */
     public DocModel handleReturn(ApiMapReturn apiMapReturn, ApiBasicReturn
             apiBasicReturn, Class<?> returnType, Type genericReturnType, ApiReturnModelProperty[] apiReturnModelProperties) {
-        Map<String, ApiReturnModelProperty> apiReturnModelPropertyMap = new HashMap<>();
+        Map<String, ApiReturnModelProperty> apiReturnModelPropertyMap = new HashMap<>(256);
         if (apiReturnModelProperties != null && apiReturnModelProperties.length > 0) {
             for (ApiReturnModelProperty apiReturnModelProperty : apiReturnModelProperties) {
                 String name = apiReturnModelProperty.name();
@@ -728,7 +760,7 @@ public class ApiContext {
             }
         }
         //对于map类型的出参 用ApiMapParam 来处理
-        Map<String, ApiReturn> apiMapReturnMap = new HashMap<>();
+        Map<String, ApiReturn> apiMapReturnMap = new HashMap<>(256);
         if (apiMapReturn != null && apiMapReturn.value().length > 0) {
             for (ApiReturn apiReturn : apiMapReturn.value()) {
                 String value = apiReturn.name();
@@ -738,7 +770,7 @@ public class ApiContext {
         //循环依赖收集集合
         Set<Class<?>> repeats = new HashSet<>();
         DocProperty docProperty = new DocProperty();
-        docProperty = handleModel(docProperty, returnType, regenerateType(genericReturnType), new HashMap<>(), false, true, repeats, null, apiReturnModelPropertyMap, null, null, apiMapReturnMap, null, null);
+        docProperty = handleModel(docProperty, returnType, regenerateType(genericReturnType), new HashMap<>(256), false, true, repeats, null, apiReturnModelPropertyMap, null, null, apiMapReturnMap, null, null);
         DocModel docModel = new DocModel();
         if (StringUtils.isBlank(docProperty.getName()) && StringUtils.isBlank(docProperty.getType()) && docProperty.getDocModel() == null) {
             return docModel;
@@ -764,6 +796,10 @@ public class ApiContext {
             docModel.getApiProperties().addAll(docProperty.getDocModel().getApiProperties());
             //标记为非基本数据类型
             docModel.setType(docProperty.getType());
+            //类名
+            docModel.setClassName(docProperty.getDocModel().getClassName());
+            //类描述
+            docModel.setDescription(docProperty.getDocModel().getDescription());
         }
         return docModel;
     }
@@ -773,6 +809,7 @@ public class ApiContext {
      *
      * @param docProperty                属性类
      * @param aClass                     类
+     * @param type                       类
      * @param propertyMap                自定义入参对象属性
      * @param isParam                    是否是入参
      * @param isJson                     是否是json
@@ -793,7 +830,9 @@ public class ApiContext {
                                    Map<String, ApiReturnModelProperty> apiReturnModelPropertyMap,
                                    Map<String, ApiMapProperty> apiMapPropertyMap,
                                    Map<String, ApiParam> apiMapParamMap,
-                                   Map<String, ApiReturn> apiMapReturnMap, Map<String, ApiProperty> paramGlobalApiPropertyMap, Map<String, ApiProperty> returnGlobalApiPropertyMap) {
+                                   Map<String, ApiReturn> apiMapReturnMap,
+                                   Map<String, ApiProperty> paramGlobalApiPropertyMap,
+                                   Map<String, ApiProperty> returnGlobalApiPropertyMap) {
         //先判断是否为循环依赖
         if (repeats.contains(aClass)) {
             //如为循环依赖则直接返回
@@ -825,6 +864,7 @@ public class ApiContext {
             //处理基本数据类型
             String typeString = docProperty.getType();
             docProperty.setType(baseTypeMap.get(aClass) + typeString);
+            docProperty.setClassName(aClass.getSimpleName());
             return docProperty;
         } else {
             //先从模型集合中取，取不到则进行解析
@@ -834,9 +874,10 @@ public class ApiContext {
                 docProperty.setDocModel(apiModelMap.get(aClass));
                 return docProperty;
             }
+            DocModel docModel = new DocModel();
+            ApiModel apiModel = aClass.getAnnotation(ApiModel.class);
             //如果属性为对象，但是属性未配置注解描述的，取类上的注解为属性描述
             if (StringUtils.isBlank(docProperty.getDescription())) {
-                ApiModel apiModel = aClass.getAnnotation(ApiModel.class);
                 if (apiModel != null) {
                     String value = apiModel.value();
                     if (StringUtils.isNotBlank(value)) {
@@ -844,7 +885,11 @@ public class ApiContext {
                     }
                 }
             }
-            DocModel docModel = new DocModel();
+            if (apiModel != null && StringUtils.isNotBlank(apiModel.value())) {
+                docModel.setDescription(apiModel.value());
+            }
+            docModel.setClassName(aClass.getSimpleName());
+            docProperty.setClassName(aClass.getSimpleName());
             Set<DocProperty> apiProperties = new TreeSet<>();
             //处理类类型
             Method[] methods = aClass.getMethods();
@@ -879,7 +924,7 @@ public class ApiContext {
                     }
                 }
                 DocProperty property = new DocProperty();
-                Map<String, Boolean> childPropertyMap = new HashMap<>();
+                Map<String, Boolean> childPropertyMap = new HashMap<>(256);
                 if (!propertyMap.isEmpty()) {
                     Set<String> strings = propertyMap.keySet();
                     //通过状态
@@ -900,7 +945,7 @@ public class ApiContext {
                     property.setRequited(propertyMap.get(methodName));
                 }
                 //全局针对多级配置
-                Map<String, ApiProperty> childParamGlobalApiPropertyMap = new HashMap<>();
+                Map<String, ApiProperty> childParamGlobalApiPropertyMap = new HashMap<>(256);
                 if (paramGlobalApiPropertyMap != null && !paramGlobalApiPropertyMap.isEmpty()) {
                     Set<String> strings = paramGlobalApiPropertyMap.keySet();
                     for (String string : strings) {
@@ -932,7 +977,7 @@ public class ApiContext {
                     }
                 }
                 //全局针对多级配置
-                Map<String, ApiProperty> childReturnGlobalApiPropertyMap = new HashMap<>();
+                Map<String, ApiProperty> childReturnGlobalApiPropertyMap = new HashMap<>(256);
                 if (returnGlobalApiPropertyMap != null && !returnGlobalApiPropertyMap.isEmpty()) {
                     Set<String> strings = returnGlobalApiPropertyMap.keySet();
                     for (String string : strings) {
@@ -966,7 +1011,6 @@ public class ApiContext {
                 //判断是否为全局类配置
                 if (isParam) {
                     //入参
-
                     if (paramGlobalClassMap.containsKey(aClass)) {
                         Map<String, ApiProperty> apiPropertyMap = paramGlobalClassMap.get(aClass);
                         Set<String> strings = apiPropertyMap.keySet();
@@ -1004,12 +1048,12 @@ public class ApiContext {
                         }
                         String value = paramGlobalClassDescriptionMap.get(aClass);
                         if (StringUtils.isNotBlank(value)) {
+                            docModel.setDescription(value);
                             docProperty.setDescription(value);
                         }
                     }
                 } else {
                     //出参
-
                     if (returnGlobalClassMap.containsKey(aClass)) {
                         Map<String, ApiProperty> apiPropertyMap = returnGlobalClassMap.get(aClass);
                         Set<String> strings = apiPropertyMap.keySet();
@@ -1042,12 +1086,12 @@ public class ApiContext {
                                 }
                             }
                         }
-
                         if (!contain) {
                             continue;
                         }
                         String value = returnGlobalClassDescriptionMap.get(aClass);
                         if (StringUtils.isNotBlank(value)) {
+                            docModel.setDescription(value);
                             docProperty.setDescription(value);
                         }
                     }
@@ -1056,7 +1100,7 @@ public class ApiContext {
                 //复制入参Map类型注解信息
                 Map<String, ApiParam> childApiMapParamMap = null;
                 if (apiMapParamMap != null && !apiMapParamMap.isEmpty()) {
-                    childApiMapParamMap = new HashMap<>();
+                    childApiMapParamMap = new HashMap<>(256);
                     Set<String> strings = apiMapParamMap.keySet();
                     for (String string : strings) {
                         if (string.contains(".")) {
@@ -1069,7 +1113,7 @@ public class ApiContext {
                 //复制出参Map类型注解信息
                 Map<String, ApiReturn> childApiMapReturnMap = null;
                 if (apiMapReturnMap != null && !apiMapReturnMap.isEmpty()) {
-                    childApiMapReturnMap = new HashMap<>();
+                    childApiMapReturnMap = new HashMap<>(256);
                     Set<String> strings = apiMapReturnMap.keySet();
                     for (String string : strings) {
                         if (string.contains(".")) {
@@ -1081,7 +1125,7 @@ public class ApiContext {
                 }
                 //对于map类型的属性
                 //方法上的Map注解
-                apiMapPropertyMap = new HashMap<>();
+                apiMapPropertyMap = new HashMap<>(256);
                 ApiMapProperty[] apiMapProperties = method.getAnnotationsByType(ApiMapProperty.class);
                 if (apiMapProperties != null && apiMapProperties.length > 0) {
                     for (ApiMapProperty apiMapProperty : apiMapProperties) {
@@ -1180,7 +1224,7 @@ public class ApiContext {
                         //复制重新定义属性信息Map
                         Map<String, ApiParamModelProperty> childApiModelPropertyMap = null;
                         if (apiModelPropertyMap != null && !apiModelPropertyMap.isEmpty()) {
-                            childApiModelPropertyMap = new HashMap<>();
+                            childApiModelPropertyMap = new HashMap<>(256);
                             Set<String> strings = apiModelPropertyMap.keySet();
                             for (String string : strings) {
                                 if (string.contains(".")) {
@@ -1262,7 +1306,7 @@ public class ApiContext {
                         //复制重新定义属性信息Map
                         Map<String, ApiReturnModelProperty> childApiReturnModelPropertyMap = null;
                         if (apiReturnModelPropertyMap != null && !apiReturnModelPropertyMap.isEmpty()) {
-                            childApiReturnModelPropertyMap = new HashMap<>();
+                            childApiReturnModelPropertyMap = new HashMap<>(256);
                             Set<String> strings = apiReturnModelPropertyMap.keySet();
                             for (String string : strings) {
                                 if (string.contains(".")) {
@@ -1346,7 +1390,7 @@ public class ApiContext {
                         //复制重新定义属性信息Map
                         Map<String, ApiParamModelProperty> childApiModelPropertyMap = null;
                         if (apiModelPropertyMap != null && !apiModelPropertyMap.isEmpty()) {
-                            childApiModelPropertyMap = new HashMap<>();
+                            childApiModelPropertyMap = new HashMap<>(256);
                             Set<String> strings = apiModelPropertyMap.keySet();
                             for (String string : strings) {
                                 if (string.contains(".")) {
@@ -1423,7 +1467,7 @@ public class ApiContext {
                         //复制重新定义属性信息Map
                         Map<String, ApiReturnModelProperty> childApiReturnModelPropertyMap = null;
                         if (apiReturnModelPropertyMap != null && !apiReturnModelPropertyMap.isEmpty()) {
-                            childApiReturnModelPropertyMap = new HashMap<>();
+                            childApiReturnModelPropertyMap = new HashMap<>(256);
                             Set<String> strings = apiReturnModelPropertyMap.keySet();
                             for (String string : strings) {
                                 if (string.contains(".")) {
@@ -1635,32 +1679,6 @@ public class ApiContext {
                                  Map<String, ApiReturnModelProperty> apiReturnModelPropertyMap,
                                  Map<String, ApiMapProperty> apiMapPropertyMap,
                                  Map<String, ApiParam> apiMapParamMap, Map<String, ApiReturn> apiMapReturnMap, Map<String, ApiProperty> paramGlobalApiPropertyMap, Map<String, ApiProperty> returnGlobalApiPropertyMap) {
-        if ((apiMapPropertyMap == null || apiMapPropertyMap.isEmpty()) && (apiMapParamMap == null || apiMapParamMap.isEmpty()) && (apiMapReturnMap == null || apiMapReturnMap.isEmpty())) {
-            return docProperty;
-        }
-        //全局针对多级配置
-        Map<String, ApiProperty> childParamGlobalApiPropertyMap = new HashMap<>();
-        if (paramGlobalApiPropertyMap != null && !paramGlobalApiPropertyMap.isEmpty()) {
-            Set<String> strings = paramGlobalApiPropertyMap.keySet();
-            for (String string : strings) {
-                if (string.contains(".")) {
-                    String[] split = string.split("\\.");
-                    childParamGlobalApiPropertyMap.put(string.replaceFirst(split[0] + ".", ""), paramGlobalApiPropertyMap.get(string));
-
-                }
-            }
-        }
-        //全局针对多级配置
-        Map<String, ApiProperty> childReturnGlobalApiPropertyMap = new HashMap<>();
-        if (returnGlobalApiPropertyMap != null && !returnGlobalApiPropertyMap.isEmpty()) {
-            Set<String> strings = returnGlobalApiPropertyMap.keySet();
-            for (String string : strings) {
-                if (string.contains(".")) {
-                    String[] split = string.split("\\.");
-                    childReturnGlobalApiPropertyMap.put(string.replaceFirst(split[0] + ".", ""), returnGlobalApiPropertyMap.get(string));
-                }
-            }
-        }
         // 强制类型转换
         ParameterizedType pType = (ParameterizedType) gType;
         // 取得泛型类型的泛型参数
@@ -1676,9 +1694,38 @@ public class ApiContext {
             aClass = (Class<?>) tArgs[1];
         }
         DocModel docModel = new DocModel();
+        docModel.setClassName("Map");
+        docModel.setDescription(docProperty.getDescription());
         Set<DocProperty> apiProperties = new TreeSet<>();
+        if ((apiMapPropertyMap == null || apiMapPropertyMap.isEmpty()) && (apiMapParamMap == null || apiMapParamMap.isEmpty()) && (apiMapReturnMap == null || apiMapReturnMap.isEmpty())) {
+            return handleModel(docProperty, aClass, tArgs[1], propertyMap, isParam, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, apiMapParamMap, apiMapReturnMap, paramGlobalApiPropertyMap, returnGlobalApiPropertyMap);
+        }
+        //全局针对多级配置
+        Map<String, ApiProperty> childParamGlobalApiPropertyMap = new HashMap<>(256);
+        if (paramGlobalApiPropertyMap != null && !paramGlobalApiPropertyMap.isEmpty()) {
+            Set<String> strings = paramGlobalApiPropertyMap.keySet();
+            for (String string : strings) {
+                if (string.contains(".")) {
+                    String[] split = string.split("\\.");
+                    childParamGlobalApiPropertyMap.put(string.replaceFirst(split[0] + ".", ""), paramGlobalApiPropertyMap.get(string));
+
+                }
+            }
+        }
+        //全局针对多级配置
+        Map<String, ApiProperty> childReturnGlobalApiPropertyMap = new HashMap<>(256);
+        if (returnGlobalApiPropertyMap != null && !returnGlobalApiPropertyMap.isEmpty()) {
+            Set<String> strings = returnGlobalApiPropertyMap.keySet();
+            for (String string : strings) {
+                if (string.contains(".")) {
+                    String[] split = string.split("\\.");
+                    childReturnGlobalApiPropertyMap.put(string.replaceFirst(split[0] + ".", ""), returnGlobalApiPropertyMap.get(string));
+                }
+            }
+        }
+
         Set<String> fieldKeySet = new HashSet<>();
-        Map<String, ApiMapProperty> copyApiMapPropertyMap = new HashMap<>();
+        Map<String, ApiMapProperty> copyApiMapPropertyMap = new HashMap<>(256);
         if (apiMapPropertyMap != null && !apiMapPropertyMap.isEmpty()) {
             copyApiMapPropertyMap.putAll(apiMapPropertyMap);
             //属性Map的name配置
@@ -1688,7 +1735,7 @@ public class ApiContext {
         if (apiMapParamMap != null && !apiMapParamMap.isEmpty() && isParam) {
             //入参Map
             Set<String> keySet = apiMapParamMap.keySet();
-            Map<String, Map<String, ApiParam>> mapMap = new HashMap<>();
+            Map<String, Map<String, ApiParam>> mapMap = new HashMap<>(256);
             Set<DocProperty> docProperties = new TreeSet<>();
             for (String key : keySet) {
                 String[] split = key.split("\\.");
@@ -1705,7 +1752,7 @@ public class ApiContext {
                         childApiMapParamMap = mapMap.get(split[0]);
                         childApiMapParamMap.put(key.replaceFirst(split[0] + ".", ""), apiMapParamMap.get(key));
                     } else {
-                        childApiMapParamMap = new HashMap<>();
+                        childApiMapParamMap = new HashMap<>(256);
                         childApiMapParamMap.put(key.replaceFirst(split[0] + ".", ""), apiMapParamMap.get(key));
                         mapMap.put(split[0], childApiMapParamMap);
                     }
@@ -1748,6 +1795,9 @@ public class ApiContext {
                     if (StringUtils.isNotBlank(type) && StringUtils.isBlank(property.getType())) {
                         property.setType(type);
                     }
+                    if (StringUtils.isNotBlank(type) && (StringUtils.isBlank(property.getClassName())|| "Object".equals(property.getClassName()))) {
+                        property.setClassName(typeReverseMap.get(property.getType()));
+                    }
                     apiProperties.add(property);
                 }
             }
@@ -1764,7 +1814,7 @@ public class ApiContext {
         } else if (apiMapReturnMap != null && !apiMapReturnMap.isEmpty() && !isParam) {
             //出参Map
             Set<String> keySet = apiMapReturnMap.keySet();
-            Map<String, Map<String, ApiReturn>> mapMap = new HashMap<>();
+            Map<String, Map<String, ApiReturn>> mapMap = new HashMap<>(256);
             Set<DocProperty> docProperties = new TreeSet<>();
             for (String key : keySet) {
                 String[] split = key.split("\\.");
@@ -1781,7 +1831,7 @@ public class ApiContext {
                         childApiMapReturnMap = mapMap.get(split[0]);
                         childApiMapReturnMap.put(key.replaceFirst(split[0] + ".", ""), apiMapReturnMap.get(key));
                     } else {
-                        childApiMapReturnMap = new HashMap<>();
+                        childApiMapReturnMap = new HashMap<>(256);
                         childApiMapReturnMap.put(key.replaceFirst(split[0] + ".", ""), apiMapReturnMap.get(key));
                         mapMap.put(split[0], childApiMapReturnMap);
                     }
@@ -1814,6 +1864,9 @@ public class ApiContext {
                     if (StringUtils.isNotBlank(type) && StringUtils.isBlank(property.getType())) {
                         property.setType(type);
                     }
+                    if (StringUtils.isNotBlank(type) && (StringUtils.isBlank(property.getClassName())|| "Object".equals(property.getClassName()))) {
+                        property.setClassName(typeReverseMap.get(property.getType()));
+                    }
                     apiProperties.add(property);
                 }
             }
@@ -1831,7 +1884,7 @@ public class ApiContext {
         if (!copyApiMapPropertyMap.isEmpty()) {
             //属性Map
             Set<String> keySet = copyApiMapPropertyMap.keySet();
-            Map<String, Map<String, ApiMapProperty>> mapMap = new HashMap<>();
+            Map<String, Map<String, ApiMapProperty>> mapMap = new HashMap<>(256);
             //复制入参Map类型注解信息
             Map<String, ApiParam> childApiMapParamMap = null;
             //复制出参Map类型注解信息
@@ -1841,7 +1894,7 @@ public class ApiContext {
                 String[] split = key.split("\\.");
                 //复制入参Map类型注解信息
                 if (apiMapParamMap != null && !apiMapParamMap.isEmpty() && isParam) {
-                    childApiMapParamMap = new HashMap<>();
+                    childApiMapParamMap = new HashMap<>(256);
                     Set<String> strings = apiMapParamMap.keySet();
                     for (String string : strings) {
                         if (string.contains(".")) {
@@ -1857,7 +1910,7 @@ public class ApiContext {
                 }
                 //复制出参Map类型注解信息
                 if (apiMapReturnMap != null && !apiMapReturnMap.isEmpty() && !isParam) {
-                    childApiMapReturnMap = new HashMap<>();
+                    childApiMapReturnMap = new HashMap<>(256);
                     Set<String> strings = apiMapReturnMap.keySet();
                     for (String string : strings) {
                         if (string.contains(".")) {
@@ -1878,7 +1931,7 @@ public class ApiContext {
                         childApiMapPropertyMap = mapMap.get(split[0]);
                         childApiMapPropertyMap.put(key.replaceFirst(split[0] + ".", ""), copyApiMapPropertyMap.get(key));
                     } else {
-                        childApiMapPropertyMap = new HashMap<>();
+                        childApiMapPropertyMap = new HashMap<>(256);
                         childApiMapPropertyMap.put(key.replaceFirst(split[0] + ".", ""), copyApiMapPropertyMap.get(key));
                         mapMap.put(split[0], childApiMapPropertyMap);
                     }
@@ -1917,9 +1970,12 @@ public class ApiContext {
                 for (DocProperty property : docProperties) {
                     String type = property.getType();
                     property.setType("");
-                    property = handleModel(property, aClass, gType, propertyMap, isParam, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, copyApiMapPropertyMap, null, null, childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
+                    property = handleModel(property, aClass, gType, propertyMap, isParam, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, mapMap.get(property.getName()), null, null, childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
                     if (StringUtils.isNotBlank(type) && StringUtils.isBlank(property.getType())) {
                         property.setType(type);
+                    }
+                    if (StringUtils.isNotBlank(type) && (StringUtils.isBlank(property.getClassName())|| "Object".equals(property.getClassName()))) {
+                        property.setClassName(typeReverseMap.get(property.getType()));
                     }
                     apiProperties.add(property);
                 }

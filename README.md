@@ -1,4 +1,8 @@
 # javaApiDocs文档
+# 版本说明
+v1.3.0-beta
+   
+增加生成Android和IOS代码
 
 [TOC]
 
@@ -8,14 +12,14 @@ ip:端口/项目名/citrsw/index.html
 
 ## 示例
 
-1.  [JavaApiDocs源码地址](https://github.com/15706058532/JavaApiDocs)
+1. [JavaApiDocs源码地址](https://github.com/15706058532/JavaApiDocs)
 2. [使用文档](https://api.citrsw.com)
-3. [演示页面](https://example.citrsw.com/citrsw/index.html)
-4. [演示后端java代码](https://github.com/15706058532/api-example)
+3. [示例页面](https://example.citrsw.com/citrsw/index.html)
+4. [示例后端java代码](https://github.com/15706058532/api-example)
 
 ## 辅助工具
 
-[集成JavaApiDocs的代码生成器]("https://github.com/15706058532/MyBatisPlusGenerator")
+[集成JavaApiDocs的代码生成器](https://github.com/15706058532/MyBatisPlusGenerator)
 
 ## maven配置
 
@@ -23,7 +27,7 @@ ip:端口/项目名/citrsw/index.html
 <dependency>
     <groupId>com.citrsw</groupId>
     <artifactId>java-api-docs</artifactId>
-    <version>1.2.0-beta</version>
+    <version>1.3.0-beta</version>
 </dependency>
 ```
 

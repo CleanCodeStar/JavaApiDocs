@@ -1,5 +1,7 @@
 package com.citrsw.definition;
 
+import com.citrsw.common.ApiUtils;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -24,6 +26,12 @@ public class DocProperty implements Comparable<DocProperty> {
      * 名称
      */
     private String name;
+
+    /**
+     * 类名称
+     */
+    @JsonIgnore
+    private String className;
 
     /**
      * 描述
@@ -61,6 +69,9 @@ public class DocProperty implements Comparable<DocProperty> {
      */
     private DocModel docModel;
 
+    /**
+     * form-data形式
+     */
     public Set<DocProperty> param(DocProperty parentDocProperty) {
         Set<DocProperty> apiProperties = new LinkedHashSet<>();
         if (docModel != null && !docModel.getApiProperties().isEmpty()) {
@@ -89,9 +100,12 @@ public class DocProperty implements Comparable<DocProperty> {
         return apiProperties;
     }
 
+    /**
+     * json形式
+     */
     public String getJson(StringBuilder tabs, boolean isParam, boolean isExample) {
         StringBuilder builder = new StringBuilder();
-        if(StringUtils.isBlank(name)&&docModel==null&&StringUtils.isBlank(type.replaceAll("\\[0\\]",""))){
+        if (StringUtils.isBlank(name) && docModel == null && StringUtils.isBlank(type.replaceAll("\\[0\\]", ""))) {
             return "";
         }
         builder.append("\r\n").append(tabs).append(name).append(": ");
@@ -216,6 +230,120 @@ public class DocProperty implements Comparable<DocProperty> {
             }
         }
         return builder.toString();
+    }
+
+    /**
+     * 生成安卓实体类代码
+     */
+    public String android(Set<String> strings) {
+        if (docModel != null && !docModel.getApiProperties().isEmpty()) {
+            docModel.android(strings);
+            StringBuilder builder = new StringBuilder();
+            if (StringUtils.isNotBlank(description)) {
+                builder.append("\n\n    /**\r\n     * ").append(description).append("\r\n     */");
+            }
+            StringBuilder classNameBuilder;
+            if (StringUtils.isBlank(this.className) || this.className.startsWith("Map")) {
+                classNameBuilder = new StringBuilder("Map<String, ");
+                classNameBuilder.append(docModel.getApiProperties().iterator().next().className);
+                classNameBuilder.append(">");
+            } else {
+                classNameBuilder = new StringBuilder(this.className);
+                if (type.contains("[0]")) {
+                    classNameBuilder = new StringBuilder("List");
+                    String[] split = type.split("0\\]");
+                    for (int i = 0; i < split.length; i++) {
+                        classNameBuilder.append("<");
+                    }
+                    classNameBuilder.append(this.className);
+                    for (int i = 0; i < split.length; i++) {
+                        classNameBuilder.append(">");
+                    }
+                }
+            }
+            builder.append("\r\n    private").append(" ").append(classNameBuilder).append(" ").append(name).append(";");
+            return builder.toString();
+        } else {
+            StringBuilder builder = new StringBuilder();
+            if (StringUtils.isNotBlank(description)) {
+                builder.append("\n\n    /**\r\n     * ").append(description).append("\r\n     */");
+            }
+            StringBuilder classNameBuilder = new StringBuilder(this.className);
+            if (type.contains("[0]")) {
+                classNameBuilder = new StringBuilder("List");
+                String[] split = type.split("0\\]");
+                for (int i = 0; i < split.length; i++) {
+                    classNameBuilder.append("<");
+                }
+                classNameBuilder.append(this.className);
+                for (int i = 0; i < split.length; i++) {
+                    classNameBuilder.append(">");
+                }
+            }
+            builder.append("\r\n    private").append(" ").append(classNameBuilder).append(" ").append(name).append(";");
+            return builder.toString();
+        }
+    }
+
+    /**
+     * 生成IOS实体类代码
+     *
+     * @param strings
+     */
+    public String ios(Set<String> strings) {
+        String iosType = ApiUtils.javaToIosType(this.className);
+        iosType = StringUtils.isBlank(iosType) ? this.className : iosType;
+        if (docModel != null && !docModel.getApiProperties().isEmpty()) {
+            docModel.ios(strings);
+            StringBuilder builder = new StringBuilder();
+            if (StringUtils.isNotBlank(description)) {
+                builder.append("\n\n    /**\r\n     * ").append(description).append("\r\n     */");
+            }
+            StringBuilder classNameBuilder;
+            if (StringUtils.isBlank(this.className) || this.className.startsWith("Map")) {
+                classNameBuilder = new StringBuilder("[String: ");
+                String className = ApiUtils.javaToIosType(docModel.getApiProperties().iterator().next().className);
+                className = StringUtils.isBlank(className) ? this.className : className;
+                classNameBuilder.append(className);
+                classNameBuilder.append("]");
+            } else {
+                classNameBuilder = new StringBuilder(iosType);
+                if (type.contains("[0]")) {
+                    classNameBuilder = new StringBuilder();
+                    String[] split = type.split("0\\]");
+                    for (int i = 0; i < split.length; i++) {
+                        classNameBuilder.append("[");
+                    }
+                    classNameBuilder.append(iosType);
+                    for (int i = 0; i < split.length; i++) {
+                        classNameBuilder.append("]");
+                    }
+                    classNameBuilder.append(" = []");
+                }
+            }
+            builder.append("\r\n    var").append(" ").append(name).append(": ").append(classNameBuilder);
+            return builder.toString();
+        } else {
+            StringBuilder builder = new StringBuilder();
+            if (StringUtils.isNotBlank(description)) {
+                builder.append("\n\n    /**\r\n     * ").append(description).append("\r\n     */");
+            }
+            StringBuilder classNameBuilder = new StringBuilder(iosType);
+            if (type.contains("[0]")) {
+                classNameBuilder = new StringBuilder();
+                String[] split = type.split("0\\]");
+                for (int i = 0; i < split.length; i++) {
+                    classNameBuilder.append("[");
+                }
+                classNameBuilder.append(iosType);
+                for (int i = 0; i < split.length; i++) {
+                    classNameBuilder.append("]");
+                }
+                classNameBuilder.append(" = []");
+            }
+            builder.append("\r\n    var").append(" ").append(name).append(": ").append(classNameBuilder);
+            return builder.toString();
+        }
     }
 
     @Override

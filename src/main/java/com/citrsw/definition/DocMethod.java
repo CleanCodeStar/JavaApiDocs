@@ -61,6 +61,29 @@ public class DocMethod implements Comparable<DocMethod> {
     private String returnJson;
 
     /**
+     * 生成入参安卓实体类代码
+     */
+    @JsonProperty("param_android")
+    public String paramAndroid;
+
+    /**
+     * 生成入参响应安卓实体类代码
+     */
+    @JsonProperty("return_android")
+    public String returnAndroid;
+    /**
+     * 生成IOS实体类代码
+     */
+    @JsonProperty("param_ios")
+    public String paramIos;
+
+    /**
+     * 生成响应IOS实体类代码
+     */
+    @JsonProperty("return_ios")
+    public String returnIos;
+
+    /**
      * 状态码
      */
     @JsonProperty("doc_codes")
