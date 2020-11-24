@@ -109,7 +109,6 @@ public class TempMethod {
             builder.append(s);
         }
         return builder.toString();
-
     }
 
     /**
@@ -123,8 +122,22 @@ public class TempMethod {
             builder.append(s);
         }
         return builder.toString();
-
     }
+
+    /**
+     * 生成请求Vue代码
+     */
+    public String getParamVue() {
+        return paramDocModel.paramVue();
+    }
+
+    /**
+     * 生成响应Vue代码
+     */
+    public String getReturnVue() {
+        return paramDocModel.returnVue();
+    }
+
 
     /**
      * 状态码

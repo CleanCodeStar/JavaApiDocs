@@ -186,7 +186,7 @@ public class DocModel {
             if (StringUtils.isNotBlank(description)) {
                 builder.append("/**\r\n * ").append(description).append("\r\n */\r\n");
             }
-            builder.append("struct ").append(className).append(" {");
+            builder.append("class ").append(className).append(" {");
         }
         for (Iterator<DocProperty> it = apiProperties.iterator(); it.hasNext(); ) {
             DocProperty docProperty = it.next();
@@ -198,4 +198,81 @@ public class DocModel {
         }
         strings.add(builder.toString());
     }
+
+    /**
+     * 生成请求Vue代码
+     */
+    public String paramVue() {
+        StringBuilder builder = new StringBuilder();
+        StringBuilder stringBuilder = new StringBuilder();
+        if (StringUtils.isNotBlank(className)) {
+            builder.append("---------------html----------------------").append("\r\n");
+            builder.append("<el-dialog title=\"").append("新增");
+            if (StringUtils.isNotBlank(description)) {
+                builder.append(description);
+            }
+            builder.append("\" center :visible.sync=\"visible\" width=\"30%\">").append("\r\n");
+            builder.append("    ").append("<el-form :model=\"").append(StringUtils.uncapitalize(className)).append("\" :rules=\"rules\" ref=\"").append(className).append("\" ").append("\r\n");
+            builder.append("              ").append("label-width=\"100px\" @keyup.enter.native=\"save").append(className).append("()\">").append("\r\n");
+            stringBuilder.append("rules: {").append("\r\n");
+            for (Iterator<DocProperty> it = apiProperties.iterator(); it.hasNext(); ) {
+                DocProperty docProperty = it.next();
+                stringBuilder.append(docProperty.paramVue(builder, StringUtils.uncapitalize(className)));
+            }
+            builder.append("        ").append("<span slot=\"footer\" class=\"dialog-footer\">").append("\r\n");
+            builder.append("            ").append("<el-button type=\"primary\" @click=\"save").append(className).append("()\" size=\"mini\">提 交</el-button>").append("\r\n");
+
+            builder.append("        ").append("</span>").append("\r\n");
+            builder.append("    ").append("</el-form>").append("\r\n");
+            builder.append("</el-dialog>").append("\r\n").append("\r\n");;
+
+            builder.append("---------------data----------------------").append("\r\n");
+            builder.append(StringUtils.uncapitalize(className)).append(": {},").append("\r\n");
+            builder.append("visible: false,").append("\r\n");
+            stringBuilder.deleteCharAt(stringBuilder.length()-3);
+            stringBuilder.append("},").append("\r\n");
+            stringBuilder.append("---------------method----------------------").append("\r\n");
+            stringBuilder.append("save").append(className).append("() {").append("\r\n");
+            stringBuilder.append("},").append("\r\n");
+            builder.append(stringBuilder);
+        }
+        return builder.toString();
+    }
+
+    /**
+     * 生成响应Vue代码
+     */
+    public String returnVue() {
+        StringBuilder builder = new StringBuilder();
+        if (StringUtils.isNotBlank(className)) {
+            builder.append("---------------html----------------------").append("\r\n");
+            builder.append("<el-table size=\"mini\" :data=\"").append(StringUtils.uncapitalize(className)).append("s\">").append("\r\n");
+            for (Iterator<DocProperty> it = apiProperties.iterator(); it.hasNext(); ) {
+                DocProperty docProperty = it.next();
+                docProperty.returnVue(builder, StringUtils.uncapitalize(className));
+            }
+            builder.append("</el-table>").append("\r\n");
+            builder.append("<el-pagination").append("\r\n");
+            builder.append("    ").append("background").append("\r\n");
+            builder.append("    ").append(":current-page=\"page.current*1\"").append("\r\n");
+            builder.append("    ").append(":page-sizes=\"[10, 20, 50,100]\"").append("\r\n");
+            builder.append("    ").append("layout=\"->,sizes,total,prev, pager, next,jumper\"").append("\r\n");
+            builder.append("    ").append("@current-change=\"function(v) {").append("\r\n");
+            builder.append("          ").append("page.current = v").append("\r\n");
+            builder.append("          ").append("query").append(className).append("s();").append("\r\n");
+            builder.append("        ").append("}\"").append("\r\n");
+            builder.append("    ").append("@size-change=\"function(v) {").append("\r\n");
+            builder.append("          ").append("page.size = v").append("\r\n");
+            builder.append("          ").append("query").append(className).append("s();").append("\r\n");
+            builder.append("        ").append("}\"").append("\r\n");
+            builder.append("    ").append(":total=\"page.total*1\">").append("\r\n");
+            builder.append("</el-pagination>").append("\r\n").append("\r\n");
+
+            builder.append("---------------data----------------------").append("\r\n");
+            builder.append(StringUtils.uncapitalize(className)).append("s: [],").append("\r\n");
+            builder.append("page: {}");
+        }
+        return builder.toString();
+    }
+
 }

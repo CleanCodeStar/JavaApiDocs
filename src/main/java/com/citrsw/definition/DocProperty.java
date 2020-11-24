@@ -359,4 +359,46 @@ public class DocProperty implements Comparable<DocProperty> {
         }
         return 0;
     }
+
+    public String paramVue(StringBuilder builder, String className) {
+        if (docModel == null) {
+            if (!type.contains("[0]")) {
+                builder.append("        ").append("<el-form-item");
+                if (StringUtils.isNotBlank(description)) {
+                    builder.append(" label=\"").append(description).append("\"");
+                }
+                builder.append(" prop=\"").append(name).append("\">").append("\r\n");
+                builder.append("            ").append("<el-input v-model=\"").append(className).append(".").append(name).append("\"");
+                if (StringUtils.isNotBlank(description)) {
+                    builder.append(" placeholder=\"").append(description).append("\"");
+                }
+                builder.append("></el-input>").append("\r\n");
+
+                builder.append("        ").append("</el-form-item>").append("\r\n");
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.append("    ").append(name).append(": [").append("\r\n");
+                stringBuilder.append("        ").append("{ required: true, message: '请输入");
+                if (StringUtils.isNotBlank(description)) {
+                    stringBuilder.append(description);
+                }
+                stringBuilder.append("', trigger: 'blur' }").append("\r\n");
+                stringBuilder.append("    ").append("],").append("\r\n");
+                return stringBuilder.toString();
+            }
+        }
+        return "";
+    }
+
+    public void returnVue(StringBuilder builder, String className) {
+        if (docModel == null) {
+            if (!type.contains("[0]")) {
+                builder.append("    ").append("<el-table-column").append("\r\n");
+                if (StringUtils.isNotBlank(description)) {
+                    builder.append("        ").append("label=\"").append(description).append("\"").append("\r\n");
+                }
+                builder.append("        ").append("prop=\"").append(name).append("\">").append("\r\n");
+                builder.append("    ").append("</el-table-column>").append("\r\n");
+            }
+        }
+    }
 }

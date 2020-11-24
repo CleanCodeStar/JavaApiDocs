@@ -72,7 +72,7 @@ public class DocMethod implements Comparable<DocMethod> {
     @JsonProperty("return_android")
     public String returnAndroid;
     /**
-     * 生成IOS实体类代码
+     * 生成入参IOS实体类代码
      */
     @JsonProperty("param_ios")
     public String paramIos;
@@ -82,6 +82,18 @@ public class DocMethod implements Comparable<DocMethod> {
      */
     @JsonProperty("return_ios")
     public String returnIos;
+
+    /**
+     * 生成请求Vue代码
+     */
+    @JsonProperty("param_vue")
+    public String paramVue;
+
+    /**
+     * 生成响应Vue代码
+     */
+    @JsonProperty("return_vue")
+    public String returnVue;
 
     /**
      * 状态码

@@ -257,7 +257,7 @@ public class ApiContext {
                             "/ /_/ / /_/ /| |/ / /_/ / ___ |/ /_/ / / /_/ / /_/ / /__(__  ) \n" +
                             "\\____/\\__,_/ |___/\\__,_/_/  |_/ .___/_/_____/\\____/\\___/____/  \n" +
                             "                             /_/                               \n" +
-                            "                                                  1.3.0-beta   \n");
+                            "                                                  1.4.0-beta   \n");
                 }
             }
         } catch (Exception exception) {
@@ -584,9 +584,11 @@ public class ApiContext {
             docMethod.setParamExample(tempMethod.getParamExample());
             docMethod.setParamAndroid(tempMethod.getParamAndroid());
             docMethod.setParamIos(tempMethod.getParamIos());
+            docMethod.setParamVue(tempMethod.getParamVue());
             docMethod.setReturnJson(tempMethod.getReturnJson());
             docMethod.setReturnAndroid(tempMethod.getReturnAndroid());
             docMethod.setReturnIos(tempMethod.getReturnIos());
+            docMethod.setReturnVue(tempMethod.getReturnVue());
             docMethod.setDocCodes(tempMethod.getDocCodes());
             docMethods.add(docMethod);
         }

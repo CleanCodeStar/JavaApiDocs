@@ -1,5 +1,6 @@
 package com.citrsw.controller;
 
+import com.citrsw.annatation.ApiMethod;
 import com.citrsw.core.ApiContext;
 import com.citrsw.core.MarkdownHandler;
 import com.citrsw.definition.Doc;
@@ -33,11 +34,13 @@ public class ApiController {
     }
 
     @GetMapping("/citrsw/api")
+    @ApiMethod("Api文档数据")
     public Doc api() {
         return apiContext.getDoc();
     }
 
     @GetMapping("/citrsw/api/down/markdown")
+    @ApiMethod("Api文档markdown下载")
     public ResponseEntity<InputStreamResource> down() throws UnsupportedEncodingException {
         String generate = new MarkdownHandler().generate(apiContext.getDoc());
         byte[] bytes = generate.getBytes(StandardCharsets.UTF_8);
