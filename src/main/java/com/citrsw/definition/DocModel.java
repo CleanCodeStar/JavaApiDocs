@@ -212,18 +212,18 @@ public class DocModel {
                 builder.append(description);
             }
             builder.append("\" center :visible.sync=\"visible\" width=\"30%\">").append("\r\n");
-            builder.append("    ").append("<el-form :model=\"").append(StringUtils.uncapitalize(className)).append("\" :rules=\"rules\" ref=\"").append(className).append("\" ").append("\r\n");
+            builder.append("    ").append("<el-form :model=\"").append(StringUtils.uncapitalize(className)).append("\" :rules=\"rules\" ref=\"").append(StringUtils.uncapitalize(className)).append("\" ").append("\r\n");
             builder.append("              ").append("label-width=\"100px\" @keyup.enter.native=\"save").append(className).append("()\">").append("\r\n");
             stringBuilder.append("rules: {").append("\r\n");
             for (Iterator<DocProperty> it = apiProperties.iterator(); it.hasNext(); ) {
                 DocProperty docProperty = it.next();
                 stringBuilder.append(docProperty.paramVue(builder, StringUtils.uncapitalize(className)));
             }
-            builder.append("        ").append("<span slot=\"footer\" class=\"dialog-footer\">").append("\r\n");
-            builder.append("            ").append("<el-button type=\"primary\" @click=\"save").append(className).append("()\" size=\"mini\">提 交</el-button>").append("\r\n");
-
-            builder.append("        ").append("</span>").append("\r\n");
             builder.append("    ").append("</el-form>").append("\r\n");
+            builder.append("    ").append("<span slot=\"footer\" class=\"dialog-footer\">").append("\r\n");
+            builder.append("        ").append("<el-button type=\"primary\" @click=\"save").append(className).append("()\" size=\"mini\">提 交</el-button>").append("\r\n");
+
+            builder.append("    ").append("</span>").append("\r\n");
             builder.append("</el-dialog>").append("\r\n").append("\r\n");;
 
             builder.append("---------------data----------------------").append("\r\n");
