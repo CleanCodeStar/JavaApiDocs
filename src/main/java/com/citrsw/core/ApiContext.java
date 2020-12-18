@@ -665,13 +665,22 @@ public class ApiContext {
                 }
                 //借用apiProperty为壳返回apiModel
                 docModel = docProperty.getDocModel();
-                //标记为非基本数据类型
-                docModel.setForm("json");
-                docModel.setType(docProperty.getType());
-                //类名
-                docModel.setClassName(docProperty.getClassName());
-                //类描述
-                docModel.setDescription(docProperty.getDocModel().getDescription());
+                //如果docModel为空标识不是对象则直接创建一个新的
+                if (docModel == null) {
+                    //只能是json字符串
+                    docModel = new DocModel();
+                    docModel.setForm("json");
+                    docModel.setType(docProperty.getType());
+                } else {
+                    //标记为非基本数据类型
+                    docModel.setForm("json");
+                    docModel.setType(docProperty.getType());
+                    //类名
+                    docModel.setClassName(docProperty.getClassName());
+                    //类描述
+                    docModel.setDescription(docProperty.getDocModel() != null ? docProperty.getDocModel().getDescription() : "json字符串");
+                }
+
             }
             if (num < 1) {
                 //非json则为form-data形式入参
@@ -1797,7 +1806,7 @@ public class ApiContext {
                     if (StringUtils.isNotBlank(type) && StringUtils.isBlank(property.getType())) {
                         property.setType(type);
                     }
-                    if (StringUtils.isNotBlank(type) && (StringUtils.isBlank(property.getClassName())|| "Object".equals(property.getClassName()))) {
+                    if (StringUtils.isNotBlank(type) && (StringUtils.isBlank(property.getClassName()) || "Object".equals(property.getClassName()))) {
                         property.setClassName(typeReverseMap.get(property.getType()));
                     }
                     apiProperties.add(property);
@@ -1866,7 +1875,7 @@ public class ApiContext {
                     if (StringUtils.isNotBlank(type) && StringUtils.isBlank(property.getType())) {
                         property.setType(type);
                     }
-                    if (StringUtils.isNotBlank(type) && (StringUtils.isBlank(property.getClassName())|| "Object".equals(property.getClassName()))) {
+                    if (StringUtils.isNotBlank(type) && (StringUtils.isBlank(property.getClassName()) || "Object".equals(property.getClassName()))) {
                         property.setClassName(typeReverseMap.get(property.getType()));
                     }
                     apiProperties.add(property);
@@ -1976,7 +1985,7 @@ public class ApiContext {
                     if (StringUtils.isNotBlank(type) && StringUtils.isBlank(property.getType())) {
                         property.setType(type);
                     }
-                    if (StringUtils.isNotBlank(type) && (StringUtils.isBlank(property.getClassName())|| "Object".equals(property.getClassName()))) {
+                    if (StringUtils.isNotBlank(type) && (StringUtils.isBlank(property.getClassName()) || "Object".equals(property.getClassName()))) {
                         property.setClassName(typeReverseMap.get(property.getType()));
                     }
                     apiProperties.add(property);

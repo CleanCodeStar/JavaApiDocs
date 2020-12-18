@@ -74,7 +74,7 @@ public class DocModel {
             return "";
         }
         if (StringUtils.isNotBlank(type) && !type.contains("[0]")) {
-            return "";
+            return type;
         }
         StringBuilder builder = new StringBuilder();
         String tab = "";
@@ -224,12 +224,13 @@ public class DocModel {
             builder.append("        ").append("<el-button type=\"primary\" @click=\"save").append(className).append("()\" size=\"mini\">提 交</el-button>").append("\r\n");
 
             builder.append("    ").append("</span>").append("\r\n");
-            builder.append("</el-dialog>").append("\r\n").append("\r\n");;
+            builder.append("</el-dialog>").append("\r\n").append("\r\n");
+            ;
 
             builder.append("---------------data----------------------").append("\r\n");
             builder.append(StringUtils.uncapitalize(className)).append(": {},").append("\r\n");
             builder.append("visible: false,").append("\r\n");
-            stringBuilder.deleteCharAt(stringBuilder.length()-3);
+            stringBuilder.deleteCharAt(stringBuilder.length() - 3);
             stringBuilder.append("},").append("\r\n");
             stringBuilder.append("---------------method----------------------").append("\r\n");
             stringBuilder.append("save").append(className).append("() {").append("\r\n");
