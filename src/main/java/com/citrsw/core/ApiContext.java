@@ -257,7 +257,7 @@ public class ApiContext {
                             "/ /_/ / /_/ /| |/ / /_/ / ___ |/ /_/ / / /_/ / /_/ / /__(__  ) \n" +
                             "\\____/\\__,_/ |___/\\__,_/_/  |_/ .___/_/_____/\\____/\\___/____/  \n" +
                             "                             /_/                               \n" +
-                            "                                                  1.5.0-beta   \n");
+                            "                                                  1.5.4-beta   \n");
                 }
             }
         } catch (Exception exception) {
@@ -438,7 +438,7 @@ public class ApiContext {
             }
         }
         if (parentUriSet.isEmpty()) {
-            //如果类上没有配置则增加一个空的地址，从而保证下面的代码正常执行
+            //如果delPicture类上没有配置则增加一个空的地址，从而保证下面的代码正常执行
             parentUriSet.add("");
         }
         for (Method method : methods) {
@@ -844,6 +844,10 @@ public class ApiContext {
                                    Map<String, ApiReturn> apiMapReturnMap,
                                    Map<String, ApiProperty> paramGlobalApiPropertyMap,
                                    Map<String, ApiProperty> returnGlobalApiPropertyMap) {
+//        System.out.println(aClass.toString());
+//        if(aClass.toString().equals("void")){
+//            System.out.println();
+//        }
         //先判断是否为循环依赖
         if (repeats.contains(aClass)) {
             //如为循环依赖则直接返回
@@ -879,12 +883,12 @@ public class ApiContext {
             return docProperty;
         } else {
             //先从模型集合中取，取不到则进行解析
-            //指定对象属性的除外，泛型的也除外,重新指定对象属性信息的也除外,全局配置的也除外
-            if (!paramGlobalClassMap.containsKey(aClass) && !returnGlobalClassMap.containsKey(aClass) && apiModelPropertyMap != null && apiReturnModelPropertyMap != null && propertyMap.isEmpty() && apiModelMap.containsKey(aClass) && !(type != null && aClass.getTypeParameters().length > 0)) {
-                //取到后直接返回
-                docProperty.setDocModel(apiModelMap.get(aClass));
-                return docProperty;
-            }
+//            //指定对象属性的除外，泛型的也除外,重新指定对象属性信息的也除外,全局配置的也除外
+//            if (!paramGlobalClassMap.containsKey(aClass) && !returnGlobalClassMap.containsKey(aClass) && apiModelPropertyMap != null && apiReturnModelPropertyMap != null && propertyMap.isEmpty() && apiModelMap.containsKey(aClass) && !(type != null && aClass.getTypeParameters().length > 0)) {
+//                //取到后直接返回
+//                docProperty.setDocModel(apiModelMap.get(aClass));
+//                return docProperty;
+//            }
             DocModel docModel = new DocModel();
             ApiModel apiModel = aClass.getAnnotation(ApiModel.class);
             //如果属性为对象，但是属性未配置注解描述的，取类上的注解为属性描述
@@ -935,6 +939,7 @@ public class ApiContext {
                     }
                 }
                 DocProperty property = new DocProperty();
+                property.setClassName(method.getReturnType().getSimpleName());
                 Map<String, Boolean> childPropertyMap = new HashMap<>(256);
                 if (!propertyMap.isEmpty()) {
                     Set<String> strings = propertyMap.keySet();
