@@ -2,13 +2,16 @@ package com.citrsw.common;
 
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.net.*;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 写点注释
@@ -73,12 +76,47 @@ public class ApiUtils {
             return returnType;
         }
     }
-    public static String getLocalIp() throws Exception{
-        String localIp = "";
-        InetAddress addr = InetAddress.getLocalHost();
-        //获取本机IP
-        localIp = addr.getHostAddress();
-        return localIp;
+
+    /**
+     * 获取内网IP
+     * @return
+     * @throws Exception
+     */
+    public static String getLocalIp() throws Exception {
+        // 本地IP，如果没有配置外网IP则返回它
+        String localip = null;
+        // 外网IP
+        String netip = null;
+        Enumeration<NetworkInterface> netInterfaces;
+        netInterfaces = NetworkInterface.getNetworkInterfaces();
+        InetAddress ip = null;
+        // 是否找到外网IP
+        boolean finded = false;
+        while (netInterfaces.hasMoreElements() && !finded) {
+            NetworkInterface ni = netInterfaces.nextElement();
+            Enumeration<InetAddress> address = ni.getInetAddresses();
+            while (address.hasMoreElements()) {
+                ip = address.nextElement();
+                if (!ip.isSiteLocalAddress()
+                        && !ip.isLoopbackAddress()
+                        // 外网IP
+                        && !ip.getHostAddress().contains(":")) {
+                    netip = ip.getHostAddress();
+                    finded = true;
+                    break;
+                } else if (ip.isSiteLocalAddress()
+                        && !ip.isLoopbackAddress()
+                        // 内网IP
+                        && !ip.getHostAddress().contains(":")) {
+                    localip = ip.getHostAddress();
+                }
+            }
+        }
+        if (netip != null && !"".equals(netip)) {
+            return netip;
+        } else {
+            return localip;
+        }
     }
 
 }

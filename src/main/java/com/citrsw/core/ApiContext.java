@@ -44,8 +44,14 @@ public class ApiContext {
     /**
      * 当前的项目名
      */
+    @Value("${server.servlet.context-path:}")
+    private String contextPath;
+
+    /**
+     * 当前的项目名
+     */
     @Value("${spring.mvc.servlet.path:}")
-    private String path;
+    private String servletPath;
 
     private final ControllerHandle controllerHandle;
 
@@ -178,15 +184,14 @@ public class ApiContext {
                             "/ /_/ / /_/ /| |/ / /_/ / ___ |/ /_/ / / /_/ / /_/ / /__(__  ) \n" +
                             "\\____/\\__,_/ |___/\\__,_/_/  |_/ .___/_/_____/\\____/\\___/____/  \n" +
                             "                             /_/                               \n" +
-                            "                                                  1.5.5-beta   \n");
+                            "                                                  1.5.6-beta   \n");
                     //获取本机地址及端口号
                     try {
                         String ip = ApiUtils.getLocalIp();
-                        System.out.println("内网Api访问地址：  http://" + ip + ":" + port + path + "/citrsw/index.html");
-                        System.out.println("本地Api访问地址：  http://127.0.0.1" + ":" + port + path + "/citrsw/index.html");
-                    } catch (Exception e) {
-                        System.out.println("本地Api访问地址：  http://127.0.0.1" + ":" + port + path + "/citrsw/index.html");
+                        System.out.println("内网Api访问地址：  http://" + ip + ":" + port + contextPath + servletPath + "/citrsw/index.html");
+                    } catch (Exception ignored) {
                     }
+                    System.out.println("本地Api访问地址：  http://127.0.0.1" + ":" + port + contextPath + servletPath + "/citrsw/index.html");
                 }
             }
         } catch (Exception exception) {
