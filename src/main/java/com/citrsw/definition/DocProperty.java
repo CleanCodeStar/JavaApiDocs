@@ -108,7 +108,15 @@ public class DocProperty implements Comparable<DocProperty> {
         if (StringUtils.isBlank(name) && docModel == null && StringUtils.isBlank(type.replaceAll("\\[0\\]", ""))) {
             return "";
         }
-        builder.append("\r\n").append(tabs).append(name).append(": ");
+        builder.append("\r\n").append(tabs);
+        if (isExample) {
+            builder.append("\"");
+        }
+        builder.append(name);
+        if (isExample) {
+            builder.append("\"");
+        }
+        builder.append(": ");
         if (docModel != null && !docModel.getApiProperties().isEmpty()) {
             if (type.contains("[0]")) {
                 String[] split = type.split("0\\]");
@@ -267,6 +275,9 @@ public class DocProperty implements Comparable<DocProperty> {
             StringBuilder builder = new StringBuilder();
             if (StringUtils.isNotBlank(description)) {
                 builder.append("\n\n    /**\r\n     * ").append(description).append("\r\n     */");
+            }
+            if (this.className == null) {
+                System.out.println(1);
             }
             StringBuilder classNameBuilder = new StringBuilder(this.className);
             if (type.contains("[0]")) {

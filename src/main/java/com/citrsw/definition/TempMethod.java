@@ -69,7 +69,7 @@ public class TempMethod {
      * json出参
      */
     public String getReturnJson() {
-        return returnDocModel.returnJson();
+        return returnDocModel==null?"":returnDocModel.returnJson();
     }
 
     /**
@@ -89,6 +89,9 @@ public class TempMethod {
      * 生成响应安卓实体类代码
      */
     public String getReturnAndroid() {
+        if( returnDocModel==null){
+            return "";
+        }
         Set<String> strings = new TreeSet<>();
         returnDocModel.android(strings);
         StringBuilder builder = new StringBuilder();
@@ -115,6 +118,9 @@ public class TempMethod {
      * 生成IOS实体类代码
      */
     public String getReturnIos() {
+        if( returnDocModel==null){
+            return "";
+        }
         Set<String> strings = new TreeSet<>();
         returnDocModel.ios(strings);
         StringBuilder builder = new StringBuilder();
