@@ -61,7 +61,7 @@ public class MarkdownHandler {
             }
         }
         if (StringUtils.isNotBlank(docMethod.getParamJson())) {
-            //json形式入参
+            //json形式
             buffer.append("```json").append("\n");
             buffer.append(docMethod.getParamJson()).append("\n");
             buffer.append("```").append("\n");
@@ -69,7 +69,7 @@ public class MarkdownHandler {
         //响应
         buffer.append("***响应***").append("\n");
         if (StringUtils.isNotBlank(docMethod.getReturnJson())) {
-            //json形式入参
+            //json形式
             buffer.append("```json").append("\n");
             buffer.append(docMethod.getReturnJson()).append("\n");
             buffer.append("```").append("\n");

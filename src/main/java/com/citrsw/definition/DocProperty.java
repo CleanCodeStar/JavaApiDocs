@@ -168,7 +168,7 @@ public class DocProperty implements Comparable<DocProperty> {
             }
 
 
-            builder.append("\r\n").append(tabs).append("}");
+            builder.append("\r\n").append(tabs).append("},");
             return builder.toString();
         }
         if (isExample) {

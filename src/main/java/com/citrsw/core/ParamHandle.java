@@ -99,7 +99,7 @@ public class ParamHandle {
                 }
                 num++;
                 //如果是json,那么肯定不是基本数据类型，直接调用handleModel()
-                docProperty = handleModel.handleModel(docProperty, parameter.getType(), parameter.getParameterizedType(), propertyMap, true, true, repeats, apiModelPropertyMap, null, null, apiMapParamMap, null, null, null);
+                docProperty = handleModel.handleModel(docProperty, parameter.getType(), parameter.getParameterizedType(), propertyMap, false, true, repeats, apiModelPropertyMap, null, null, apiMapParamMap, null, null, null);
                 if (StringUtils.isBlank(docProperty.getName()) && StringUtils.isBlank(docProperty.getType()) && docProperty.getDocModel() == null) {
                     return docModel;
                 }
@@ -124,7 +124,7 @@ public class ParamHandle {
             }
             if (num < 1) {
                 //非json则为form-data形式入参
-                docProperty = handleModel.handleModel(docProperty, parameter.getType(), parameter.getParameterizedType(), propertyMap, true, true, repeats, apiModelPropertyMap, null, null, apiMapParamMap, null, null, null);
+                docProperty = handleModel.handleModel(docProperty, parameter.getType(), parameter.getParameterizedType(), propertyMap, true, false, repeats, apiModelPropertyMap, null, null, apiMapParamMap, null, null, null);
                 if (StringUtils.isBlank(docProperty.getName()) && StringUtils.isBlank(docProperty.getType()) && docProperty.getDocModel() == null) {
                     return docModel;
                 }
