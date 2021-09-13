@@ -118,7 +118,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
    //Controller类
    @RestController
    @Slf4j
-   @ApiClass(value = "管理员")
+   @ApiClass("管理员")
    @ApiIgnore
    public class UserController {
    
@@ -183,7 +183,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
 3. **使用示例**
 
    ```java
-   @ApiClass(value = "学生")
+   @ApiClass("学生")
    @RestController
    public class StudentController {
    }
@@ -291,7 +291,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
    ```java
    @ApiMethod("根据条件分页查询")
    @GetMapping("/user/page/all")
-   public Result<Page<User>> pageAll(User user, @RequestParam(defaultValue = "1")@ApiParam(description = "当前页", defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") @ApiParam(description = "每页数据条数", defaultValue = "10") Integer pageSize) {
+   public Result<Page<User>> pageAll(User user, @RequestParam(default"1")@ApiParam(description = "当前页", default"1") Integer page, @RequestParam(default"10") @ApiParam(description = "每页数据条数", default"10") Integer pageSize) {
        LambdaQueryWrapper<User> wrapper = Wrappers.lambdaQuery();
        return Result.buildQueryOk(userService.page(new Page<>(page, pageSize), wrapper));
    }
@@ -468,8 +468,8 @@ public class InterceptorConfig implements WebMvcConfigurer {
    @SpringBootApplication
    @ApiEnable(name = "中国IT资源分享网站", underscore = true)
    @ApiGlobalClass(name = Page.class, type = TypeEnum.PARAM, properties = {
-           @ApiProperty(name = "current", description = "当前页", defaultValue = "1"),
-           @ApiProperty(name = "size", description = "每页显示条数", defaultValue = "10"),
+           @ApiProperty(name = "current", description = "当前页", default"1"),
+           @ApiProperty(name = "size", description = "每页显示条数", default"10"),
            @ApiProperty(name = "orders.asc", description = "排序方式"),
            @ApiProperty(name = "orders.column", description = "排序字段")
    })
@@ -520,10 +520,10 @@ public class InterceptorConfig implements WebMvcConfigurer {
    ```java
    @SpringBootApplication
    @ApiEnable(name = "中国IT资源分享网站", underscore = true)
-   @ApiGlobalCode(name = "code", value = "200", description = "成功")
-   @ApiGlobalCode(name = "code", value = "300", description = "失败")
-   @ApiGlobalCode(name = "code", value = "400", description = "token失效")
-   @ApiGlobalCode(name = "code", value = "500", description = "系统内部异常")
+   @ApiGlobalCode(name = "code", "200", description = "成功")
+   @ApiGlobalCode(name = "code", "300", description = "失败")
+   @ApiGlobalCode(name = "code", "400", description = "token失效")
+   @ApiGlobalCode(name = "code", "500", description = "系统内部异常")
    public class ApiExampleApplication {
        public static void main(String[] args) {
            SpringApplication.run(ApiExampleApplication.class, args);
@@ -554,9 +554,9 @@ public class InterceptorConfig implements WebMvcConfigurer {
    ```java
    @ApiMethod("增加状态码/覆盖全局状态码")
    @GetMapping("/add/code")
-   @ApiCode(name = "code", value = "200", description = "用户保存成功")
-   @ApiCode(name = "code", value = "300", description = "用户保存失败")
-   @ApiCode(name = "code", value = "310", description = "用户名或密码为空")
+   @ApiCode(name = "code", "200", description = "用户保存成功")
+   @ApiCode(name = "code", "300", description = "用户保存失败")
+   @ApiCode(name = "code", "310", description = "用户名或密码为空")
    public Student save(Student student) {
        return student;
    }
@@ -712,7 +712,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
    //入门：Controller类public方法上的入参参数
    @ApiMethod("根据条件分页查询")
    @GetMapping("/user/page/all")
-   public Result<Page<User>> pageAll(User user, @RequestParam(defaultValue = "1")@ApiParam(description = "当前页", defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") @ApiParam(description = "每页数据条数", defaultValue = "10") Integer pageSize) {
+   public Result<Page<User>> pageAll(User user, @RequestParam(default"1")@ApiParam(description = "当前页", default"1") Integer page, @RequestParam(default"10") @ApiParam(description = "每页数据条数", default"10") Integer pageSize) {
        LambdaQueryWrapper<User> wrapper = Wrappers.lambdaQuery();
        return Result.buildQueryOk(userService.page(new Page<>(page, pageSize), wrapper));
    }
