@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -87,13 +88,13 @@ public class DocMethod implements Comparable<DocMethod> {
      * 生成请求Vue代码
      */
     @JsonProperty("param_vue")
-    public String paramVue;
+    public Map<String, Map<String, String>> paramVue;
 
     /**
      * 生成响应Vue代码
      */
     @JsonProperty("return_vue")
-    public String returnVue;
+    public Map<String, Map<String, String>> returnVue;
 
     /**
      * 状态码

@@ -7,9 +7,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 属性信息
@@ -139,6 +137,9 @@ public class DocProperty implements Comparable<DocProperty> {
                         json = json.replaceFirst(",", "");
                     }
                     builder.append(json);
+                    if ((json.endsWith("}") || json.endsWith("]")) && it.hasNext()) {
+                        builder.append(",");
+                    }
                 }
                 builder.append("\r\n").append(tabBuilder).append("}").append("\r\n");
                 if (tabBuilder.length() > 0) {
@@ -165,10 +166,13 @@ public class DocProperty implements Comparable<DocProperty> {
                     json = json.replaceFirst(",", "");
                 }
                 builder.append(json);
+                if ((json.endsWith("}") || json.endsWith("]")) && it.hasNext()) {
+                    builder.append(",");
+                }
             }
 
 
-            builder.append("\r\n").append(tabs).append("},");
+            builder.append("\r\n").append(tabs).append("}");
             return builder.toString();
         }
         if (isExample) {
@@ -371,36 +375,36 @@ public class DocProperty implements Comparable<DocProperty> {
         return 0;
     }
 
-    public String paramVue(StringBuilder builder, String className) {
+    public String paramVue(StringBuilder rulesBuilder,StringBuilder htmlBuilder, String className, Map<String, Map<String, String>> mapList) {
         if (docModel == null) {
             if (!type.contains("[0]")) {
-                builder.append("        ").append("<el-form-item");
+                htmlBuilder.append("        ").append("<el-form-item");
                 if (StringUtils.isNotBlank(description)) {
-                    builder.append(" label=\"").append(description).append("\"");
+                    htmlBuilder.append(" label=\"").append(description).append("\"");
                 }
-                builder.append(" prop=\"").append(name).append("\">").append("\r\n");
-                builder.append("            ").append("<el-input v-model=\"").append(className).append(".").append(name).append("\"");
+                htmlBuilder.append(" prop=\"").append(name).append("\">").append("\r\n");
+                htmlBuilder.append("            ").append("<el-input v-model=\"").append(className).append(".").append(name).append("\"");
                 if (StringUtils.isNotBlank(description)) {
-                    builder.append(" placeholder=\"").append(description).append("\"");
+                    htmlBuilder.append(" placeholder=\"").append(description).append("\"");
                 }
-                builder.append("></el-input>").append("\r\n");
+                htmlBuilder.append("></el-input>").append("\r\n");
 
-                builder.append("        ").append("</el-form-item>").append("\r\n");
-                StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append("    ").append(name).append(": [").append("\r\n");
-                stringBuilder.append("        ").append("{ required: true, message: '请输入");
-                if (StringUtils.isNotBlank(description)) {
-                    stringBuilder.append(description);
-                }
-                stringBuilder.append("', trigger: 'blur' }").append("\r\n");
-                stringBuilder.append("    ").append("],").append("\r\n");
-                return stringBuilder.toString();
+                htmlBuilder.append("        ").append("</el-form-item>").append("\r\n");
             }
+        } else {
+            docModel.paramVue(mapList);
         }
-        return "";
+        rulesBuilder.append("        ").append(name).append(": [").append("\r\n");
+        rulesBuilder.append("          ").append("{required: true, message: '请输入");
+        if (StringUtils.isNotBlank(description)) {
+            rulesBuilder.append(description);
+        }
+        rulesBuilder.append("', trigger: 'blur'}").append("\r\n");
+        rulesBuilder.append("        ").append("],").append("\r\n");
+        return rulesBuilder.toString();
     }
 
-    public void returnVue(StringBuilder builder, String className) {
+    public void returnVue(StringBuilder builder, String className, Map<String, Map<String, String>> mapList) {
         if (docModel == null) {
             if (!type.contains("[0]")) {
                 builder.append("    ").append("<el-table-column").append("\r\n");
@@ -410,6 +414,8 @@ public class DocProperty implements Comparable<DocProperty> {
                 builder.append("        ").append("prop=\"").append(name).append("\">").append("\r\n");
                 builder.append("    ").append("</el-table-column>").append("\r\n");
             }
+        } else {
+            docModel.returnVue(mapList);
         }
     }
 }

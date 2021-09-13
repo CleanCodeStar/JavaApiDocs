@@ -5,10 +5,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * 模型信息
@@ -90,6 +87,9 @@ public class DocModel {
                 json = json.replaceFirst("\\,", "");
             }
             builder.append(tab).append("    ").append(json);
+            if ((json.endsWith("}") || json.endsWith("]")) && it.hasNext()) {
+                builder.append(",");
+            }
         }
         builder.append("\r\n").append(tab).append("}");
         if (StringUtils.isNotBlank(type) && type.contains("[0]")) {
@@ -119,6 +119,9 @@ public class DocModel {
                 json = json.replaceFirst("\\,", "");
             }
             builder.append(tab).append("    ").append(json);
+            if ((json.endsWith("}") || json.endsWith("]")) && it.hasNext()) {
+                builder.append(",");
+            }
         }
         builder.append("\r\n").append(tab).append("}");
         if (StringUtils.isNotBlank(type) && type.contains("[0]")) {
@@ -146,6 +149,9 @@ public class DocModel {
                 json = json.replaceFirst("\\,", "");
             }
             builder.append(tab).append("    ").append(json);
+            if ((json.endsWith("}") || json.endsWith("]")) && it.hasNext()) {
+                builder.append(",");
+            }
         }
         builder.append("\r\n").append(tab).append("}");
         if (StringUtils.isNotBlank(type) && type.contains("[0]")) {
@@ -166,8 +172,7 @@ public class DocModel {
             builder.append("@Accessors(chain = true)\r\n").append("@Data\r\n");
             builder.append("public class ").append(className).append(" {");
         }
-        for (Iterator<DocProperty> it = apiProperties.iterator(); it.hasNext(); ) {
-            DocProperty docProperty = it.next();
+        for (DocProperty docProperty : apiProperties) {
             String android = docProperty.android(strings);
             builder.append(android);
         }
@@ -188,8 +193,7 @@ public class DocModel {
             }
             builder.append("class ").append(className).append(" {");
         }
-        for (Iterator<DocProperty> it = apiProperties.iterator(); it.hasNext(); ) {
-            DocProperty docProperty = it.next();
+        for (DocProperty docProperty : apiProperties) {
             String android = docProperty.ios(strings);
             builder.append(android);
         }
@@ -202,55 +206,60 @@ public class DocModel {
     /**
      * 生成请求Vue代码
      */
-    public String paramVue() {
-        StringBuilder builder = new StringBuilder();
-        StringBuilder stringBuilder = new StringBuilder();
+    public void paramVue(Map<String,Map<String, String>> mapList) {
+        StringBuilder htmlBuilder = new StringBuilder();
+        StringBuilder rulesBuilder = new StringBuilder();
+        rulesBuilder.append("export default {").append("\r\n  ")
+                .append("name: \"").append(StringUtils.capitalize(className)).append("Vue\",").append("\r\n  ")
+                .append("data() {").append("\r\n    ")
+                .append("return {").append("\r\n      ");
+        rulesBuilder.append(StringUtils.uncapitalize(className)).append(": {},").append("\r\n      ");
+        rulesBuilder.append("visible: false,").append("\r\n      ");
         if (StringUtils.isNotBlank(className)) {
-            builder.append("---------------html----------------------").append("\r\n");
-            builder.append("<el-dialog title=\"").append("新增");
+            htmlBuilder.append("<el-dialog title=\"").append("新增");
             if (StringUtils.isNotBlank(description)) {
-                builder.append(description);
+                htmlBuilder.append(description);
             }
-            builder.append("\" center :visible.sync=\"visible\" width=\"30%\">").append("\r\n");
-            builder.append("    ").append("<el-form :model=\"").append(StringUtils.uncapitalize(className)).append("\" :rules=\"rules\" ref=\"").append(StringUtils.uncapitalize(className)).append("\" ").append("\r\n");
-            builder.append("              ").append("label-width=\"100px\" @keyup.enter.native=\"save").append(className).append("()\">").append("\r\n");
-            stringBuilder.append("rules: {").append("\r\n");
-            for (Iterator<DocProperty> it = apiProperties.iterator(); it.hasNext(); ) {
-                DocProperty docProperty = it.next();
-                stringBuilder.append(docProperty.paramVue(builder, StringUtils.uncapitalize(className)));
+            htmlBuilder.append("\" center :visible.sync=\"visible\" width=\"30%\">").append("\r\n");
+            htmlBuilder.append("    ").append("<el-form :model=\"").append(StringUtils.uncapitalize(className)).append("\" :rules=\"rules\" ref=\"").append(StringUtils.uncapitalize(className)).append("\" ").append("\r\n");
+            htmlBuilder.append("              ").append("label-width=\"100px\" @keyup.enter.native=\"save").append(className).append("()\">").append("\r\n");
+            rulesBuilder.append("rules: {").append("\r\n");
+            for (DocProperty docProperty : apiProperties) {
+                docProperty.paramVue(rulesBuilder,htmlBuilder, StringUtils.uncapitalize(className), mapList);
             }
-            builder.append("    ").append("</el-form>").append("\r\n");
-            builder.append("    ").append("<span slot=\"footer\" class=\"dialog-footer\">").append("\r\n");
-            builder.append("        ").append("<el-button type=\"primary\" @click=\"save").append(className).append("()\" size=\"mini\">提 交</el-button>").append("\r\n");
+            rulesBuilder.delete(rulesBuilder.length()-3,rulesBuilder.length()-2);
+            htmlBuilder.append("    ").append("</el-form>").append("\r\n");
+            htmlBuilder.append("    ").append("<span slot=\"footer\" class=\"dialog-footer\">").append("\r\n");
+            htmlBuilder.append("        ").append("<el-button type=\"primary\" @click=\"save").append(className).append("()\" size=\"mini\">提 交</el-button>").append("\r\n");
 
-            builder.append("    ").append("</span>").append("\r\n");
-            builder.append("</el-dialog>").append("\r\n").append("\r\n");
-            ;
+            htmlBuilder.append("    ").append("</span>").append("\r\n");
+            htmlBuilder.append("</el-dialog>").append("\r\n").append("\r\n");
 
-            builder.append("---------------data----------------------").append("\r\n");
-            builder.append(StringUtils.uncapitalize(className)).append(": {},").append("\r\n");
-            builder.append("visible: false,").append("\r\n");
-            stringBuilder.deleteCharAt(stringBuilder.length() - 3);
-            stringBuilder.append("},").append("\r\n");
-            stringBuilder.append("---------------method----------------------").append("\r\n");
-            stringBuilder.append("save").append(className).append("() {").append("\r\n");
-            stringBuilder.append("},").append("\r\n");
-            builder.append(stringBuilder);
+
+            rulesBuilder.append("      }").append("\r\n    ");
+            rulesBuilder.append("}").append("\r\n  ");
+            rulesBuilder.append("},").append("\r\n  ");
+            rulesBuilder.append("methods: {").append("\r\n      ");
+            rulesBuilder.append("save").append(className).append("() {").append("\r\n      ");
+            rulesBuilder.append("}").append("\r\n  ");
+            rulesBuilder.append("}").append("\r\n");
+            rulesBuilder.append("}").append("\r\n");
         }
-        return builder.toString();
+        Map<String, String> map = new HashMap<>(3);
+        map.put("HTML", htmlBuilder.toString());
+        map.put("JavaScript", rulesBuilder.toString());
+        mapList.put(StringUtils.capitalize(className), map);
     }
 
     /**
      * 生成响应Vue代码
      */
-    public String returnVue() {
+    public void returnVue(Map<String, Map<String, String>> mapList) {
         StringBuilder builder = new StringBuilder();
         if (StringUtils.isNotBlank(className)) {
-            builder.append("---------------html----------------------").append("\r\n");
             builder.append("<el-table size=\"mini\" :data=\"").append(StringUtils.uncapitalize(className)).append("s\">").append("\r\n");
-            for (Iterator<DocProperty> it = apiProperties.iterator(); it.hasNext(); ) {
-                DocProperty docProperty = it.next();
-                docProperty.returnVue(builder, StringUtils.uncapitalize(className));
+            for (DocProperty docProperty : apiProperties) {
+                docProperty.returnVue(builder, StringUtils.uncapitalize(className), mapList);
             }
             builder.append("</el-table>").append("\r\n");
             builder.append("<el-pagination").append("\r\n");
@@ -267,13 +276,27 @@ public class DocModel {
             builder.append("          ").append("query").append(className).append("s();").append("\r\n");
             builder.append("        ").append("}\"").append("\r\n");
             builder.append("    ").append(":total=\"page.total*1\">").append("\r\n");
-            builder.append("</el-pagination>").append("\r\n").append("\r\n");
-
-            builder.append("---------------data----------------------").append("\r\n");
-            builder.append(StringUtils.uncapitalize(className)).append("s: [],").append("\r\n");
-            builder.append("page: {}");
+            builder.append("</el-pagination>").append("\r\n");
         }
-        return builder.toString();
+        StringBuilder rulesBuilder = new StringBuilder();
+        rulesBuilder.append("export default {").append("\r\n  ")
+                .append("name: \"").append(StringUtils.capitalize(className)).append("Vue\",").append("\r\n  ")
+                .append("data() {").append("\r\n    ")
+                .append("return {").append("\r\n      ");
+        rulesBuilder.append(StringUtils.uncapitalize(className)).append("s: [],").append("\r\n      ");
+        rulesBuilder.append("page: {}").append("\r\n    ");
+        rulesBuilder.append("}").append("\r\n  ");
+        rulesBuilder.append("},").append("\r\n  ");
+        rulesBuilder.append("methods: {").append("\r\n      ");
+        rulesBuilder.append("query").append(className).append("s() {").append("\r\n      ");
+        rulesBuilder.append("}").append("\r\n  ");
+        rulesBuilder.append("}").append("\r\n");
+        rulesBuilder.append("}").append("\r\n");
+        Map<String, String> map = new HashMap<>(3);
+        map.put("HTML", builder.toString());
+        map.put("JavaScript", rulesBuilder.toString());
+
+        mapList.put(StringUtils.capitalize(className), map);
     }
 
 }

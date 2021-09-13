@@ -3,10 +3,7 @@ package com.citrsw.definition;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * 方法信息
@@ -69,7 +66,7 @@ public class TempMethod {
      * json出参
      */
     public String getReturnJson() {
-        return returnDocModel==null?"":returnDocModel.returnJson();
+        return returnDocModel == null ? "" : returnDocModel.returnJson();
     }
 
     /**
@@ -89,7 +86,7 @@ public class TempMethod {
      * 生成响应安卓实体类代码
      */
     public String getReturnAndroid() {
-        if( returnDocModel==null){
+        if (returnDocModel == null) {
             return "";
         }
         Set<String> strings = new TreeSet<>();
@@ -118,7 +115,7 @@ public class TempMethod {
      * 生成IOS实体类代码
      */
     public String getReturnIos() {
-        if( returnDocModel==null){
+        if (returnDocModel == null) {
             return "";
         }
         Set<String> strings = new TreeSet<>();
@@ -133,17 +130,24 @@ public class TempMethod {
     /**
      * 生成请求Vue代码
      */
-    public String getParamVue() {
-        return paramDocModel.paramVue();
+    public Map<String, Map<String, String>> getParamVue() {
+        Map<String, Map<String, String>> mapList = new LinkedHashMap<>(50);
+        if (paramDocModel != null) {
+            paramDocModel.paramVue(mapList);
+        }
+        return mapList;
     }
 
     /**
      * 生成响应Vue代码
      */
-    public String getReturnVue() {
-        return paramDocModel.returnVue();
+    public Map<String, Map<String, String>> getReturnVue() {
+        Map<String, Map<String, String>> mapList = new LinkedHashMap<>(50);
+        if (returnDocModel != null) {
+            returnDocModel.returnVue(mapList);
+        }
+        return mapList;
     }
-
 
     /**
      * 状态码
