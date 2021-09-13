@@ -206,7 +206,19 @@ public class DocModel {
     /**
      * 生成请求Vue代码
      */
-    public void paramVue(Map<String,Map<String, String>> mapList) {
+    public void paramVue(Map<String, Map<String, String>> mapList) {
+        if (StringUtils.isBlank(className)) {
+            if(mapList.isEmpty()){
+                className = "Class0";
+            }
+            for (int i = 0; i < mapList.size(); i++) {
+                if (!mapList.containsKey("Class"+i)) {
+                    className = "Class" + i;
+                    break;
+                }
+            }
+
+        }
         StringBuilder htmlBuilder = new StringBuilder();
         StringBuilder rulesBuilder = new StringBuilder();
         rulesBuilder.append("export default {").append("\r\n  ")
@@ -215,36 +227,31 @@ public class DocModel {
                 .append("return {").append("\r\n      ");
         rulesBuilder.append(StringUtils.uncapitalize(className)).append(": {},").append("\r\n      ");
         rulesBuilder.append("visible: false,").append("\r\n      ");
-        if (StringUtils.isNotBlank(className)) {
-            htmlBuilder.append("<el-dialog title=\"").append("新增");
-            if (StringUtils.isNotBlank(description)) {
-                htmlBuilder.append(description);
-            }
-            htmlBuilder.append("\" center :visible.sync=\"visible\" width=\"30%\">").append("\r\n");
-            htmlBuilder.append("    ").append("<el-form :model=\"").append(StringUtils.uncapitalize(className)).append("\" :rules=\"rules\" ref=\"").append(StringUtils.uncapitalize(className)).append("\" ").append("\r\n");
-            htmlBuilder.append("              ").append("label-width=\"100px\" @keyup.enter.native=\"save").append(className).append("()\">").append("\r\n");
-            rulesBuilder.append("rules: {").append("\r\n");
-            for (DocProperty docProperty : apiProperties) {
-                docProperty.paramVue(rulesBuilder,htmlBuilder, StringUtils.uncapitalize(className), mapList);
-            }
-            rulesBuilder.delete(rulesBuilder.length()-3,rulesBuilder.length()-2);
-            htmlBuilder.append("    ").append("</el-form>").append("\r\n");
-            htmlBuilder.append("    ").append("<span slot=\"footer\" class=\"dialog-footer\">").append("\r\n");
-            htmlBuilder.append("        ").append("<el-button type=\"primary\" @click=\"save").append(className).append("()\" size=\"mini\">提 交</el-button>").append("\r\n");
-
-            htmlBuilder.append("    ").append("</span>").append("\r\n");
-            htmlBuilder.append("</el-dialog>").append("\r\n").append("\r\n");
-
-
-            rulesBuilder.append("      }").append("\r\n    ");
-            rulesBuilder.append("}").append("\r\n  ");
-            rulesBuilder.append("},").append("\r\n  ");
-            rulesBuilder.append("methods: {").append("\r\n      ");
-            rulesBuilder.append("save").append(className).append("() {").append("\r\n      ");
-            rulesBuilder.append("}").append("\r\n  ");
-            rulesBuilder.append("}").append("\r\n");
-            rulesBuilder.append("}").append("\r\n");
+        htmlBuilder.append("<el-dialog title=\"").append("新增");
+        if (StringUtils.isNotBlank(description)) {
+            htmlBuilder.append(description);
         }
+        htmlBuilder.append("\" center :visible.sync=\"visible\" width=\"30%\">").append("\r\n");
+        htmlBuilder.append("    ").append("<el-form :model=\"").append(StringUtils.uncapitalize(className)).append("\" :rules=\"rules\" ref=\"").append(StringUtils.uncapitalize(className)).append("\" ").append("\r\n");
+        htmlBuilder.append("              ").append("label-width=\"100px\" @keyup.enter.native=\"save").append(className).append("()\">").append("\r\n");
+        rulesBuilder.append("rules: {").append("\r\n");
+        for (DocProperty docProperty : apiProperties) {
+            docProperty.paramVue(rulesBuilder, htmlBuilder, StringUtils.uncapitalize(className), mapList);
+        }
+        rulesBuilder.delete(rulesBuilder.length() - 3, rulesBuilder.length() - 2);
+        htmlBuilder.append("    ").append("</el-form>").append("\r\n");
+        htmlBuilder.append("    ").append("<span slot=\"footer\" class=\"dialog-footer\">").append("\r\n");
+        htmlBuilder.append("        ").append("<el-button type=\"primary\" @click=\"save").append(className).append("()\" size=\"mini\">提 交</el-button>").append("\r\n");
+        htmlBuilder.append("    ").append("</span>").append("\r\n");
+        htmlBuilder.append("</el-dialog>").append("\r\n").append("\r\n");
+        rulesBuilder.append("      }").append("\r\n    ");
+        rulesBuilder.append("}").append("\r\n  ");
+        rulesBuilder.append("},").append("\r\n  ");
+        rulesBuilder.append("methods: {").append("\r\n      ");
+        rulesBuilder.append("save").append(className).append("() {").append("\r\n      ");
+        rulesBuilder.append("}").append("\r\n  ");
+        rulesBuilder.append("}").append("\r\n");
+        rulesBuilder.append("}").append("\r\n");
         Map<String, String> map = new HashMap<>(3);
         map.put("HTML", htmlBuilder.toString());
         map.put("JavaScript", rulesBuilder.toString());
@@ -256,28 +263,37 @@ public class DocModel {
      */
     public void returnVue(Map<String, Map<String, String>> mapList) {
         StringBuilder builder = new StringBuilder();
-        if (StringUtils.isNotBlank(className)) {
-            builder.append("<el-table size=\"mini\" :data=\"").append(StringUtils.uncapitalize(className)).append("s\">").append("\r\n");
-            for (DocProperty docProperty : apiProperties) {
-                docProperty.returnVue(builder, StringUtils.uncapitalize(className), mapList);
+        if (StringUtils.isBlank(className)) {
+            if(mapList.isEmpty()){
+                className = "Class0";
             }
-            builder.append("</el-table>").append("\r\n");
-            builder.append("<el-pagination").append("\r\n");
-            builder.append("    ").append("background").append("\r\n");
-            builder.append("    ").append(":current-page=\"page.current*1\"").append("\r\n");
-            builder.append("    ").append(":page-sizes=\"[10, 20, 50,100]\"").append("\r\n");
-            builder.append("    ").append("layout=\"->,sizes,total,prev, pager, next,jumper\"").append("\r\n");
-            builder.append("    ").append("@current-change=\"function(v) {").append("\r\n");
-            builder.append("          ").append("page.current = v").append("\r\n");
-            builder.append("          ").append("query").append(className).append("s();").append("\r\n");
-            builder.append("        ").append("}\"").append("\r\n");
-            builder.append("    ").append("@size-change=\"function(v) {").append("\r\n");
-            builder.append("          ").append("page.size = v").append("\r\n");
-            builder.append("          ").append("query").append(className).append("s();").append("\r\n");
-            builder.append("        ").append("}\"").append("\r\n");
-            builder.append("    ").append(":total=\"page.total*1\">").append("\r\n");
-            builder.append("</el-pagination>").append("\r\n");
+            for (int i = 0; i < mapList.size(); i++) {
+                if (!mapList.containsKey("Class"+i)) {
+                    className = "Class" + i;
+                    break;
+                }
+            }
         }
+        builder.append("<el-table size=\"mini\" :data=\"").append(StringUtils.uncapitalize(className)).append("s\">").append("\r\n");
+        for (DocProperty docProperty : apiProperties) {
+            docProperty.returnVue(builder, StringUtils.uncapitalize(className), mapList);
+        }
+        builder.append("</el-table>").append("\r\n");
+        builder.append("<el-pagination").append("\r\n");
+        builder.append("    ").append("background").append("\r\n");
+        builder.append("    ").append(":current-page=\"page.current*1\"").append("\r\n");
+        builder.append("    ").append(":page-sizes=\"[10, 20, 50,100]\"").append("\r\n");
+        builder.append("    ").append("layout=\"->,sizes,total,prev, pager, next,jumper\"").append("\r\n");
+        builder.append("    ").append("@current-change=\"function(v) {").append("\r\n");
+        builder.append("          ").append("page.current = v").append("\r\n");
+        builder.append("          ").append("query").append(className).append("s();").append("\r\n");
+        builder.append("        ").append("}\"").append("\r\n");
+        builder.append("    ").append("@size-change=\"function(v) {").append("\r\n");
+        builder.append("          ").append("page.size = v").append("\r\n");
+        builder.append("          ").append("query").append(className).append("s();").append("\r\n");
+        builder.append("        ").append("}\"").append("\r\n");
+        builder.append("    ").append(":total=\"page.total*1\">").append("\r\n");
+        builder.append("</el-pagination>").append("\r\n");
         StringBuilder rulesBuilder = new StringBuilder();
         rulesBuilder.append("export default {").append("\r\n  ")
                 .append("name: \"").append(StringUtils.capitalize(className)).append("Vue\",").append("\r\n  ")
