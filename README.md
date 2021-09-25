@@ -13,6 +13,14 @@ v1.5.9-beta
 
 1. 修复搜索不到结果时，显示所有类名的BUG
 2. 修复生成Vue代码没有类名时，无法生成API文档的BUG
+
+v1.5.10-beta
+
+1. 修复生成json示例时,属性为数组时依然显示为字符串的BUG
+2. 修复uri中含有参数时,发送强求后,第二次再次发送不同的参数时不能使用新值的BUG
+3. 修复点击数据按钮时不能生成布尔类型的测试数据的BUG
+4. 修复点击数据按钮时数据类型为数组(非集合类型)时不能生成测试数据的BUG
+
 [TOC]
 
 ## 访问ApiDocs页面方式
@@ -36,7 +44,7 @@ ip:端口/项目名/citrsw/index.html
 <dependency>
     <groupId>com.citrsw</groupId>
     <artifactId>java-api-docs</artifactId>
-    <version>1.5.9-beta</version>
+    <version>1.5.10-beta</version>
 </dependency>
 ```
 

@@ -2,16 +2,11 @@ package com.citrsw.common;
 
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.net.*;
-import java.nio.charset.StandardCharsets;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * 写点注释
@@ -79,6 +74,7 @@ public class ApiUtils {
 
     /**
      * 获取内网IP
+     *
      * @return
      * @throws Exception
      */

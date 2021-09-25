@@ -178,6 +178,8 @@ public class DocProperty implements Comparable<DocProperty> {
         if (isExample) {
             if (StringUtils.isBlank(type)) {
                 builder.append("null,");
+            } else if (type.contains("[0]")) {
+                builder.append("[],");
             } else {
                 builder.append("\"");
                 if (StringUtils.isNotBlank(defaultValue)) {
@@ -375,7 +377,7 @@ public class DocProperty implements Comparable<DocProperty> {
         return 0;
     }
 
-    public String paramVue(StringBuilder rulesBuilder,StringBuilder htmlBuilder, String className, Map<String, Map<String, String>> mapList) {
+    public String paramVue(StringBuilder rulesBuilder, StringBuilder htmlBuilder, String className, Map<String, Map<String, String>> mapList) {
         if (docModel == null) {
             if (!type.contains("[0]")) {
                 htmlBuilder.append("        ").append("<el-form-item");
