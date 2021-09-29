@@ -21,6 +21,10 @@ v1.5.10-beta
 3. 修复点击数据按钮时不能生成布尔类型的测试数据的BUG
 4. 修复点击数据按钮时数据类型为数组(非集合类型)时不能生成测试数据的BUG
 
+v1.5.11-beta
+
+1. 增加处理枚举类型参数
+
 [TOC]
 
 ## 访问ApiDocs页面方式
@@ -44,7 +48,7 @@ ip:端口/项目名/citrsw/index.html
 <dependency>
     <groupId>com.citrsw</groupId>
     <artifactId>java-api-docs</artifactId>
-    <version>1.5.10-beta</version>
+    <version>1.5.11-beta</version>
 </dependency>
 ```
 

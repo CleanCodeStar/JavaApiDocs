@@ -50,6 +50,7 @@ public class ModelHandle {
      * 正则
      */
     private final Pattern pattern = Pattern.compile("[A-Z]");
+
     /**
      * 处理模型
      *
@@ -95,6 +96,12 @@ public class ModelHandle {
             //处理数组
             docProperty.setType(docProperty.getType() + "[0]");
             return handleGeneric(docProperty, aClass.getComponentType(), propertyMap, isParam, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, apiMapParamMap, apiMapReturnMap, paramGlobalApiPropertyMap, returnGlobalApiPropertyMap);
+        } else if (aClass.isEnum()) {
+            //处理枚举
+            String typeString = docProperty.getType();
+            docProperty.setType("enum" + typeString);
+            docProperty.setClassName(aClass.getSimpleName());
+            return docProperty;
         } else if (int.class.isAssignableFrom(aClass)
                 || long.class.isAssignableFrom(aClass)
                 || double.class.isAssignableFrom(aClass)
@@ -146,8 +153,12 @@ public class ModelHandle {
                     continue;
                 }
                 String methodName = method.getName();
+                if ("getDeclaringClass".equals(methodName)) {
+                    //是getDeclaringClass()方法直接跳过
+                    continue;
+                }
                 if ("getClass".equals(methodName)) {
-                    //不是getClass()方法直接跳过
+                    //是getClass()方法直接跳过
                     continue;
                 }
                 if (!methodName.startsWith("set") && !methodName.startsWith("get") && !methodName.startsWith("is")) {
@@ -881,7 +892,6 @@ public class ModelHandle {
             return handleModel(docProperty, (Class<?>) gType, gType, propertyMap, isParam, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, apiMapParamMap, apiMapReturnMap, paramGlobalApiPropertyMap, returnGlobalApiPropertyMap);
         }
     }
-
 
 
     /**
