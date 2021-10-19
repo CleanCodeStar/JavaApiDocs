@@ -185,13 +185,13 @@
     <distributionManagement>
         <repository>
             <!--这个id 会在maven 的setting 中的servers 下的 service  的id处使用-->
-            <id>nexus-releases</id>
+            <id>oss-nexus-releases</id>
             <name>Nexus Releases Repository</name>
             <!--Release  正式版和仓库对应-->
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
         </repository>
         <snapshotRepository>
-            <id>nexus-snapshots</id>
+            <id>oss-nexus-snapshots</id>
             <name>Nexus Snapshot Repository</name>
             <!--Snapshot  正式版和仓库对应-->
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
@@ -200,7 +200,7 @@
     <profiles>
         <profile>
             <!--与这里一至repository-->
-            <id>nexus-releases</id>
+            <id>oss-nexus-releases</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
@@ -213,7 +213,7 @@
         </profile>
         <profile>
             <!--与这里一至repository-->
-            <id>nexus-snapshots</id>
+            <id>oss-nexus-snapshots</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
