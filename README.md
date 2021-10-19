@@ -25,6 +25,11 @@ v1.5.11-beta
 
 1. 增加处理枚举类型参数
 
+v1.5.12-beta
+1. 修复集合类型无法解析的BUG
+2. 修复生成Api访问地址时出现‘//’导致无法访问的BUG
+
+
 [TOC]
 
 ## 访问ApiDocs页面方式
@@ -48,7 +53,7 @@ ip:端口/项目名/citrsw/index.html
 <dependency>
     <groupId>com.citrsw</groupId>
     <artifactId>java-api-docs</artifactId>
-    <version>1.5.11-beta</version>
+    <version>1.5.12-beta</version>
 </dependency>
 ```
 

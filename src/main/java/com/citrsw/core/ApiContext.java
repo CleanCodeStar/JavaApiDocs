@@ -184,14 +184,18 @@ public class ApiContext {
                             "/ /_/ / /_/ /| |/ / /_/ / ___ |/ /_/ / / /_/ / /_/ / /__(__  ) \n" +
                             "\\____/\\__,_/ |___/\\__,_/_/  |_/ .___/_/_____/\\____/\\___/____/  \n" +
                             "                             /_/                               \n" +
-                            "                                                  1.5.11-beta   \n");
+                            "                                                  1.5.12-beta   \n");
                     //获取本机地址及端口号
                     try {
                         String ip = ApiUtils.getLocalIp();
-                        System.out.println("内网Api访问地址：  http://" + ip + ":" + port + contextPath + servletPath + "/citrsw/index.html");
+                        String uri = ip + ":" + port + contextPath + servletPath + "/citrsw/index.html";
+                        uri = uri.replaceAll("//","/");
+                        System.out.println("内网Api访问地址：  http://" + uri);
                     } catch (Exception ignored) {
                     }
-                    System.out.println("本地Api访问地址：  http://127.0.0.1" + ":" + port + contextPath + servletPath + "/citrsw/index.html");
+                    String uri = port + contextPath + servletPath + "/citrsw/index.html";
+                    uri = uri.replaceAll("//","/");
+                    System.out.println("本地Api访问地址：  http://127.0.0.1" + ":" + uri);
                 }
             }
         } catch (Exception exception) {
