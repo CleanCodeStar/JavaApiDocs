@@ -11,7 +11,7 @@
     </parent>
     <groupId>com.citrsw</groupId>
     <artifactId>java-api-docs</artifactId>
-    <version>1.5.12-beta</version>
+    <version>1.5.13-beta</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -205,7 +205,7 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <profiles.active>nexus-releases</profiles.active>
+                <profiles.active>oss-nexus-releases</profiles.active>
                 <gpg.executable>gpg</gpg.executable>
                 <gpg.passphrase>cleancode962464</gpg.passphrase>
                 <gpg.homedir>C:\Users\CleanCode\AppData\Roaming\gnupg</gpg.homedir>
@@ -218,7 +218,7 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <profiles.active>nexus-snapshots</profiles.active>
+                <profiles.active>oss-nexus-snapshots</profiles.active>
                 <gpg.executable>gpg</gpg.executable>
                 <gpg.passphrase>cleancode962464</gpg.passphrase>
                 <gpg.homedir>C:\Users\CleanCode\AppData\Roaming\gnupg</gpg.homedir>

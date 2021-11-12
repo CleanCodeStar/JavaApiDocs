@@ -83,7 +83,7 @@ public class DocModel {
         for (Iterator<DocProperty> it = apiProperties.iterator(); it.hasNext(); ) {
             DocProperty docProperty = it.next();
             String json = docProperty.getJson(new StringBuilder("    ").append(tab), true, false);
-            if (!json.startsWith("[") && !it.hasNext()) {
+            if (!json.startsWith("[") && !json.contains("{")&& !it.hasNext()) {
                 json = json.replaceFirst("\\,", "");
             }
             builder.append(tab).append("    ").append(json);
@@ -115,7 +115,7 @@ public class DocModel {
         for (Iterator<DocProperty> it = apiProperties.iterator(); it.hasNext(); ) {
             DocProperty docProperty = it.next();
             String json = docProperty.getJson(new StringBuilder("    ").append(tab), true, true);
-            if (!json.startsWith("[") && !it.hasNext()) {
+            if (!json.startsWith("[")&& !json.contains("{") && !it.hasNext()) {
                 json = json.replaceFirst("\\,", "");
             }
             builder.append(tab).append("    ").append(json);
@@ -145,7 +145,7 @@ public class DocModel {
         for (Iterator<DocProperty> it = apiProperties.iterator(); it.hasNext(); ) {
             DocProperty docProperty = it.next();
             String json = docProperty.getJson(new StringBuilder("    ").append(tab), false, false);
-            if (!json.startsWith("[") && !it.hasNext()) {
+            if (!json.startsWith("[")&& !json.contains("{") && !it.hasNext()) {
                 json = json.replaceFirst("\\,", "");
             }
             builder.append(tab).append("    ").append(json);

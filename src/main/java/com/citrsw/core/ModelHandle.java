@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
 import java.lang.reflect.*;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -111,6 +112,7 @@ public class ModelHandle {
                 || aClass.getPackage().getName().startsWith("java.lang")
                 || Date.class.isAssignableFrom(aClass)
                 || LocalDateTime.class.isAssignableFrom(aClass)
+                || BigDecimal.class.isAssignableFrom(aClass)
                 || LocalDate.class.isAssignableFrom(aClass)
                 || MultipartFile.class.isAssignableFrom(aClass)
                 || LocalTime.class.isAssignableFrom(aClass)) {

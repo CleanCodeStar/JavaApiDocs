@@ -4,6 +4,7 @@ import com.citrsw.annatation.ApiProperty;
 import com.citrsw.definition.DocCode;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -38,6 +39,7 @@ public class ApiConstant {
         baseTypeMap.put(float.class, "float");
         baseTypeMap.put(Double.class, "double");
         baseTypeMap.put(double.class, "double");
+        baseTypeMap.put(BigDecimal.class, "double");
         baseTypeMap.put(String.class, "string");
         baseTypeMap.put(Date.class, "datetime");
         baseTypeMap.put(LocalDateTime.class, "datetime");

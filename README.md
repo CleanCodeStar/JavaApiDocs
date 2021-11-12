@@ -26,9 +26,14 @@ v1.5.11-beta
 1. 增加处理枚举类型参数
 
 v1.5.12-beta
-1. 修复集合类型无法解析的BUG
-2. 修复生成Api访问地址时出现‘//’导致无法访问的BUG
 
+1. 修复集合类型无法解析的BUG
+2. 修复生成Api访问地址时出现‘//’导致无法访问的BUG 
+
+v1.5.13-beta
+
+1. 增加处理BigDecimal类型参数，解析为double类型
+2. 修复出现类嵌套时，json第一个字段后面缺少“，”的BUG
 
 [TOC]
 
@@ -53,7 +58,7 @@ ip:端口/项目名/citrsw/index.html
 <dependency>
     <groupId>com.citrsw</groupId>
     <artifactId>java-api-docs</artifactId>
-    <version>1.5.12-beta</version>
+    <version>1.5.13-beta</version>
 </dependency>
 ```
 

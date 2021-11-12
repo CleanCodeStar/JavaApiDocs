@@ -7,6 +7,10 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.commons.lang3.StringUtils;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -87,11 +91,11 @@ public class DocProperty implements Comparable<DocProperty> {
                 property.setDefaultValue(docProperty.getDefaultValue());
                 property.setExample(docProperty.getExample());
                 property.setDocModel(docProperty.getDocModel());
-                try{
+                try {
 
-                String newName = StringUtils.isNotBlank(property.getName()) ? "." + property.getName() : "";
-                property.setName(parentDocProperty.getName() + parentDocProperty.getType().replaceAll(parentDocProperty.getType().replaceAll("\\[0\\]", "").replaceAll("\\[\\]", ""), "") + newName);
-                }catch (Exception e){
+                    String newName = StringUtils.isNotBlank(property.getName()) ? "." + property.getName() : "";
+                    property.setName(parentDocProperty.getName() + parentDocProperty.getType().replaceAll(parentDocProperty.getType().replaceAll("\\[0\\]", "").replaceAll("\\[\\]", ""), "") + newName);
+                } catch (Exception e) {
                     System.out.println(e);
                 }
                 apiProperties.addAll(property.param(property));
