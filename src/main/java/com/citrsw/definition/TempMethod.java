@@ -32,6 +32,11 @@ public class TempMethod {
     private Set<String> uriSet;
 
     /**
+     * 入参必传参数(key:全名称，value:字段属性)
+     */
+    private Map<String, DocProperty> paramRequireMap = new HashMap<>(156);
+
+    /**
      * 入参模型
      */
     private DocModel paramDocModel;
@@ -40,21 +45,21 @@ public class TempMethod {
      * json入参
      */
     public String getParamJson() {
-        return paramDocModel.paramJson();
+        return paramDocModel.paramJson(paramRequireMap);
     }
 
     /**
-     * json入参例子
+     * json入参例子(没写错，是方法名起错了)
      */
     public String getParamExample() {
         return paramDocModel.paramExample();
     }
 
     /**
-     * json入参例子
+     * form-data入参例子
      */
     public Set<DocProperty> getParams() {
-        return paramDocModel.params();
+        return paramDocModel.params(paramRequireMap);
     }
 
     /**

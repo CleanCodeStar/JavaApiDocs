@@ -2,7 +2,10 @@ package com.citrsw.core;
 
 import com.citrsw.annatation.*;
 import com.citrsw.common.ApiConstant;
-import com.citrsw.definition.*;
+import com.citrsw.definition.DocCode;
+import com.citrsw.definition.DocMethod;
+import com.citrsw.definition.DocModel;
+import com.citrsw.definition.TempMethod;
 import com.citrsw.exception.ParamException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -29,6 +32,7 @@ public class MethodHandle {
 
     private final ParamHandle handleParam;
     private final ReturnHandle handleReturn;
+
 
     public MethodHandle(ParamHandle handleParam, ReturnHandle handleReturn) {
         this.handleParam = handleParam;
@@ -199,6 +203,7 @@ public class MethodHandle {
             //TempMethod转DocMethod
             DocMethod docMethod = new DocMethod();
             docMethod.setDescription(tempMethod.getDescription());
+            docMethod.setParamRequireMap(tempMethod.getParamRequireMap());
             docMethod.setModeSet(tempMethod.getModeSet());
             docMethod.setUriSet(tempMethod.getUriSet());
             docMethod.setParams(tempMethod.getParams());
@@ -213,6 +218,11 @@ public class MethodHandle {
             docMethod.setReturnVue(tempMethod.getReturnVue());
             docMethod.setDocCodes(tempMethod.getDocCodes());
             docMethods.add(docMethod);
+            for (String uri : uriSet) {
+                for (String mode : modeSet) {
+                    ApiConstant.methodMap.put(method.getDeclaringClass().getName() + "#" + mode.toUpperCase() + "#" + uri, tempMethod);
+                }
+            }
         }
         return docMethods;
     }

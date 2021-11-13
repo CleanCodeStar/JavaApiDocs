@@ -1,7 +1,9 @@
 package com.citrsw.common;
 
+import com.citrsw.annatation.ApiParamNullBack;
 import com.citrsw.annatation.ApiProperty;
 import com.citrsw.definition.DocCode;
+import com.citrsw.definition.TempMethod;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
@@ -23,12 +25,23 @@ public class ApiConstant {
      * 是否使用下滑线命名方式
      */
     public static boolean underscore;
+
+    /**
+     * 参数校验不通过的返回对象
+     */
+    public static ApiParamNullBack paramNullBack;
+
+    /**
+     * 参数校验不通过的返回对象
+     */
+    public static Map<String, TempMethod> methodMap = new HashMap<>(156);
+
     /**
      * java基本数据类型
      */
     public static Map<Class<?>, String> baseTypeMap = new HashMap<>(256);
 
-    static{
+    static {
         baseTypeMap.put(Integer.class, "int");
         baseTypeMap.put(int.class, "int");
         baseTypeMap.put(Long.class, "long");

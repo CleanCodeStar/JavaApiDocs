@@ -77,7 +77,6 @@ public class ApiContext {
 
     @PostConstruct
     public void init() {
-        log.info("======Api启动======");
         try {
             StackTraceElement[] stackTrace = new RuntimeException().getStackTrace();
             for (StackTraceElement stackTraceElement : stackTrace) {
@@ -88,6 +87,7 @@ public class ApiContext {
                     if (apiEnable == null) {
                         return;
                     }
+                    log.info("======Api启动======");
                     if (apiEnable.actives().length > 0 && StringUtils.isNotBlank(this.active)) {
                         //适用环境
                         boolean pass = false;
@@ -101,6 +101,14 @@ public class ApiContext {
                             log.warn("Api生成失败,当前启动环境为{},api指定环境为{},", this.active, apiEnable.actives());
                             return;
                         }
+                    }
+                    //获取参数校验不通过的返回对象
+                    ApiConstant.paramNullBack = apiEnable.paramNullBackFor();
+                    if (StringUtils.isBlank(ApiConstant.paramNullBack.codeFieldName())
+                            || StringUtils.isBlank(ApiConstant.paramNullBack.codeFieldValue())
+                            || StringUtils.isBlank(ApiConstant.paramNullBack.msgFieldName())) {
+                        log.warn("paramNullBack 配置未生效，原因：必要参数未配置");
+                        ApiConstant.paramNullBack = null;
                     }
                     //是否使用下划线命名
                     ApiConstant.underscore = apiEnable.underscore();
@@ -184,17 +192,17 @@ public class ApiContext {
                             "/ /_/ / /_/ /| |/ / /_/ / ___ |/ /_/ / / /_/ / /_/ / /__(__  ) \n" +
                             "\\____/\\__,_/ |___/\\__,_/_/  |_/ .___/_/_____/\\____/\\___/____/  \n" +
                             "                             /_/                               \n" +
-                            "                                                  1.5.13-beta   \n");
+                            "                                                  1.6.0-beta   \n");
                     //获取本机地址及端口号
                     try {
                         String ip = ApiUtils.getLocalIp();
                         String uri = ip + ":" + port + contextPath + servletPath + "/citrsw/index.html";
-                        uri = uri.replaceAll("//","/");
+                        uri = uri.replaceAll("//", "/");
                         System.out.println("内网Api访问地址：  http://" + uri);
                     } catch (Exception ignored) {
                     }
                     String uri = port + contextPath + servletPath + "/citrsw/index.html";
-                    uri = uri.replaceAll("//","/");
+                    uri = uri.replaceAll("//", "/");
                     System.out.println("本地Api访问地址：  http://127.0.0.1" + ":" + uri);
                 }
             }

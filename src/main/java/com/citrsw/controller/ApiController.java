@@ -46,7 +46,7 @@ public class ApiController {
         byte[] bytes = generate.getBytes(StandardCharsets.UTF_8);
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
         //对文件名进行url编码处理防止出现乱码
-        String newName = URLEncoder.encode(StringUtils.isBlank(apiContext.getDoc().getName())?"Api文档.md":apiContext.getDoc().getName()+".md", "utf-8")
+        String newName = URLEncoder.encode(StringUtils.isBlank(apiContext.getDoc().getName()) ? "Api文档.md" : apiContext.getDoc().getName() + ".md", "utf-8")
                 .replaceAll("\\+", "%20").replaceAll("%28", "\\(")
                 .replaceAll("%29", "\\)").replaceAll("%3B", ";")
                 .replaceAll("%40", "@").replaceAll("%23", "\\#")

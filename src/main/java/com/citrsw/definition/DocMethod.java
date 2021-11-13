@@ -1,6 +1,7 @@
 package com.citrsw.definition;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -37,6 +38,12 @@ public class DocMethod implements Comparable<DocMethod> {
      */
     @JsonProperty("uri_set")
     private Set<String> uriSet;
+
+    /**
+     * 入参必传参数(key:全名称，value:字段属性)
+     */
+    @JsonIgnore
+    private Map<String, DocProperty> paramRequireMap;
 
     /**
      * form-data入参

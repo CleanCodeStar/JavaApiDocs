@@ -7,11 +7,10 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.commons.lang3.StringUtils;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 属性信息
@@ -74,7 +73,7 @@ public class DocProperty implements Comparable<DocProperty> {
     /**
      * form-data形式
      */
-    public Set<DocProperty> param(DocProperty parentDocProperty) {
+    public Set<DocProperty> param(DocProperty parentDocProperty, Map<String, DocProperty> paramRequireMap) {
         Set<DocProperty> apiProperties = new LinkedHashSet<>();
         if (docModel != null && !docModel.getApiProperties().isEmpty()) {
             for (DocProperty docProperty : docModel.getApiProperties()) {
@@ -92,13 +91,15 @@ public class DocProperty implements Comparable<DocProperty> {
                 property.setExample(docProperty.getExample());
                 property.setDocModel(docProperty.getDocModel());
                 try {
-
                     String newName = StringUtils.isNotBlank(property.getName()) ? "." + property.getName() : "";
                     property.setName(parentDocProperty.getName() + parentDocProperty.getType().replaceAll(parentDocProperty.getType().replaceAll("\\[0\\]", "").replaceAll("\\[\\]", ""), "") + newName);
+                    if (docProperty.getRequited() != null && docProperty.getRequited()) {
+                        paramRequireMap.put(property.getName(), docProperty);
+                    }
                 } catch (Exception e) {
                     System.out.println(e);
                 }
-                apiProperties.addAll(property.param(property));
+                apiProperties.addAll(property.param(property, paramRequireMap));
             }
         } else {
             parentDocProperty.setType(parentDocProperty.getType().replaceAll("\\[0\\]", "[]"));
@@ -110,10 +111,15 @@ public class DocProperty implements Comparable<DocProperty> {
     /**
      * json形式
      */
-    public String getJson(StringBuilder tabs, boolean isParam, boolean isExample) {
+    public String getJson(String superName, StringBuilder tabs, boolean isParam, boolean isExample, Map<String, DocProperty> paramRequireMap) {
         StringBuilder builder = new StringBuilder();
         if (StringUtils.isBlank(name) && docModel == null && StringUtils.isBlank(type.replaceAll("\\[0\\]", ""))) {
             return "";
+        }
+        if (StringUtils.isNotBlank(superName)) {
+            superName = superName + "." + name;
+        } else {
+            superName = name;
         }
         builder.append("\r\n").append(tabs);
         if (isExample) {
@@ -141,7 +147,7 @@ public class DocProperty implements Comparable<DocProperty> {
                 }
                 for (Iterator<DocProperty> it = docModel.getApiProperties().iterator(); it.hasNext(); ) {
                     DocProperty docProperty = it.next();
-                    String json = docProperty.getJson(new StringBuilder(tabBuilder).append("    "), isParam, isExample);
+                    String json = docProperty.getJson(superName, new StringBuilder(tabBuilder).append("    "), isParam, isExample, paramRequireMap);
                     if (!json.contains("[") && !json.contains("{") && !it.hasNext()) {
                         json = json.replaceFirst(",", "");
                     }
@@ -170,7 +176,7 @@ public class DocProperty implements Comparable<DocProperty> {
             }
             for (Iterator<DocProperty> it = docModel.getApiProperties().iterator(); it.hasNext(); ) {
                 DocProperty docProperty = it.next();
-                String json = docProperty.getJson(new StringBuilder(tabs).append("    "), isParam, isExample);
+                String json = docProperty.getJson(superName, new StringBuilder(tabs).append("    "), isParam, isExample, paramRequireMap);
                 if (!json.contains("[") && !json.contains("{") && !it.hasNext()) {
                     json = json.replaceFirst(",", "");
                 }
@@ -240,6 +246,10 @@ public class DocProperty implements Comparable<DocProperty> {
             }
         }
         if (isParam) {
+            if (paramRequireMap != null && requited != null && requited) {
+                //将必须传的参数存起来
+                paramRequireMap.put(superName, this);
+            }
             builder.append(requited != null && requited ? "必传" : "非必传");
             if (StringUtils.isNotBlank(format)) {
                 builder.append(" | ").append(format);

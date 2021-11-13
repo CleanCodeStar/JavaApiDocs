@@ -1,7 +1,5 @@
 package com.citrsw.annatation;
 
-import org.springframework.web.bind.annotation.ValueConstants;
-
 import java.lang.annotation.*;
 
 /**

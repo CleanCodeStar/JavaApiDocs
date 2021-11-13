@@ -8,6 +8,9 @@ package com.citrsw.exception;
  * @date 2020-09-24 2:33
  */
 public class ParamException extends RuntimeException {
+
+    private static final long serialVersionUID = 8668329831985671815L;
+
     public ParamException() {
     }
 

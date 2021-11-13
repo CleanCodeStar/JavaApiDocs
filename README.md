@@ -1,13 +1,15 @@
 # javaApiDocs文档
+
 # 版本说明
+
 v1.3.0-beta
-   
+
 增加生成Android和IOS代码
 
 v1.5.8-beta
 
 1. 优化VUE生成代码的结构
-2. 优化搜索功能，支持类描述、方法描述、请求地址搜索  由《胡小勇》同学提出
+2. 优化搜索功能，支持类描述、方法描述、请求地址搜索 由《胡小勇》同学提出
 
 v1.5.9-beta
 
@@ -28,12 +30,16 @@ v1.5.11-beta
 v1.5.12-beta
 
 1. 修复集合类型无法解析的BUG
-2. 修复生成Api访问地址时出现‘//’导致无法访问的BUG 
+2. 修复生成Api访问地址时出现‘//’导致无法访问的BUG
 
 v1.5.13-beta
 
 1. 增加处理BigDecimal类型参数，解析为double类型
 2. 修复出现类嵌套时，json第一个字段后面缺少“，”的BUG
+
+v1.6.0-beta **【重大更新】**
+
+1. 新增注解ApiParamNullBack，对必须传入参数进行校验,默认开启，可手动关闭，同时支持自定义配置
 
 [TOC]
 
@@ -58,7 +64,7 @@ ip:端口/项目名/citrsw/index.html
 <dependency>
     <groupId>com.citrsw</groupId>
     <artifactId>java-api-docs</artifactId>
-    <version>1.5.13-beta</version>
+    <version>1.6.0-beta</version>
 </dependency>
 ```
 
@@ -66,62 +72,27 @@ ip:端口/项目名/citrsw/index.html
 
 如果使用了拦截器则必须放行JavaApiDocs的请求
 
-1. ```java
-   registry.addResourceHandler("/citrsw/**").addResourceLocations("classpath:/citrsw/");
-   ```
 
-2. ```java
-   .excludePathPatterns("/citrsw/**")
-   ```
-
-   
-
-```java
+ ```java
 /**
- * 拦截器配置
- *
- * @author Zhenfeng Li
- * @date 2020-01-07 15:15:11
+ * 配置拦截器示例
  */
-@Configuration
-public class InterceptorConfig implements WebMvcConfigurer {
-
-    private final LoginInterceptor loginInterceptor;
-
-    public InterceptorConfig(LoginInterceptor loginInterceptor) {
-        this.loginInterceptor = loginInterceptor;
-    }
-
-    /**
-     * 放行API
-     *
-     */
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/citrsw/**").addResourceLocations("classpath:/citrsw/");
-    }
-
-    /**
-     * 配置拦截器执行顺序
-     */
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        // 多个拦截器组成一个拦截器链
-        // 默认全部拦截
-        // addPathPatterns 添加拦截
-        // excludePathPatterns 排除拦截
-        //登录拦截器
+@Override
+public void addInterceptors(InterceptorRegistry registry) {
+//         多个拦截器组成一个拦截器链
+//         默认全部拦截
+//         addPathPatterns 添加拦截
+//         excludePathPatterns 排除拦截
+//        登录拦截器
         registry.addInterceptor(loginInterceptor)
                 //需要拦截的uri
                 .addPathPatterns("/**")
                 //需要跳过的uri
-                .excludePathPatterns("/citrsw/**", "/login", "/logout")
+                .excludePathPatterns("/citrsw/**",其他URI)
                 //拦截器的执行顺序
                 .order(1);
-    }
-}
-```
-
+        }
+   ```
 
 
 ## 入门用法
@@ -163,7 +134,6 @@ public class InterceptorConfig implements WebMvcConfigurer {
    
    ```
 
-
 #### @ApiEnable
 
 1. **适用范围**
@@ -173,7 +143,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
 2. **参数说明**
 
    | 参数名     | 说明               |
-   | ---------- | ------------------ |
+         | ---------- | ------------------ |
    | name       | 项目名称           |
    | underscore | 是否使用下划线名称 |
 
@@ -199,7 +169,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
 2. **参数说明**
 
    | 参数名 | 说明             |
-   | ------ | ---------------- |
+         | ------ | ---------------- |
    | value  | Controller类描述 |
 
 3. **使用示例**
@@ -220,7 +190,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
 2. **参数说明**
 
    | 参数名 | 说明                     |
-   | ------ | ------------------------ |
+         | ------ | ------------------------ |
    | value  | Controller类中方法的描述 |
 
 3. **使用示例**
@@ -243,7 +213,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
 2. **参数说明**
 
    | 参数名 | 说明       |
-   | ------ | ---------- |
+         | ------ | ---------- |
    | value  | 实体类描述 |
 
 3. **使用示例**
@@ -268,7 +238,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
 2. **参数说明**
 
    | 参数名       | 说明     |
-   | ------------ | -------- |
+         | ------------ | -------- |
    | description  | 属性描述 |
    | name         | 属性别名 |
    | required     | 是否必须 |
@@ -299,7 +269,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
 2. **参数说明**
 
    | 参数名       | 说明                                                         |
-   | ------------ | ------------------------------------------------------------ |
+         | ------------ | ------------------------------------------------------------ |
    | name         | 别名                                                         |
    | description  | 描述                                                         |
    | required     | 是否必须                                                     |
@@ -334,7 +304,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
 2. **参数说明**
 
    | 参数名      | 说明 |
-   | ----------- | ---- |
+         | ----------- | ---- |
    | description | 描述 |
 
 3. **使用示例**
@@ -361,7 +331,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
 2. **参数说明**
 
    | 参数名       | 说明                                                    |
-   | ------------ | ------------------------------------------------------- |
+         | ------------ | ------------------------------------------------------- |
    | name         | Map类型的key名称（支持多级配置，例如：user.info.level） |
    | description  | 描述                                                    |
    | required     | 是否必须                                                |
@@ -391,7 +361,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
 2. **参数说明**
 
    | 参数名     | 说明                     |
-   | ---------- | ------------------------ |
+         | ---------- | ------------------------ |
    | require    | 必须传入的属性名称数组   |
    | nonRequire | 非必须传入的属性名称数组 |
 
@@ -477,7 +447,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
 2. **参数说明**
 
    | 参数名      | 说明                                               |
-   | ----------- | -------------------------------------------------- |
+         | ----------- | -------------------------------------------------- |
    | name        | 类名                                               |
    | description | 类描述                                             |
    | type        | 类型（入参：TypeEnum.PARAM,响应：TypeEnum.RETURN） |
@@ -532,7 +502,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
 2. **参数说明**
 
    | 参数名      | 说明   |
-   | ----------- | ------ |
+         | ----------- | ------ |
    | name        | 参数名 |
    | value       | 值     |
    | description | 描述   |
@@ -566,7 +536,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
 2. **参数说明**
 
    | 参数名      | 说明   |
-   | ----------- | ------ |
+         | ----------- | ------ |
    | name        | 参数名 |
    | value       | 值     |
    | description | 描述   |
@@ -601,7 +571,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
 2. **参数说明**
 
    | 参数名       | 说明                                            |
-   | ------------ | ----------------------------------------------- |
+         | ------------ | ----------------------------------------------- |
    | name         | 属性名称（支持多级配置，例如：user.info.level） |
    | description  | 描述                                            |
    | required     | 是否必须                                        |
@@ -677,7 +647,6 @@ public class InterceptorConfig implements WebMvcConfigurer {
    }
    ```
 
-
 #### @ApiMapParam
 
 1. **适用范围**
@@ -689,7 +658,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
 2. **参数说明**
 
    | 参数名 | 说明         |
-   | ------ | ------------ |
+         | ------ | ------------ |
    | value  | ApiParam数组 |
 
 3. **使用示例**
@@ -708,8 +677,6 @@ public class InterceptorConfig implements WebMvcConfigurer {
    }
    ```
 
-   
-
 #### @ApiParam（高级用法）
 
 1. **适用范围**
@@ -719,7 +686,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
 2. **参数说明**
 
    | 参数名       | 说明                                                    |
-   | ------------ | ------------------------------------------------------- |
+         | ------------ | ------------------------------------------------------- |
    | name         | Map类型的key名称（支持多级配置，例如：user.info.level） |
    | description  | 描述                                                    |
    | required     | 是否必须                                                |
@@ -764,7 +731,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
 2. **参数说明**
 
    | 参数名      | 说明                                            |
-   | ----------- | ----------------------------------------------- |
+         | ----------- | ----------------------------------------------- |
    | name        | 属性名称（支持多级配置，例如：user.info.level） |
    | description | 描述                                            |
 
@@ -864,7 +831,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
 2. **参数说明**
 
    | 参数名 | 说明          |
-   | ------ | ------------- |
+         | ------ | ------------- |
    | value  | ApiReturn数组 |
 
 3. **使用示例**
@@ -892,7 +859,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
 2. **参数说明**
 
    | 参数名      | 说明                                                    |
-   | ----------- | ------------------------------------------------------- |
+         | ----------- | ------------------------------------------------------- |
    | name        | Map类型的key名称（支持多级配置，例如：user.info.level） |
    | description | 描述                                                    |
    | type        | 类型（在实际类型为Object时生效）                        |

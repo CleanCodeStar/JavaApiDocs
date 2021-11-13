@@ -43,11 +43,15 @@ public class DocModel {
      */
     private String form;
 
-    public Set<DocProperty> params() {
+    public Set<DocProperty> params(Map<String, DocProperty> paramRequireMap) {
         if (StringUtils.isNotBlank(form) && "json".equals(form)) {
             return new LinkedHashSet<>();
         }
         if (StringUtils.isNotBlank(type) && !type.contains("[0]")) {
+            DocProperty docProperty = apiProperties.iterator().next();
+            if (docProperty.getRequited() != null && docProperty.getRequited()) {
+                paramRequireMap.put(docProperty.getName(), docProperty);
+            }
             return apiProperties;
         }
         Set<DocProperty> apiProperties = new LinkedHashSet<>();
@@ -61,12 +65,15 @@ public class DocModel {
             property.setDefaultValue(docProperty.getDefaultValue());
             property.setExample(docProperty.getExample());
             property.setDocModel(docProperty.getDocModel());
-            apiProperties.addAll(docProperty.param(property));
+            if (docProperty.getRequited() != null && docProperty.getRequited()) {
+                paramRequireMap.put(docProperty.getName(), docProperty);
+            }
+            apiProperties.addAll(docProperty.param(property, paramRequireMap));
         }
         return apiProperties;
     }
 
-    public String paramJson() {
+    public String paramJson(Map<String, DocProperty> paramRequireMap) {
         if (StringUtils.isNotBlank(form) && "form-data".equals(form)) {
             return "";
         }
@@ -82,8 +89,8 @@ public class DocModel {
         builder.append(tab).append("{");
         for (Iterator<DocProperty> it = apiProperties.iterator(); it.hasNext(); ) {
             DocProperty docProperty = it.next();
-            String json = docProperty.getJson(new StringBuilder("    ").append(tab), true, false);
-            if (!json.startsWith("[") && !json.contains("{")&& !it.hasNext()) {
+            String json = docProperty.getJson(null, new StringBuilder("    ").append(tab), true, false, paramRequireMap);
+            if (!json.startsWith("[") && !json.contains("{") && !it.hasNext()) {
                 json = json.replaceFirst("\\,", "");
             }
             builder.append(tab).append("    ").append(json);
@@ -114,8 +121,8 @@ public class DocModel {
         builder.append(tab).append("{");
         for (Iterator<DocProperty> it = apiProperties.iterator(); it.hasNext(); ) {
             DocProperty docProperty = it.next();
-            String json = docProperty.getJson(new StringBuilder("    ").append(tab), true, true);
-            if (!json.startsWith("[")&& !json.contains("{") && !it.hasNext()) {
+            String json = docProperty.getJson(null, new StringBuilder("    ").append(tab), true, true, null);
+            if (!json.startsWith("[") && !json.contains("{") && !it.hasNext()) {
                 json = json.replaceFirst("\\,", "");
             }
             builder.append(tab).append("    ").append(json);
@@ -132,7 +139,7 @@ public class DocModel {
 
     public String returnJson() {
         if (StringUtils.isNotBlank(type) && !type.contains("[0]")) {
-            String json = apiProperties.iterator().next().getJson(new StringBuilder(), false, false);
+            String json = apiProperties.iterator().next().getJson(null, new StringBuilder(), false, false, null);
             return json.substring(json.indexOf("//") + 2);
         }
         StringBuilder builder = new StringBuilder();
@@ -144,8 +151,8 @@ public class DocModel {
         builder.append(tab).append("{");
         for (Iterator<DocProperty> it = apiProperties.iterator(); it.hasNext(); ) {
             DocProperty docProperty = it.next();
-            String json = docProperty.getJson(new StringBuilder("    ").append(tab), false, false);
-            if (!json.startsWith("[")&& !json.contains("{") && !it.hasNext()) {
+            String json = docProperty.getJson(null, new StringBuilder("    ").append(tab), false, false, null);
+            if (!json.startsWith("[") && !json.contains("{") && !it.hasNext()) {
                 json = json.replaceFirst("\\,", "");
             }
             builder.append(tab).append("    ").append(json);
@@ -208,11 +215,11 @@ public class DocModel {
      */
     public void paramVue(Map<String, Map<String, String>> mapList) {
         if (StringUtils.isBlank(className)) {
-            if(mapList.isEmpty()){
+            if (mapList.isEmpty()) {
                 className = "Class0";
             }
             for (int i = 0; i < mapList.size(); i++) {
-                if (!mapList.containsKey("Class"+i)) {
+                if (!mapList.containsKey("Class" + i)) {
                     className = "Class" + i;
                     break;
                 }
@@ -264,11 +271,11 @@ public class DocModel {
     public void returnVue(Map<String, Map<String, String>> mapList) {
         StringBuilder builder = new StringBuilder();
         if (StringUtils.isBlank(className)) {
-            if(mapList.isEmpty()){
+            if (mapList.isEmpty()) {
                 className = "Class0";
             }
             for (int i = 0; i < mapList.size(); i++) {
-                if (!mapList.containsKey("Class"+i)) {
+                if (!mapList.containsKey("Class" + i)) {
                     className = "Class" + i;
                     break;
                 }
@@ -294,23 +301,22 @@ public class DocModel {
         builder.append("        ").append("}\"").append("\r\n");
         builder.append("    ").append(":total=\"page.total*1\">").append("\r\n");
         builder.append("</el-pagination>").append("\r\n");
-        StringBuilder rulesBuilder = new StringBuilder();
-        rulesBuilder.append("export default {").append("\r\n  ")
-                .append("name: \"").append(StringUtils.capitalize(className)).append("Vue\",").append("\r\n  ")
-                .append("data() {").append("\r\n    ")
-                .append("return {").append("\r\n      ");
-        rulesBuilder.append(StringUtils.uncapitalize(className)).append("s: [],").append("\r\n      ");
-        rulesBuilder.append("page: {}").append("\r\n    ");
-        rulesBuilder.append("}").append("\r\n  ");
-        rulesBuilder.append("},").append("\r\n  ");
-        rulesBuilder.append("methods: {").append("\r\n      ");
-        rulesBuilder.append("query").append(className).append("s() {").append("\r\n      ");
-        rulesBuilder.append("}").append("\r\n  ");
-        rulesBuilder.append("}").append("\r\n");
-        rulesBuilder.append("}").append("\r\n");
         Map<String, String> map = new HashMap<>(3);
         map.put("HTML", builder.toString());
-        map.put("JavaScript", rulesBuilder.toString());
+        String rulesBuilder = "export default {" + "\r\n  " +
+                "name: \"" + StringUtils.capitalize(className) + "Vue\"," + "\r\n  " +
+                "data() {" + "\r\n    " +
+                "return {" + "\r\n      " +
+                StringUtils.uncapitalize(className) + "s: []," + "\r\n      " +
+                "page: {}" + "\r\n    " +
+                "}" + "\r\n  " +
+                "}," + "\r\n  " +
+                "methods: {" + "\r\n      " +
+                "query" + className + "s() {" + "\r\n      " +
+                "}" + "\r\n  " +
+                "}" + "\r\n" +
+                "}" + "\r\n";
+        map.put("JavaScript", rulesBuilder);
 
         mapList.put(StringUtils.capitalize(className), map);
     }

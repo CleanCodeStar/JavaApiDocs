@@ -1,12 +1,15 @@
 package com.citrsw.core;
 
-import com.citrsw.annatation.*;
-import com.citrsw.definition.*;
+import com.citrsw.annatation.ApiClass;
+import com.citrsw.annatation.ApiIgnore;
+import com.citrsw.definition.DocClass;
+import com.citrsw.definition.DocMethod;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
 import java.lang.reflect.Method;

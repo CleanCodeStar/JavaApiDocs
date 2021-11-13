@@ -32,4 +32,9 @@ public @interface ApiEnable {
      * 环境
      */
     String[] actives() default {};
+
+    /**
+     * 参数校验
+     */
+    ApiParamNullBack paramNullBackFor() default @ApiParamNullBack(codeFieldName = "code", codeFieldValue = "400", msgFieldName = "msg");
 }
