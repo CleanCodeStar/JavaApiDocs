@@ -32,6 +32,11 @@ public class ApiConstant {
     public static ApiParamNullBack paramNullBack;
 
     /**
+     * Api是否可用
+     */
+    public static boolean apiEnable = true;
+
+    /**
      * 参数校验不通过的返回对象
      */
     public static Map<String, TempMethod> methodMap = new HashMap<>(156);

@@ -88,9 +88,9 @@ public class ApiContext {
                         return;
                     }
                     log.info("======Api启动======");
+                    boolean pass = false;
                     if (apiEnable.actives().length > 0 && StringUtils.isNotBlank(this.active)) {
                         //适用环境
-                        boolean pass = false;
                         for (String active : apiEnable.actives()) {
                             if (active.equals(this.active)) {
                                 pass = true;
@@ -98,8 +98,8 @@ public class ApiContext {
                             }
                         }
                         if (!pass) {
-                            log.warn("Api生成失败,当前启动环境为{},api指定环境为{},", this.active, apiEnable.actives());
-                            return;
+                            ApiConstant.apiEnable = false;
+                            log.warn("Api已禁用,当前启动环境为[{}],api指定环境为{},", this.active, apiEnable.actives());
                         }
                     }
                     //获取参数校验不通过的返回对象
@@ -192,18 +192,20 @@ public class ApiContext {
                             "/ /_/ / /_/ /| |/ / /_/ / ___ |/ /_/ / / /_/ / /_/ / /__(__  ) \n" +
                             "\\____/\\__,_/ |___/\\__,_/_/  |_/ .___/_/_____/\\____/\\___/____/  \n" +
                             "                             /_/                               \n" +
-                            "                                                  1.6.0-beta   \n");
-                    //获取本机地址及端口号
-                    try {
-                        String ip = ApiUtils.getLocalIp();
-                        String uri = ip + ":" + port + contextPath + servletPath + "/citrsw/index.html";
+                            "                                                  1.6.1-beta   \n");
+                    if (pass) {
+                        //获取本机地址及端口号
+                        try {
+                            String ip = ApiUtils.getLocalIp();
+                            String uri = ip + ":" + port + contextPath + servletPath + "/citrsw/index.html";
+                            uri = uri.replaceAll("//", "/");
+                            System.out.println("内网Api访问地址：  http://" + uri);
+                        } catch (Exception ignored) {
+                        }
+                        String uri = port + contextPath + servletPath + "/citrsw/index.html";
                         uri = uri.replaceAll("//", "/");
-                        System.out.println("内网Api访问地址：  http://" + uri);
-                    } catch (Exception ignored) {
+                        System.out.println("本地Api访问地址：  http://127.0.0.1" + ":" + uri);
                     }
-                    String uri = port + contextPath + servletPath + "/citrsw/index.html";
-                    uri = uri.replaceAll("//", "/");
-                    System.out.println("本地Api访问地址：  http://127.0.0.1" + ":" + uri);
                 }
             }
         } catch (Exception exception) {

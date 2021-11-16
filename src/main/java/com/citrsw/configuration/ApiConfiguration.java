@@ -1,6 +1,9 @@
 package com.citrsw.configuration;
 
+import com.citrsw.filter.ApiParamFilter;
 import com.citrsw.interceptor.ApiHandlerInterceptor;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -19,10 +22,23 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class ApiConfiguration implements WebMvcConfigurer {
 
     private final ApiHandlerInterceptor apiHandlerInterceptor;
+    private final ApiParamFilter apiParamFilter;
 
-    public ApiConfiguration(ApiHandlerInterceptor apiHandlerInterceptor) {
+    public ApiConfiguration(ApiHandlerInterceptor apiHandlerInterceptor, ApiParamFilter apiParamFilter) {
         this.apiHandlerInterceptor = apiHandlerInterceptor;
+        this.apiParamFilter = apiParamFilter;
     }
+
+    @Bean
+    public FilterRegistrationBean<ApiParamFilter> servletRegistrationBean() {
+        FilterRegistrationBean<ApiParamFilter> bean = new FilterRegistrationBean<>();
+        bean.setFilter(apiParamFilter);
+        bean.setName(ApiParamFilter.class.getName());
+        bean.addUrlPatterns("/*");
+        bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
+        return bean;
+    }
+
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {

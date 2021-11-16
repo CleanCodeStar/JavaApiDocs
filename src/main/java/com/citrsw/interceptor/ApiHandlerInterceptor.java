@@ -7,6 +7,7 @@ import com.citrsw.annatation.ApiParamNullBack;
 import com.citrsw.common.ApiConstant;
 import com.citrsw.definition.DocProperty;
 import com.citrsw.definition.TempMethod;
+import com.citrsw.filter.ApiParameterRequestWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,9 +20,7 @@ import org.thymeleaf.util.MapUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -67,8 +66,9 @@ public class ApiHandlerInterceptor implements HandlerInterceptor {
             if (MapUtils.isEmpty(methodMap)) {
                 return true;
             }
+            Map<String, Boolean> returnMap = new HashMap<>(125);
             if (!methodMap.containsKey(methodKey)) {
-                methodKey = matchingMethod(methodKey);
+                methodKey = matchingMethod(methodKey, returnMap);
                 if (StringUtils.isBlank(methodKey)) {
                     return true;
                 }
@@ -79,21 +79,15 @@ public class ApiHandlerInterceptor implements HandlerInterceptor {
             if (paramRequireMap.size() == 0) {
                 return true;
             }
-            //获取body入参
-            StringBuilder builder = new StringBuilder();
-            try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(request.getInputStream()))) {
-                char[] charBuffer = new char[128];
-                int bytesRead;
-                while ((bytesRead = bufferedReader.read(charBuffer)) > 0) {
-                    builder.append(charBuffer, 0, bytesRead);
+            if (request instanceof ApiParameterRequestWrapper) {
+                ApiParameterRequestWrapper requestWrapper = (ApiParameterRequestWrapper) request;
+                String body = requestWrapper.getBody();
+                //获取body入参
+                try {
+                    JSONObject jsonObject = JSONObject.parseObject(body);
+                    returnMap.putAll(convertJsonParam(jsonObject, null));
+                } catch (JSONException ignored) {
                 }
-            } catch (IOException ignored) {
-            }
-            Map<String, Boolean> returnMap = new HashMap<>(125);
-            try {
-                JSONObject jsonObject = JSONObject.parseObject(builder.toString());
-                returnMap.putAll(convertJsonParam(jsonObject, null));
-            } catch (JSONException ignored) {
             }
             //获取param入参
             Map<String, String[]> parameterMap = request.getParameterMap();
@@ -190,21 +184,26 @@ public class ApiHandlerInterceptor implements HandlerInterceptor {
     /**
      * 匹配请求对应的处理方法
      */
-    private String matchingMethod(String methodKey) {
+    private String matchingMethod(String methodKey, Map<String, Boolean> returnMap) {
         String[] methodKeys = methodKey.split("/");
         for (String key : ApiConstant.methodMap.keySet()) {
             String[] keys = key.split("/");
             if (methodKeys.length == keys.length) {
                 boolean pass = false;
                 for (int i = 0; i < keys.length; i++) {
-                    if (keys[i].contains("{") || keys[i].equals(methodKeys[i])) {
+                    if (keys[i].contains("{")) {
+                        if (StringUtils.isNotBlank(methodKeys[i])) {
+                            //将路由中的参数提取出来
+                            returnMap.put(keys[i].replaceAll("\\{", "").replaceAll("\\}", ""), Boolean.TRUE);
+                        }
+                        pass = true;
+                    } else if (keys[i].equals(methodKeys[i])) {
                         pass = true;
                     } else {
                         break;
                     }
                 }
                 if (pass) {
-                    log.debug("权限放行");
                     return key;
                 }
             }

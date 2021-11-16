@@ -41,6 +41,13 @@ v1.6.0-beta **【重大更新】**
 
 1. 新增注解ApiParamNullBack，对必须传入参数进行校验,默认开启，可手动关闭，同时支持自定义配置
 
+v1.6.1-beta 
+
+1. 修复生成MarkDown离线文档时，参数为表格时，响应标题会排入表格的BUG
+2. 优化核心代码
+3. 修复json参数传输数据时，后端接口无法获取body内容的BUG
+4. 修复URI上的参数无法通过校验器的BUG
+
 [TOC]
 
 ## 访问ApiDocs页面方式
@@ -64,7 +71,7 @@ ip:端口/项目名/citrsw/index.html
 <dependency>
     <groupId>com.citrsw</groupId>
     <artifactId>java-api-docs</artifactId>
-    <version>1.6.0-beta</version>
+    <version>1.6.1-beta</version>
 </dependency>
 ```
 

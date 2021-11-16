@@ -67,7 +67,7 @@ public class MarkdownHandler {
             buffer.append("```").append("\n");
         }
         //响应
-        buffer.append("***响应***").append("\n");
+        buffer.append("\n").append("***响应***").append("\n");
         if (StringUtils.isNotBlank(docMethod.getReturnJson())) {
             //json形式
             buffer.append("```json").append("\n");

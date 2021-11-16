@@ -919,26 +919,28 @@ public class ModelHandle {
                                  Map<String, ApiReturnModelProperty> apiReturnModelPropertyMap,
                                  Map<String, ApiMapProperty> apiMapPropertyMap,
                                  Map<String, ApiParam> apiMapParamMap, Map<String, ApiReturn> apiMapReturnMap, Map<String, ApiProperty> paramGlobalApiPropertyMap, Map<String, ApiProperty> returnGlobalApiPropertyMap) {
-        // 强制类型转换
-        ParameterizedType pType = (ParameterizedType) gType;
-        // 取得泛型类型的泛型参数
-        Type[] tArgs = pType.getActualTypeArguments();
-        if (tArgs.length == 0) {
-            return docProperty;
-        }
-        Class<?> aClass;
-        if (tArgs[1] instanceof ParameterizedType) {
-            //处理类上的泛型
-            aClass = (Class<?>) ((ParameterizedType) tArgs[1]).getRawType();
-        } else {
-            aClass = (Class<?>) tArgs[1];
-        }
         DocModel docModel = new DocModel();
         docModel.setClassName("Map");
         docModel.setDescription(docProperty.getDescription());
         Set<DocProperty> apiProperties = new TreeSet<>();
+        Class<?> keyClass = Object.class;
+        if (gType instanceof ParameterizedType) {
+            // 强制类型转换
+            ParameterizedType pType = (ParameterizedType) gType;
+            // 取得泛型类型的泛型参数
+            Type[] tArgs = pType.getActualTypeArguments();
+            if (tArgs.length == 0) {
+                return docProperty;
+            }
+            if (tArgs[1] instanceof ParameterizedType) {
+                //处理类上的泛型
+                keyClass = (Class<?>) ((ParameterizedType) tArgs[1]).getRawType();
+            } else {
+                keyClass = (Class<?>) tArgs[1];
+            }
+        }
         if ((apiMapPropertyMap == null || apiMapPropertyMap.isEmpty()) && (apiMapParamMap == null || apiMapParamMap.isEmpty()) && (apiMapReturnMap == null || apiMapReturnMap.isEmpty())) {
-            return handleModel(docProperty, aClass, tArgs[1], propertyMap, isParam, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, apiMapParamMap, apiMapReturnMap, paramGlobalApiPropertyMap, returnGlobalApiPropertyMap);
+            return handleModel(docProperty, keyClass, keyClass, propertyMap, isParam, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, apiMapParamMap, apiMapReturnMap, paramGlobalApiPropertyMap, returnGlobalApiPropertyMap);
         }
         //全局针对多级配置
         Map<String, ApiProperty> childParamGlobalApiPropertyMap = new HashMap<>(256);
@@ -1031,7 +1033,7 @@ public class ModelHandle {
                 for (DocProperty property : docProperties) {
                     String type = property.getType();
                     property.setType("");
-                    property = handleModel(property, aClass, gType, propertyMap, true, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, mapMap.get(property.getName()), apiMapReturnMap, childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
+                    property = handleModel(property, keyClass, gType, propertyMap, true, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, mapMap.get(property.getName()), apiMapReturnMap, childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
                     if (StringUtils.isNotBlank(type) && StringUtils.isBlank(property.getType())) {
                         property.setType(type);
                     }
@@ -1047,7 +1049,7 @@ public class ModelHandle {
                 for (String key : childKeySet) {
                     DocProperty childProperty = new DocProperty();
                     childProperty.setName(key);
-                    childProperty = handleModel(childProperty, aClass, gType, propertyMap, true, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, mapMap.get(key), apiMapReturnMap, childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
+                    childProperty = handleModel(childProperty, keyClass, gType, propertyMap, true, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, mapMap.get(key), apiMapReturnMap, childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
                     apiProperties.add(childProperty);
                 }
             }
@@ -1100,7 +1102,7 @@ public class ModelHandle {
                 for (DocProperty property : docProperties) {
                     String type = property.getType();
                     property.setType("");
-                    property = handleModel(property, aClass, gType, propertyMap, false, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, copyApiMapPropertyMap, apiMapParamMap, mapMap.get(property.getName()), childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
+                    property = handleModel(property, keyClass, gType, propertyMap, false, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, copyApiMapPropertyMap, apiMapParamMap, mapMap.get(property.getName()), childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
                     if (StringUtils.isNotBlank(type) && StringUtils.isBlank(property.getType())) {
                         property.setType(type);
                     }
@@ -1116,7 +1118,7 @@ public class ModelHandle {
                 for (String key : childKeySet) {
                     DocProperty childProperty = new DocProperty();
                     childProperty.setName(key);
-                    childProperty = handleModel(childProperty, aClass, gType, propertyMap, false, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, copyApiMapPropertyMap, apiMapParamMap, mapMap.get(key), childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
+                    childProperty = handleModel(childProperty, keyClass, gType, propertyMap, false, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, copyApiMapPropertyMap, apiMapParamMap, mapMap.get(key), childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
                     apiProperties.add(childProperty);
                 }
             }
@@ -1210,7 +1212,7 @@ public class ModelHandle {
                 for (DocProperty property : docProperties) {
                     String type = property.getType();
                     property.setType("");
-                    property = handleModel(property, aClass, gType, propertyMap, isParam, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, mapMap.get(property.getName()), null, null, childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
+                    property = handleModel(property, keyClass, gType, propertyMap, isParam, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, mapMap.get(property.getName()), null, null, childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
                     if (StringUtils.isNotBlank(type) && StringUtils.isBlank(property.getType())) {
                         property.setType(type);
                     }
@@ -1226,7 +1228,7 @@ public class ModelHandle {
                 for (String key : childKeySet) {
                     DocProperty childProperty = new DocProperty();
                     childProperty.setName(key);
-                    childProperty = handleModel(childProperty, aClass, gType, propertyMap, isParam, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, mapMap.get(key), childApiMapParamMap, childApiMapReturnMap, childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
+                    childProperty = handleModel(childProperty, keyClass, gType, propertyMap, isParam, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, mapMap.get(key), childApiMapParamMap, childApiMapReturnMap, childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
                     apiProperties.add(childProperty);
                 }
             }
