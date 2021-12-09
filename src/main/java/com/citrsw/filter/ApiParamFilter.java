@@ -1,6 +1,7 @@
 package com.citrsw.filter;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
@@ -9,7 +10,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 /**
- * 组过滤器
+ * Json过滤器
  *
  * @author Zhenfeng Li
  * @version 1.0
@@ -21,11 +22,11 @@ public class ApiParamFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         ApiParameterRequestWrapper parameterRequestWrapper = null;
-        try {
-            HttpServletRequest req = (HttpServletRequest) request;
-            parameterRequestWrapper = new ApiParameterRequestWrapper(req);
-        } catch (Exception e) {
-            log.warn("customHttpServletRequestWrapper Error:", e);
+        if (request instanceof HttpServletRequest) {
+            String header = ((HttpServletRequest) request).getHeader("Content-Type");
+            if (StringUtils.isNotBlank(header) && header.toLowerCase().contains("application/json")) {
+                parameterRequestWrapper = new ApiParameterRequestWrapper((HttpServletRequest) request);
+            }
         }
         chain.doFilter((Objects.isNull(parameterRequestWrapper) ? request : parameterRequestWrapper), response);
     }

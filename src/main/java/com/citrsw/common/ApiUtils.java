@@ -1,8 +1,5 @@
 package com.citrsw.common;
 
-
-import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
-
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.InetAddress;
@@ -86,7 +83,7 @@ public class ApiUtils {
         String netip = null;
         Enumeration<NetworkInterface> netInterfaces;
         netInterfaces = NetworkInterface.getNetworkInterfaces();
-        InetAddress ip = null;
+        InetAddress ip;
         // 是否找到外网IP
         boolean finded = false;
         while (netInterfaces.hasMoreElements() && !finded) {

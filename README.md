@@ -41,12 +41,18 @@ v1.6.0-beta **【重大更新】**
 
 1. 新增注解ApiParamNullBack，对必须传入参数进行校验,默认开启，可手动关闭，同时支持自定义配置
 
-v1.6.1-beta 
+v1.6.1-beta
 
 1. 修复生成MarkDown离线文档时，参数为表格时，响应标题会排入表格的BUG
 2. 优化核心代码
 3. 修复json参数传输数据时，后端接口无法获取body内容的BUG
 4. 修复URI上的参数无法通过校验器的BUG
+
+v1.6.2-beta
+
+1. 支持Spring Boot 2.6.1 版本
+2. 支持JDK17版本
+3. 枚举类型参数优化
 
 [TOC]
 
@@ -71,14 +77,13 @@ ip:端口/项目名/citrsw/index.html
 <dependency>
     <groupId>com.citrsw</groupId>
     <artifactId>java-api-docs</artifactId>
-    <version>1.6.1-beta</version>
+    <version>1.6.2-beta</version>
 </dependency>
 ```
 
 ## 拦截器配置
 
 如果使用了拦截器则必须放行JavaApiDocs的请求
-
 
  ```java
 /**
@@ -100,7 +105,6 @@ public void addInterceptors(InterceptorRegistry registry) {
                 .order(1);
         }
    ```
-
 
 ## 入门用法
 
@@ -150,7 +154,7 @@ public void addInterceptors(InterceptorRegistry registry) {
 2. **参数说明**
 
    | 参数名     | 说明               |
-         | ---------- | ------------------ |
+            | ---------- | ------------------ |
    | name       | 项目名称           |
    | underscore | 是否使用下划线名称 |
 
@@ -176,7 +180,7 @@ public void addInterceptors(InterceptorRegistry registry) {
 2. **参数说明**
 
    | 参数名 | 说明             |
-         | ------ | ---------------- |
+            | ------ | ---------------- |
    | value  | Controller类描述 |
 
 3. **使用示例**
@@ -197,7 +201,7 @@ public void addInterceptors(InterceptorRegistry registry) {
 2. **参数说明**
 
    | 参数名 | 说明                     |
-         | ------ | ------------------------ |
+            | ------ | ------------------------ |
    | value  | Controller类中方法的描述 |
 
 3. **使用示例**
@@ -220,7 +224,7 @@ public void addInterceptors(InterceptorRegistry registry) {
 2. **参数说明**
 
    | 参数名 | 说明       |
-         | ------ | ---------- |
+            | ------ | ---------- |
    | value  | 实体类描述 |
 
 3. **使用示例**
@@ -245,7 +249,7 @@ public void addInterceptors(InterceptorRegistry registry) {
 2. **参数说明**
 
    | 参数名       | 说明     |
-         | ------------ | -------- |
+            | ------------ | -------- |
    | description  | 属性描述 |
    | name         | 属性别名 |
    | required     | 是否必须 |
@@ -276,7 +280,7 @@ public void addInterceptors(InterceptorRegistry registry) {
 2. **参数说明**
 
    | 参数名       | 说明                                                         |
-         | ------------ | ------------------------------------------------------------ |
+            | ------------ | ------------------------------------------------------------ |
    | name         | 别名                                                         |
    | description  | 描述                                                         |
    | required     | 是否必须                                                     |
@@ -311,7 +315,7 @@ public void addInterceptors(InterceptorRegistry registry) {
 2. **参数说明**
 
    | 参数名      | 说明 |
-         | ----------- | ---- |
+            | ----------- | ---- |
    | description | 描述 |
 
 3. **使用示例**
@@ -338,7 +342,7 @@ public void addInterceptors(InterceptorRegistry registry) {
 2. **参数说明**
 
    | 参数名       | 说明                                                    |
-         | ------------ | ------------------------------------------------------- |
+            | ------------ | ------------------------------------------------------- |
    | name         | Map类型的key名称（支持多级配置，例如：user.info.level） |
    | description  | 描述                                                    |
    | required     | 是否必须                                                |
@@ -368,7 +372,7 @@ public void addInterceptors(InterceptorRegistry registry) {
 2. **参数说明**
 
    | 参数名     | 说明                     |
-         | ---------- | ------------------------ |
+            | ---------- | ------------------------ |
    | require    | 必须传入的属性名称数组   |
    | nonRequire | 非必须传入的属性名称数组 |
 
@@ -454,7 +458,7 @@ public void addInterceptors(InterceptorRegistry registry) {
 2. **参数说明**
 
    | 参数名      | 说明                                               |
-         | ----------- | -------------------------------------------------- |
+            | ----------- | -------------------------------------------------- |
    | name        | 类名                                               |
    | description | 类描述                                             |
    | type        | 类型（入参：TypeEnum.PARAM,响应：TypeEnum.RETURN） |
@@ -509,7 +513,7 @@ public void addInterceptors(InterceptorRegistry registry) {
 2. **参数说明**
 
    | 参数名      | 说明   |
-         | ----------- | ------ |
+            | ----------- | ------ |
    | name        | 参数名 |
    | value       | 值     |
    | description | 描述   |
@@ -543,7 +547,7 @@ public void addInterceptors(InterceptorRegistry registry) {
 2. **参数说明**
 
    | 参数名      | 说明   |
-         | ----------- | ------ |
+            | ----------- | ------ |
    | name        | 参数名 |
    | value       | 值     |
    | description | 描述   |
@@ -578,7 +582,7 @@ public void addInterceptors(InterceptorRegistry registry) {
 2. **参数说明**
 
    | 参数名       | 说明                                            |
-         | ------------ | ----------------------------------------------- |
+            | ------------ | ----------------------------------------------- |
    | name         | 属性名称（支持多级配置，例如：user.info.level） |
    | description  | 描述                                            |
    | required     | 是否必须                                        |
@@ -665,7 +669,7 @@ public void addInterceptors(InterceptorRegistry registry) {
 2. **参数说明**
 
    | 参数名 | 说明         |
-         | ------ | ------------ |
+            | ------ | ------------ |
    | value  | ApiParam数组 |
 
 3. **使用示例**
@@ -693,7 +697,7 @@ public void addInterceptors(InterceptorRegistry registry) {
 2. **参数说明**
 
    | 参数名       | 说明                                                    |
-         | ------------ | ------------------------------------------------------- |
+            | ------------ | ------------------------------------------------------- |
    | name         | Map类型的key名称（支持多级配置，例如：user.info.level） |
    | description  | 描述                                                    |
    | required     | 是否必须                                                |
@@ -738,7 +742,7 @@ public void addInterceptors(InterceptorRegistry registry) {
 2. **参数说明**
 
    | 参数名      | 说明                                            |
-         | ----------- | ----------------------------------------------- |
+            | ----------- | ----------------------------------------------- |
    | name        | 属性名称（支持多级配置，例如：user.info.level） |
    | description | 描述                                            |
 
@@ -838,7 +842,7 @@ public void addInterceptors(InterceptorRegistry registry) {
 2. **参数说明**
 
    | 参数名 | 说明          |
-         | ------ | ------------- |
+            | ------ | ------------- |
    | value  | ApiReturn数组 |
 
 3. **使用示例**
@@ -866,7 +870,7 @@ public void addInterceptors(InterceptorRegistry registry) {
 2. **参数说明**
 
    | 参数名      | 说明                                                    |
-         | ----------- | ------------------------------------------------------- |
+            | ----------- | ------------------------------------------------------- |
    | name        | Map类型的key名称（支持多级配置，例如：user.info.level） |
    | description | 描述                                                    |
    | type        | 类型（在实际类型为Object时生效）                        |

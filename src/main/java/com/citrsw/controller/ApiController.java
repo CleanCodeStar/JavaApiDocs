@@ -37,7 +37,7 @@ public class ApiController {
     @GetMapping("/citrsw/api")
     @ApiMethod("Api文档数据")
     public Doc api() {
-        if(!ApiConstant.apiEnable){
+        if (!ApiConstant.apiEnable) {
             return null;
         }
         return apiContext.getDoc();
@@ -46,7 +46,7 @@ public class ApiController {
     @GetMapping("/citrsw/api/down/markdown")
     @ApiMethod("Api文档markdown下载")
     public ResponseEntity<InputStreamResource> down() throws UnsupportedEncodingException {
-        if(!ApiConstant.apiEnable){
+        if (!ApiConstant.apiEnable) {
             return null;
         }
         String generate = new MarkdownHandler().generate(apiContext.getDoc());

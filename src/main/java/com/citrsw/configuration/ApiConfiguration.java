@@ -50,13 +50,9 @@ public class ApiConfiguration implements WebMvcConfigurer {
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        //登录拦截器
         registry.addInterceptor(apiHandlerInterceptor)
-                //需要拦截的uri
                 .addPathPatterns("/**")
-                //需要跳过的uri
                 .excludePathPatterns("/citrsw/**")
-                //拦截器的执行顺序 设置高一点方便后期扩展
                 .order(Ordered.HIGHEST_PRECEDENCE);
     }
 }

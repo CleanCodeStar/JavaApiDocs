@@ -3,10 +3,12 @@ package com.citrsw.core;
 import com.citrsw.annatation.*;
 import com.citrsw.common.ApiConstant;
 import com.citrsw.common.ApiUtils;
+import com.citrsw.common.ParameterizedTypeImpl;
 import com.citrsw.definition.DocModel;
 import com.citrsw.definition.DocProperty;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,7 +16,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ValueConstants;
 import org.springframework.web.multipart.MultipartFile;
-import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
 import java.lang.reflect.*;
 import java.math.BigDecimal;
@@ -99,7 +100,31 @@ public class ModelHandle {
             return handleGeneric(docProperty, aClass.getComponentType(), propertyMap, isParam, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, apiMapParamMap, apiMapReturnMap, paramGlobalApiPropertyMap, returnGlobalApiPropertyMap);
         } else if (aClass.isEnum()) {
             //处理枚举
+            Object[] enums = aClass.getEnumConstants();
+            Field[] fields = aClass.getDeclaredFields();
+            StringBuilder fieldBuilder = new StringBuilder();
+            StringBuilder nameBuilder = new StringBuilder();
+            for (Object object : enums) {
+                nameBuilder.append(object.toString());
+                for (Field field : fields) {
+                    if (field.isAnnotationPresent(JsonValue.class)) {
+                        field.setAccessible(true);
+                        try {
+                            fieldBuilder.append(field.get(object)).append(",");
+                        } catch (IllegalAccessException ignored) {
+                        }
+                        break;
+                    }
+                }
+            }
+            if (fieldBuilder.length() == 0) {
+                fieldBuilder = nameBuilder;
+            }
+            fieldBuilder.insert(0, "取值范围:[");
+            fieldBuilder.deleteCharAt(fieldBuilder.length() - 1);
+            fieldBuilder.append("]");
             String typeString = docProperty.getType();
+            docProperty.setFormat(fieldBuilder.toString());
             docProperty.setType("enum" + typeString);
             docProperty.setClassName(aClass.getSimpleName());
             return docProperty;
@@ -122,13 +147,6 @@ public class ModelHandle {
             docProperty.setClassName(aClass.getSimpleName());
             return docProperty;
         } else {
-            //先从模型集合中取，取不到则进行解析
-//            //指定对象属性的除外，泛型的也除外,重新指定对象属性信息的也除外,全局配置的也除外
-//            if (!PARAM_GLOBAL_CLASS_MAP.containsKey(aClass) && !RETURN_GLOBAL_CLASS_MAP.containsKey(aClass) && apiModelPropertyMap != null && apiReturnModelPropertyMap != null && propertyMap.isEmpty() && apiModelMap.containsKey(aClass) && !(type != null && aClass.getTypeParameters().length > 0)) {
-//                //取到后直接返回
-//                docProperty.setDocModel(apiModelMap.get(aClass));
-//                return docProperty;
-//            }
             DocModel docModel = new DocModel();
             ApiModel apiModel = aClass.getAnnotation(ApiModel.class);
             //如果属性为对象，但是属性未配置注解描述的，取类上的注解为属性描述
@@ -823,9 +841,8 @@ public class ModelHandle {
      * @return 包装后的真实类型
      */
     public Type realType(Type type, TypeVariable<? extends Class<?>>[] typeParameters, Type genericType) {
-        if (type instanceof ParameterizedType) {
+        if (type instanceof ParameterizedType pType) {
             // 强制类型转换
-            ParameterizedType pType = (ParameterizedType) type;
             Type rawType = pType.getRawType();
             List<Type> types = new ArrayList<>();
             for (Type actualTypeArgument : pType.getActualTypeArguments()) {

@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.2.2.RELEASE</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <version>2.6.1</version>
+        <relativePath /> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.citrsw</groupId>
     <artifactId>java-api-docs</artifactId>
-    <version>1.6.1-beta</version>
+    <version>1.6.2-beta</version>
 
     <properties>
+        <java.version>17</java.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
@@ -32,7 +33,7 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.62</version>
+            <version>1.2.78</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -67,6 +68,7 @@
         <plugins>
             <!--deploy插件-->
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
                 <version>2.8.2</version>
                 <executions>
@@ -78,18 +80,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <!--sonatype插件-->
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.7</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <serverId>${profiles.active}</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                </configuration>
             </plugin>
             <!--scm插件-->
             <plugin>

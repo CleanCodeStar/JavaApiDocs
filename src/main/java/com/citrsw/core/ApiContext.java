@@ -88,8 +88,9 @@ public class ApiContext {
                         return;
                     }
                     log.info("======Api启动======");
-                    boolean pass = false;
+                    boolean pass = true;
                     if (apiEnable.actives().length > 0 && StringUtils.isNotBlank(this.active)) {
+                        pass = false;
                         //适用环境
                         for (String active : apiEnable.actives()) {
                             if (active.equals(this.active)) {
@@ -185,15 +186,15 @@ public class ApiContext {
                     if (StringUtils.isNotBlank(apiEnable.name())) {
                         doc.setName(apiEnable.name());
                     }
-                    System.out.println("\n" +
-                            "       __                  ___          _ ____                 \n" +
-                            "      / /___ __   ______ _/   |  ____  (_) __ \\____  __________\n" +
-                            " __  / / __ `/ | / / __ `/ /| | / __ \\/ / / / / __ \\/ ___/ ___/\n" +
-                            "/ /_/ / /_/ /| |/ / /_/ / ___ |/ /_/ / / /_/ / /_/ / /__(__  ) \n" +
-                            "\\____/\\__,_/ |___/\\__,_/_/  |_/ .___/_/_____/\\____/\\___/____/  \n" +
-                            "                             /_/                               \n" +
-                            "                                                  1.6.1-beta   \n");
                     if (pass) {
+                        System.out.println("\n" +
+                                "       __                  ___          _ ____                 \n" +
+                                "      / /___ __   ______ _/   |  ____  (_) __ \\____  __________\n" +
+                                " __  / / __ `/ | / / __ `/ /| | / __ \\/ / / / / __ \\/ ___/ ___/\n" +
+                                "/ /_/ / /_/ /| |/ / /_/ / ___ |/ /_/ / / /_/ / /_/ / /__(__  ) \n" +
+                                "\\____/\\__,_/ |___/\\__,_/_/  |_/ .___/_/_____/\\____/\\___/____/  \n" +
+                                "                             /_/                               \n" +
+                                "                                                  1.6.2-beta   \n");
                         //获取本机地址及端口号
                         try {
                             String ip = ApiUtils.getLocalIp();

@@ -8,10 +8,6 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Vector;
 
 /**
  * 参数处理器
