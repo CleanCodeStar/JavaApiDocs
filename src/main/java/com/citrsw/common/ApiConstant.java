@@ -1,6 +1,5 @@
 package com.citrsw.common;
 
-import com.citrsw.annatation.ApiParamNullBack;
 import com.citrsw.annatation.ApiProperty;
 import com.citrsw.definition.DocCode;
 import com.citrsw.definition.TempMethod;
@@ -29,7 +28,7 @@ public class ApiConstant {
     /**
      * 参数校验不通过的返回对象
      */
-    public static ApiParamNullBack paramNullBack;
+    public static boolean paramVerification;
 
     /**
      * Api是否可用

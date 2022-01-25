@@ -2,6 +2,8 @@ package com.citrsw.filter;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
@@ -23,8 +25,9 @@ public class ApiParamFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         ApiParameterRequestWrapper parameterRequestWrapper = null;
         if (request instanceof HttpServletRequest) {
-            String header = ((HttpServletRequest) request).getHeader("Content-Type");
-            if (StringUtils.isNotBlank(header) && header.toLowerCase().contains("application/json")) {
+            String header = ((HttpServletRequest) request).getHeader(HttpHeaders.CONTENT_TYPE);
+            //只处理Json形式的body
+            if (StringUtils.isNotBlank(header) && header.toLowerCase().contains(MediaType.APPLICATION_JSON_VALUE.toLowerCase())) {
                 parameterRequestWrapper = new ApiParameterRequestWrapper((HttpServletRequest) request);
             }
         }

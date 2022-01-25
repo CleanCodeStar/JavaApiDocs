@@ -13,10 +13,10 @@ import com.citrsw.enumeration.TypeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.*;
 
 /**
@@ -28,7 +28,7 @@ import java.util.*;
  */
 @Slf4j
 @Component
-public class ApiContext {
+public class ApiContext implements CommandLineRunner {
 
     /**
      * 当前的环境
@@ -55,13 +55,6 @@ public class ApiContext {
 
     private final ControllerHandle controllerHandle;
 
-
-//
-//    /**
-//     * 实体缓存
-//     */
-//    private final Map<Class<?>, DocModel> apiModelMap = new HashMap<>(256);
-
     /**
      * 最终的Api文档类
      */
@@ -75,8 +68,8 @@ public class ApiContext {
         return doc;
     }
 
-    @PostConstruct
-    public void init() {
+    @Override
+    public void run(String... args) {
         try {
             StackTraceElement[] stackTrace = new RuntimeException().getStackTrace();
             for (StackTraceElement stackTraceElement : stackTrace) {
@@ -89,10 +82,11 @@ public class ApiContext {
                     }
                     log.info("======Api启动======");
                     boolean pass = true;
-                    if (apiEnable.actives().length > 0 && StringUtils.isNotBlank(this.active)) {
+                    String[] actives = apiEnable.actives();
+                    if (actives.length > 0 && StringUtils.isNotBlank(this.active)) {
                         pass = false;
                         //适用环境
-                        for (String active : apiEnable.actives()) {
+                        for (String active : actives) {
                             if (active.equals(this.active)) {
                                 pass = true;
                                 break;
@@ -100,16 +94,17 @@ public class ApiContext {
                         }
                         if (!pass) {
                             ApiConstant.apiEnable = false;
-                            log.warn("Api已禁用,当前启动环境为[{}],api指定环境为{},", this.active, apiEnable.actives());
+                            log.warn("Api已禁用,当前启动环境为[{}],api指定环境为{},", this.active, actives);
                         }
+                    } else {
+                        log.warn("未配置启动环境,已适用全部环境");
                     }
                     //获取参数校验不通过的返回对象
-                    ApiConstant.paramNullBack = apiEnable.paramNullBackFor();
-                    if (StringUtils.isBlank(ApiConstant.paramNullBack.codeFieldName())
-                            || StringUtils.isBlank(ApiConstant.paramNullBack.codeFieldValue())
-                            || StringUtils.isBlank(ApiConstant.paramNullBack.msgFieldName())) {
-                        log.warn("paramNullBack 配置未生效，原因：必要参数未配置");
-                        ApiConstant.paramNullBack = null;
+                    ApiConstant.paramVerification = apiEnable.paramVerification();
+                    if (ApiConstant.paramVerification) {
+                        log.info("参数校验已启用");
+                    } else {
+                        log.warn("参数校验未启用");
                     }
                     //是否使用下划线命名
                     ApiConstant.underscore = apiEnable.underscore();
@@ -194,7 +189,7 @@ public class ApiContext {
                                 "/ /_/ / /_/ /| |/ / /_/ / ___ |/ /_/ / / /_/ / /_/ / /__(__  ) \n" +
                                 "\\____/\\__,_/ |___/\\__,_/_/  |_/ .___/_/_____/\\____/\\___/____/  \n" +
                                 "                             /_/                               \n" +
-                                "                                                  1.6.2-beta   \n");
+                                "                                                  1.6.3   \n");
                         //获取本机地址及端口号
                         try {
                             String ip = ApiUtils.getLocalIp();

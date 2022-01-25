@@ -54,6 +54,11 @@ v1.6.2-beta
 2. 支持JDK17版本
 3. 枚举类型参数优化
 
+v1.6.3
+
+1. 优化启动方式
+2. 参数校验移除返回固定结果，调整为抛出异常，由开发人员自行捕获处理
+
 [TOC]
 
 ## 访问ApiDocs页面方式
@@ -76,8 +81,8 @@ ip:端口/项目名/citrsw/index.html
 ```xml
 <dependency>
     <groupId>com.citrsw</groupId>
-    <artifactId>java-api-docs</artifactId>
-    <version>1.6.2-beta</version>
+   <artifactId>java-api-docs</artifactId>
+   <version>1.6.3</version>
 </dependency>
 ```
 
@@ -153,15 +158,17 @@ public void addInterceptors(InterceptorRegistry registry) {
 
 2. **参数说明**
 
-   | 参数名     | 说明               |
-            | ---------- | ------------------ |
-   | name       | 项目名称           |
+   | 参数名     | 说明        |
+      |-----------| ------------------ |
+   | name       | 项目名称      |
+   | actives | 适用环境      |
    | underscore | 是否使用下划线名称 |
+   | paramVerification | 是否启用参数校验  |
 
-3. **使用示例**
+4. **使用示例**
 
    ```java
-   @ApiEnable(name = "中国IT资源分享网站", underscore = true)
+   @ApiEnable(name = "中国IT资源分享网站", underscore = true, actives = {"dev"}, paramVerification = true )
    @SpringBootApplication
    public class ApiExampleApplication {
        public static void main(String[] args) {
