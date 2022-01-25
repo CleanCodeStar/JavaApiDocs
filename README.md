@@ -87,31 +87,6 @@ ip:端口/项目名/citrsw/index.html
 </dependency>
 ```
 
-## 拦截器配置
-
-如果使用了拦截器则必须放行JavaApiDocs的请求
-
- ```java
-/**
- * 配置拦截器示例
- */
-@Override
-public void addInterceptors(InterceptorRegistry registry) {
-//         多个拦截器组成一个拦截器链
-//         默认全部拦截
-//         addPathPatterns 添加拦截
-//         excludePathPatterns 排除拦截
-//        登录拦截器
-        registry.addInterceptor(loginInterceptor)
-                //需要拦截的uri
-                .addPathPatterns("/**")
-                //需要跳过的uri
-                .excludePathPatterns("/citrsw/**",其他URI)
-                //拦截器的执行顺序
-                .order(1);
-        }
-   ```
-
 ## 入门用法
 
 ### 注解使用说明
