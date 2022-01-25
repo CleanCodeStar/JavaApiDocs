@@ -8,7 +8,7 @@ import java.lang.annotation.*;
 /**
  * 激活注解
  *
- * @author Zhenfeng Li
+ * @author 李振峰
  * @date 2020-01-10 09:29:15
  */
 @Target(ElementType.TYPE)

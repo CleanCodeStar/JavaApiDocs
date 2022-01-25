@@ -8,7 +8,7 @@ import java.lang.annotation.*;
  * 未配置在此处的属性将不会显示
  * 使用场景：使用第三方的实体时使用
  *
- * @author Zhenfeng Li
+ * @author 李振峰
  * @version 1.0
  * @date 2020-09-23 20:42
  */

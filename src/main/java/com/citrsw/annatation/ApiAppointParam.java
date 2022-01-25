@@ -6,7 +6,7 @@ import java.lang.annotation.*;
  * 自定义入参字段
  * 使用场景：不需要类中全部的属性
  *
- * @author Zhenfeng Li
+ * @author 李振峰
  * @date 2020-01-10 19:02:32
  */
 @Target({ElementType.METHOD})

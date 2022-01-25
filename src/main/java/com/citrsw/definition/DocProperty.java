@@ -15,7 +15,7 @@ import java.util.Set;
 /**
  * 属性信息
  *
- * @author Zhenfeng Li
+ * @author 李振峰
  * @version 1.0
  * @date 2020-09-23 23:13
  */

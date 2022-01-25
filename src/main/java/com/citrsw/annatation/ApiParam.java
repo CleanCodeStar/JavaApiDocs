@@ -7,7 +7,7 @@ import java.lang.annotation.*;
 /**
  * 请求参数注解
  *
- * @author Zhenfeng Li
+ * @author 李振峰
  * @date 2020-01-10 19:02:32
  */
 @Target({ElementType.METHOD, ElementType.PARAMETER})

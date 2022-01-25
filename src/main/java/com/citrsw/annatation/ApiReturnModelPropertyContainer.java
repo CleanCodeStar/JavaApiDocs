@@ -5,7 +5,7 @@ import java.lang.annotation.*;
 /**
  * ApiModelProperty容器
  *
- * @author Zhenfeng Li
+ * @author 李振峰
  * @date 2020-01-10 19:53:31
  */
 @Target({ElementType.METHOD})

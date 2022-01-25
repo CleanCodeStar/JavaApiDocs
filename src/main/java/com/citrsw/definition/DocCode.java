@@ -8,7 +8,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 /**
  * 状态码定义
  *
- * @author Zhenfeng Li
+ * @author 李振峰
  * @version 1.0
  * @date 2020-09-27 6:29
  */

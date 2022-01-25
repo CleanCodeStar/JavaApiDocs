@@ -8,7 +8,7 @@ import lombok.experimental.Accessors;
 /**
  * Api参数校验异常类
  *
- * @author Zhenfeng Li
+ * @author 李振峰
  * @version 1.0
  * @date 2020-09-24 2:33
  */

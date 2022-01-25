@@ -11,7 +11,7 @@ import java.util.StringJoiner;
 /**
  * 拷贝的JDK中的类
  *
- * @author Zhenfeng Li
+ * @author 李振峰
  * @version 1.0
  * @date 2020-10-29 1:24
  */

@@ -14,7 +14,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 /**
  * 配置类
  *
- * @author Zhenfeng Li
+ * @author 李振峰
  * @date 2020-01-10 09:11:09
  */
 @Configuration

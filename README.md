@@ -372,7 +372,7 @@ ip:端口/项目名/citrsw/index.html
    /**
    * 学生
    *
-   * @author Zhenfeng Li
+   * @author 李振峰
    * @version 1.0.0
    * @date 2020-10-02 08:59:51
    */
@@ -590,7 +590,7 @@ ip:端口/项目名/citrsw/index.html
    /**
     * 管理员
     *
-    * @author Zhenfeng Li
+    * @author 李振峰
     * @version 1.0.0
     * @date 2020-10-02 08:59:51
     */

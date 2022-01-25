@@ -12,7 +12,7 @@ import java.io.InputStreamReader;
 /**
  * 参数处理器
  *
- * @author Zhenfeng Li
+ * @author 李振峰
  * @version 1.0
  * @date 2021-09-22 15:38
  */

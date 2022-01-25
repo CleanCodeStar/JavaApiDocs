@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * Markdown处理类
  *
- * @author Zhenfeng Li
+ * @author 李振峰
  * @version 1.0
  * @date 2020-10-01 20:27
  */
