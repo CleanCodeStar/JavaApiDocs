@@ -3,11 +3,10 @@ package com.citrsw.interceptor;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
-import com.citrsw.annatation.ApiParamNullBack;
 import com.citrsw.common.ApiConstant;
 import com.citrsw.definition.DocProperty;
 import com.citrsw.definition.TempMethod;
-import com.citrsw.exception.ParamException;
+import com.citrsw.exception.ApiParamException;
 import com.citrsw.filter.ApiParameterRequestWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -51,103 +50,84 @@ public class ApiHandlerInterceptor implements HandlerInterceptor {
         if (!(handler instanceof HandlerMethod)) {
             return true;
         }
-//        try {
-        boolean paramVerification = ApiConstant.paramVerification;
-        if (!paramVerification) {
-            return true;
-        }
-        String uri = request.getRequestURI();
-        String path = (contextPath + servletPath).replace("//", "/");
-        if (StringUtils.isNotBlank(path) && !"/".equals(path)) {
-            uri = uri.replace(path, "");
-        }
-        HandlerMethod handlerMethod = (HandlerMethod) handler;
-        String methodKey = handlerMethod.getBeanType().getName() + "#" + request.getMethod().toUpperCase() + "#" + uri;
-        Map<String, TempMethod> methodMap = ApiConstant.methodMap;
-        if (MapUtils.isEmpty(methodMap)) {
-            return true;
-        }
-        Map<String, Boolean> returnMap = new HashMap<>(125);
-        if (!methodMap.containsKey(methodKey)) {
-            methodKey = matchingMethod(methodKey, returnMap);
-            if (StringUtils.isBlank(methodKey)) {
+        try {
+            boolean paramVerification = ApiConstant.paramVerification;
+            if (!paramVerification) {
                 return true;
             }
-        }
-        //获取当前请求方法的必传参数集合
-        TempMethod tempMethod = methodMap.get(methodKey);
-        Map<String, DocProperty> paramRequireMap = tempMethod.getParamRequireMap();
-        if (paramRequireMap.size() == 0) {
-            return true;
-        }
-        if (request instanceof ApiParameterRequestWrapper requestWrapper) {
-            String body = requestWrapper.getBody();
-            //获取body入参
-            try {
-                JSONObject jsonObject = JSONObject.parseObject(body);
-                returnMap.putAll(convertJsonParam(jsonObject, null));
-            } catch (JSONException ignored) {
+            String uri = request.getRequestURI();
+            String path = (contextPath + servletPath).replace("//", "/");
+            if (StringUtils.isNotBlank(path) && !"/".equals(path)) {
+                uri = uri.replace(path, "");
             }
-        }
-        //获取param入参
-        Map<String, String[]> parameterMap = request.getParameterMap();
-        for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
-            String key = entry.getKey();
-            if (key.contains(".")) {
-                String[] names = key.split("\\.");
-                StringBuilder nameBuilder = new StringBuilder(names[0]);
-                returnMap.put(nameBuilder.toString().split("\\[")[0], true);
-                for (int i = 1; i < names.length - 1; i++) {
-                    nameBuilder.append(".").append(names[i]);
-                    returnMap.put(nameBuilder.toString().split("\\[")[0], true);
+            HandlerMethod handlerMethod = (HandlerMethod) handler;
+            String methodKey = handlerMethod.getBeanType().getName() + "#" + request.getMethod().toUpperCase() + "#" + uri;
+            Map<String, TempMethod> methodMap = ApiConstant.methodMap;
+            if (MapUtils.isEmpty(methodMap)) {
+                return true;
+            }
+            Map<String, Boolean> returnMap = new HashMap<>(125);
+            if (!methodMap.containsKey(methodKey)) {
+                methodKey = matchingMethod(methodKey, returnMap);
+                if (StringUtils.isBlank(methodKey)) {
+                    return true;
                 }
             }
-            if (entry.getValue() == null || entry.getValue().length == 0) {
-                returnMap.put(key.split("\\[")[0], false);
-            } else {
-                returnMap.put(key.split("\\[")[0], true);
-                for (String value : entry.getValue()) {
-                    if (StringUtils.isBlank(value)) {
-                        returnMap.put(key.split("\\[")[0], false);
-                        break;
+            //获取当前请求方法的必传参数集合
+            TempMethod tempMethod = methodMap.get(methodKey);
+            Map<String, DocProperty> paramRequireMap = tempMethod.getParamRequireMap();
+            if (paramRequireMap.size() == 0) {
+                return true;
+            }
+            if (request instanceof ApiParameterRequestWrapper requestWrapper) {
+                String body = requestWrapper.getBody();
+                //获取body入参
+                try {
+                    JSONObject jsonObject = JSONObject.parseObject(body);
+                    returnMap.putAll(convertJsonParam(jsonObject, null));
+                } catch (JSONException ignored) {
+                }
+            }
+            //获取param入参
+            Map<String, String[]> parameterMap = request.getParameterMap();
+            for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
+                String key = entry.getKey();
+                if (key.contains(".")) {
+                    String[] names = key.split("\\.");
+                    StringBuilder nameBuilder = new StringBuilder(names[0]);
+                    returnMap.put(nameBuilder.toString().split("\\[")[0], true);
+                    for (int i = 1; i < names.length - 1; i++) {
+                        nameBuilder.append(".").append(names[i]);
+                        returnMap.put(nameBuilder.toString().split("\\[")[0], true);
+                    }
+                }
+                if (entry.getValue() == null || entry.getValue().length == 0) {
+                    returnMap.put(key.split("\\[")[0], false);
+                } else {
+                    returnMap.put(key.split("\\[")[0], true);
+                    for (String value : entry.getValue()) {
+                        if (StringUtils.isBlank(value)) {
+                            returnMap.put(key.split("\\[")[0], false);
+                            break;
+                        }
                     }
                 }
             }
-        }
-        JSONObject jsonObject = new JSONObject();
-
-        //校验参数是否必传
-        for (Map.Entry<String, DocProperty> entry : paramRequireMap.entrySet()) {
-            DocProperty docProperty = entry.getValue();
-            if (!returnMap.containsKey(entry.getKey()) || !returnMap.get(entry.getKey())) {
-                ParamException paramException = new ParamException(String.format("参数[%s]（%s）为空", entry.getKey(), docProperty.getDescription()));
-                paramException.setName(entry.getKey()).setType(docProperty.getType()).setDescription(docProperty.getDescription());
-                throw paramException;
-//                    //向返回码中赋值
-//                    jsonObject.put(paramVerification.codeFieldName(), paramVerification.codeFieldValue());
-//                    //向返回消息内容中赋值
-//                    jsonObject.put(paramVerification.msgFieldName(), );
-//                    //重置response
-//                    response.reset();
-//                    //设置编码格式
-//                    response.setCharacterEncoding("UTF-8");
-//                    response.setContentType("application/json;charset=UTF-8");
-//                    response.getWriter().write(jsonObject.toJSONString());
-//                    log.error("参数[{}]（{}）为空  ===>>> {}#{}#[{}]#{}",
-//                            entry.getKey(),
-//                            docProperty.getDescription(),
-//                            handlerMethod.getBeanType().getName(),
-//                            handlerMethod.getMethod().getName(),
-//                            request.getMethod().toUpperCase(),
-//                            uri
-//                    );
-//                    return false;
+            //校验参数是否必传
+            for (Map.Entry<String, DocProperty> entry : paramRequireMap.entrySet()) {
+                DocProperty docProperty = entry.getValue();
+                if (!returnMap.containsKey(entry.getKey()) || !returnMap.get(entry.getKey())) {
+                    //参数校验不通过则抛出异常，由开发人员自行处理
+                    throw new ApiParamException(String.format("参数[%s]（%s）为空", entry.getKey(), docProperty.getDescription()), docProperty);
+                }
+            }
+        } catch (Exception e) {
+            if (e instanceof ApiParamException) {
+                throw e;
+            } else {
+                log.error("参数校验发生异常，异常信息：{}", e.getMessage());
             }
         }
-//        } catch (Exception e) {
-//            log.error("参数校验发生异常，异常信息：{}", e.getMessage());
-//            e.printStackTrace();
-//        }
         //校验出错时，为了不影响正常业务流程，这里选择继续放行
         return true;
     }

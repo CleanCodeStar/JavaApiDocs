@@ -1,11 +1,12 @@
 package com.citrsw.exception;
 
+import com.citrsw.definition.DocProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
- * Api异常类
+ * Api参数校验异常类
  *
  * @author Zhenfeng Li
  * @version 1.0
@@ -14,32 +15,23 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Accessors(chain = true)
-public class ParamException extends RuntimeException {
+public class ApiParamException extends RuntimeException {
 
     private static final long serialVersionUID = 8668329831985671815L;
 
     /**
-     * 属性名称
+     * 属性
      */
-    private String name;
+    private DocProperty docProperty;
 
     /**
-     * 属性类型
-     */
-    private String type;
-
-    /**
-     * 异常消息
+     * 异常消息内容
      */
     private String message;
 
-    /**
-     * 属性描述
-     */
-    private String description;
-
-    public ParamException(String message) {
+    public ApiParamException(String message, DocProperty docProperty) {
         super(message);
         this.message = message;
+        this.docProperty = docProperty;
     }
 }

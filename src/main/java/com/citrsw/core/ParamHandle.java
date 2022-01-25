@@ -3,7 +3,7 @@ package com.citrsw.core;
 import com.citrsw.annatation.*;
 import com.citrsw.definition.DocModel;
 import com.citrsw.definition.DocProperty;
-import com.citrsw.exception.ParamException;
+import com.citrsw.exception.ApiParamException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,7 +45,7 @@ public class ParamHandle {
      * @return 处理后的入参模型
      */
     public DocModel handleParam(ApiMapParam apiMapParam, ApiAppointParam
-            apiAppointParam, ApiParamModelProperty[] apiModelProperties, Parameter[] parameters) throws ParamException {
+            apiAppointParam, ApiParamModelProperty[] apiModelProperties, Parameter[] parameters) throws ApiParamException {
         DocModel docModel = new DocModel();
         Map<String, ApiParamModelProperty> apiModelPropertyMap = new HashMap<>(256);
         if (apiModelProperties != null && apiModelProperties.length > 0) {
@@ -95,7 +95,7 @@ public class ParamHandle {
             if (requestBody != null) {
                 if (num > 0) {
                     //入参中RequestBody的数量不能超过1
-                    throw new ParamException("入参中@RequestBody的数量超过1");
+                    throw new ApiParamException("入参中@RequestBody的数量超过1", null);
                 }
                 num++;
                 //如果是json,那么肯定不是基本数据类型，直接调用handleModel()

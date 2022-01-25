@@ -6,7 +6,7 @@ import com.citrsw.definition.DocCode;
 import com.citrsw.definition.DocMethod;
 import com.citrsw.definition.DocModel;
 import com.citrsw.definition.TempMethod;
-import com.citrsw.exception.ParamException;
+import com.citrsw.exception.ApiParamException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -160,7 +160,7 @@ public class MethodHandle {
                 DocModel paramDocModel = handleParam.handleParam(apiMapParam, apiAppointParam, apiModelProperties, parameters);
                 //入参加入到方法结果中
                 tempMethod.setParamDocModel(paramDocModel);
-            } catch (ParamException e) {
+            } catch (ApiParamException e) {
                 log.error("方法{}{}", method.getName(), e.getMessage());
                 //方法入参异常则跳过，不处理此方法
                 continue;
