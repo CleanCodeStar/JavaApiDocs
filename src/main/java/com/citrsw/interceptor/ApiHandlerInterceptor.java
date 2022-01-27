@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.citrsw.common.ApiConstant;
 import com.citrsw.definition.DocProperty;
 import com.citrsw.definition.TempMethod;
+import com.citrsw.enums.ApiParamHandle;
 import com.citrsw.exception.ApiParamException;
 import com.citrsw.filter.ApiParameterRequestWrapper;
 import lombok.extern.slf4j.Slf4j;
@@ -52,6 +53,7 @@ public class ApiHandlerInterceptor implements HandlerInterceptor {
         }
         try {
             boolean paramVerification = ApiConstant.paramVerification;
+            ApiParamHandle paramHandle = ApiConstant.paramHandle;
             if (!paramVerification) {
                 return true;
             }
@@ -117,8 +119,32 @@ public class ApiHandlerInterceptor implements HandlerInterceptor {
             for (Map.Entry<String, DocProperty> entry : paramRequireMap.entrySet()) {
                 DocProperty docProperty = entry.getValue();
                 if (!returnMap.containsKey(entry.getKey()) || !returnMap.get(entry.getKey())) {
-                    //参数校验不通过则抛出异常，由开发人员自行处理
-                    throw new ApiParamException(String.format("参数[%s]（%s）为空", entry.getKey(), docProperty.getDescription()), docProperty);
+                    log.error("参数[{}]（{}）为空  ===>>> {}#{}#[{}]#{}",
+                            entry.getKey(),
+                            docProperty.getDescription(),
+                            handlerMethod.getBeanType().getName(),
+                            handlerMethod.getMethod().getName(),
+                            request.getMethod().toUpperCase(),
+                            uri
+                    );
+                    if (paramHandle.equals(ApiParamHandle.EXCEPTION)) {
+                        //参数校验不通过则抛出异常，由开发人员自行处理
+                        throw new ApiParamException(String.format("参数[%s]（%s）为空", entry.getKey(), docProperty.getDescription()), docProperty);
+                    } else if (paramHandle.equals(ApiParamHandle.DEFAULT)) {
+                        //参数校验不通过则抛出异常，使用默认返回形式
+                        JSONObject jsonObject = new JSONObject();
+                        //向返回码中赋值
+                        jsonObject.put("code", 300);
+                        //向返回消息内容中赋值
+                        jsonObject.put("msg", String.format("参数[%s]（%s）为空", entry.getKey(), docProperty.getDescription()));
+                        //重置response
+                        response.reset();
+                        //设置编码格式
+                        response.setCharacterEncoding("UTF-8");
+                        response.setContentType("application/json;charset=UTF-8");
+                        response.getWriter().write(jsonObject.toJSONString());
+                        return false;
+                    }
                 }
             }
         } catch (Exception e) {

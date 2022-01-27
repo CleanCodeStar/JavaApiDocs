@@ -60,6 +60,10 @@ v1.6.3
 2. 移除注解[@ApiParamNullBack]
 3. 参数校验移除返回固定结果，调整为抛出异常，由开发人员自行捕获处理
 
+v1.6.4
+
+1. [@ApiEnable]增加属性paramHandle（对校验不通过的处理方式）
+
 [TOC]
 
 ## 访问ApiDocs页面方式
@@ -83,7 +87,7 @@ ip:端口/项目名/citrsw/index.html
 <dependency>
     <groupId>com.citrsw</groupId>
    <artifactId>java-api-docs</artifactId>
-   <version>1.6.3</version>
+   <version>1.6.4</version>
 </dependency>
 ```
 

@@ -3,6 +3,7 @@ package com.citrsw.common;
 import com.citrsw.annatation.ApiProperty;
 import com.citrsw.definition.DocCode;
 import com.citrsw.definition.TempMethod;
+import com.citrsw.enums.ApiParamHandle;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
@@ -29,6 +30,11 @@ public class ApiConstant {
      * 参数校验不通过的返回对象
      */
     public static boolean paramVerification;
+
+    /**
+     * 校验结果处理方式
+     */
+    public static ApiParamHandle paramHandle;
 
     /**
      * Api是否可用

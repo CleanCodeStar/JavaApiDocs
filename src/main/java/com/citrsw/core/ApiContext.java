@@ -101,6 +101,7 @@ public class ApiContext implements CommandLineRunner {
                     }
                     //获取参数校验不通过的返回对象
                     ApiConstant.paramVerification = apiEnable.paramVerification();
+                    ApiConstant.paramHandle = apiEnable.paramHandle();
                     if (ApiConstant.paramVerification) {
                         log.info("参数校验已启用");
                     } else {
@@ -189,7 +190,7 @@ public class ApiContext implements CommandLineRunner {
                                 "/ /_/ / /_/ /| |/ / /_/ / ___ |/ /_/ / / /_/ / /_/ / /__(__  ) \n" +
                                 "\\____/\\__,_/ |___/\\__,_/_/  |_/ .___/_/_____/\\____/\\___/____/  \n" +
                                 "                             /_/                               \n" +
-                                "                                                  1.6.3   \n");
+                                "                                                  1.6.4   \n");
                         //获取本机地址及端口号
                         try {
                             String ip = ApiUtils.getLocalIp();
