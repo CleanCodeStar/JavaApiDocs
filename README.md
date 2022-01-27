@@ -144,11 +144,12 @@ ip:端口/项目名/citrsw/index.html
    | actives | 适用环境      |
    | underscore | 是否使用下划线名称 |
    | paramVerification | 是否启用参数校验  |
+   | paramHandle | 校验结果处理方式  |
 
 4. **使用示例**
 
    ```java
-   @ApiEnable(name = "中国IT资源分享网站", underscore = true, actives = {"dev"}, paramVerification = true )
+   @ApiEnable(name = "中国IT资源分享网站", underscore = true, actives = {"dev"}, paramVerification = true, paramHandle = ApiParamHandle.DEFAULT )
    @SpringBootApplication
    public class ApiExampleApplication {
        public static void main(String[] args) {
