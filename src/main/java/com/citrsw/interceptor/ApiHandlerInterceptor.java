@@ -1,5 +1,6 @@
 package com.citrsw.interceptor;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
@@ -22,6 +23,7 @@ import org.thymeleaf.util.MapUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,6 +56,7 @@ public class ApiHandlerInterceptor implements HandlerInterceptor {
         try {
             boolean paramVerification = ApiConstant.paramVerification;
             ApiParamHandle paramHandle = ApiConstant.paramHandle;
+            boolean paramOutput = ApiConstant.paramOutput;
             if (!paramVerification) {
                 return true;
             }
@@ -75,6 +78,8 @@ public class ApiHandlerInterceptor implements HandlerInterceptor {
                     return true;
                 }
             }
+            StringBuilder builder = new StringBuilder();
+
             //获取当前请求方法的必传参数集合
             TempMethod tempMethod = methodMap.get(methodKey);
             Map<String, DocProperty> paramRequireMap = tempMethod.getParamRequireMap();
@@ -85,8 +90,10 @@ public class ApiHandlerInterceptor implements HandlerInterceptor {
                 String body = requestWrapper.getBody();
                 //获取body入参
                 try {
-                    JSONObject jsonObject = JSONObject.parseObject(body);
-                    returnMap.putAll(convertJsonParam(jsonObject, null));
+                    if (paramOutput) {
+                        builder.append(body).append("\r\n");
+                    }
+                    returnMap.putAll(convertJsonParam(JSON.parse(body), null));
                 } catch (JSONException ignored) {
                 }
             }
@@ -94,6 +101,9 @@ public class ApiHandlerInterceptor implements HandlerInterceptor {
             Map<String, String[]> parameterMap = request.getParameterMap();
             for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
                 String key = entry.getKey();
+                if (paramOutput) {
+                    builder.append(key).append(" = ").append(entry.getValue().length == 1 ? entry.getValue()[0] : Arrays.toString(entry.getValue())).append("\r\n");
+                }
                 if (key.contains(".")) {
                     String[] names = key.split("\\.");
                     StringBuilder nameBuilder = new StringBuilder(names[0]);
@@ -115,6 +125,10 @@ public class ApiHandlerInterceptor implements HandlerInterceptor {
                     }
                 }
             }
+            //是否输出请求参数
+            if (paramOutput) {
+                log.info("\r\n请求地址: {}, 请求方式: {} \r\n请求参数: \r\n{}", uri, request.getMethod().toUpperCase(), builder.length() == 0 ? "无" : builder.toString());
+            }
             //校验参数是否必传
             for (Map.Entry<String, DocProperty> entry : paramRequireMap.entrySet()) {
                 DocProperty docProperty = entry.getValue();
@@ -134,7 +148,7 @@ public class ApiHandlerInterceptor implements HandlerInterceptor {
                         //参数校验不通过则抛出异常，使用默认返回形式
                         JSONObject jsonObject = new JSONObject();
                         //向返回码中赋值
-                        jsonObject.put("code", 300);
+                        jsonObject.put("code", 400);
                         //向返回消息内容中赋值
                         jsonObject.put("msg", String.format("参数[%s]（%s）为空", entry.getKey(), docProperty.getDescription()));
                         //重置response
@@ -151,6 +165,7 @@ public class ApiHandlerInterceptor implements HandlerInterceptor {
             if (e instanceof ApiParamException) {
                 throw e;
             } else {
+                e.printStackTrace();
                 log.error("参数校验发生异常，异常信息：{}", e.getMessage());
             }
         }

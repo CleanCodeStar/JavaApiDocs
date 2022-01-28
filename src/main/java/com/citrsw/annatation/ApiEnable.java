@@ -45,10 +45,15 @@ public @interface ApiEnable {
      * 校验结果处理方式
      * 默认处理返回示例:
      * {
-     * code: 300,
+     * code: 400,
      * msg:"参数[roomName]（直播间的名称）为空"
      * }
      */
     ApiParamHandle paramHandle() default ApiParamHandle.DEFAULT;
+
+    /**
+     * 打印请求参数
+     */
+    boolean paramOutput() default true;
 
 }

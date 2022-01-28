@@ -102,6 +102,7 @@ public class ApiContext implements CommandLineRunner {
                     //获取参数校验不通过的返回对象
                     ApiConstant.paramVerification = apiEnable.paramVerification();
                     ApiConstant.paramHandle = apiEnable.paramHandle();
+                    ApiConstant.paramOutput = apiEnable.paramOutput();
                     if (ApiConstant.paramVerification) {
                         log.info("参数校验已启用");
                     } else {
