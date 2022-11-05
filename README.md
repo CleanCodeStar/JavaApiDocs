@@ -98,7 +98,7 @@ ip:端口/项目名/citrsw/index.html
 <dependency>
     <groupId>com.citrsw</groupId>
    <artifactId>java-api-docs</artifactId>
-   <version>1.6.4</version>
+   <version>1.6.4-jdk1.8</version>
 </dependency>
 ```
 

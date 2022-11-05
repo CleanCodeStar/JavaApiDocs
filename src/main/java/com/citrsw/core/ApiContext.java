@@ -191,7 +191,7 @@ public class ApiContext implements CommandLineRunner {
                                 "/ /_/ / /_/ /| |/ / /_/ / ___ |/ /_/ / / /_/ / /_/ / /__(__  ) \n" +
                                 "\\____/\\__,_/ |___/\\__,_/_/  |_/ .___/_/_____/\\____/\\___/____/  \n" +
                                 "                             /_/                               \n" +
-                                "                                                  1.6.4   \n");
+                                "                                                  1.6.4-jdk1.8   \n");
                         //获取本机地址及端口号
                         try {
                             String ip = ApiUtils.getLocalIp();
