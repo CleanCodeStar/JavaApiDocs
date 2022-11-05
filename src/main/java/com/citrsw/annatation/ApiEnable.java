@@ -28,7 +28,7 @@ public @interface ApiEnable {
      *
      * @deprecated 因为在实际开发中“下划线（蛇形）命名”会给前后端联调带来极大不便，故不建议采用此种形式，此属性也将会在未来版本中移除。
      */
-    @Deprecated(since = "1.6.2-bate", forRemoval = true)
+    @Deprecated
     boolean underscore() default false;
 
     /**

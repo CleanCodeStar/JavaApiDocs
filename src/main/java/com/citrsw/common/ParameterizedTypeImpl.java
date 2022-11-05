@@ -33,14 +33,7 @@ public class ParameterizedTypeImpl implements ParameterizedType {
         TypeVariable<?>[] formals = rawType.getTypeParameters();
         // check correct arity of actual type args
         if (formals.length != actualTypeArguments.length) {
-            throw new MalformedParameterizedTypeException(String.format("Mismatch of count of " +
-                            "formal and actual type " +
-                            "arguments in constructor " +
-                            "of %s: %d formal argument(s) " +
-                            "%d actual argument(s)",
-                    rawType.getName(),
-                    formals.length,
-                    actualTypeArguments.length));
+            throw new MalformedParameterizedTypeException();
         }
         for (int i = 0; i < actualTypeArguments.length; i++) {
             // check actuals against formals' bounds
@@ -142,9 +135,11 @@ public class ParameterizedTypeImpl implements ParameterizedType {
      */
     @Override
     public boolean equals(Object o) {
-        if (o instanceof ParameterizedType that) {
-            if (this == that)
+        if (o instanceof ParameterizedType ) {
+            ParameterizedType that = (ParameterizedType)o;
+            if (this == that) {
                 return true;
+            }
 
             Type thatOwner = that.getOwnerType();
             Type thatRawType = that.getRawType();
@@ -152,10 +147,11 @@ public class ParameterizedTypeImpl implements ParameterizedType {
             return
                     Objects.equals(ownerType, thatOwner) &&
                             Objects.equals(rawType, thatRawType) &&
-                            Arrays.equals(actualTypeArguments, // avoid clone
+                            Arrays.equals(actualTypeArguments,
                                     that.getActualTypeArguments());
-        } else
+        } else {
             return false;
+        }
     }
 
     @Override

@@ -68,6 +68,13 @@ v1.6.4
 2. [@ApiEnable]增加属性paramOutput（是否输出请求参数，默认输出）
 3. 修复请求参数为JSON数组时无法校验的BUG
 
+v1.6.4-jdk1.8
+
+1. 适配jdk1.8
+2. 移除参数校验
+3. 支持hibernate-validator请求参数校验
+4. 更新vue页面
+
 ## 访问ApiDocs页面方式
 
 ip:端口/项目名/citrsw/index.html

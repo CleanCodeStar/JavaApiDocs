@@ -63,7 +63,7 @@ public class ReturnHandle {
         //循环依赖收集集合
         Set<Class<?>> repeats = new HashSet<>();
         DocProperty docProperty = new DocProperty();
-        docProperty = handleModel.handleModel(docProperty, returnType, ApiUtils.regenerateType(genericReturnType), new HashMap<>(256), false, true, repeats, null, apiReturnModelPropertyMap, null, null, apiMapReturnMap, null, null);
+        docProperty = handleModel.handleModel(null, docProperty, returnType, ApiUtils.regenerateType(genericReturnType), new HashMap<>(256), false, true, repeats, null, apiReturnModelPropertyMap, null, null, apiMapReturnMap, null, null);
         DocModel docModel = new DocModel();
         if (StringUtils.isBlank(docProperty.getName()) && StringUtils.isBlank(docProperty.getType()) && docProperty.getDocModel() == null) {
             return docModel;

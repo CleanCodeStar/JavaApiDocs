@@ -1,13 +1,8 @@
 package com.citrsw.configuration;
 
-import com.citrsw.filter.ApiParamFilter;
-import com.citrsw.interceptor.ApiHandlerInterceptor;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.context.annotation.Bean;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -19,25 +14,21 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 @Configuration
 @ComponentScan("com.citrsw")
+@RequiredArgsConstructor
 public class ApiConfiguration implements WebMvcConfigurer {
 
-    private final ApiHandlerInterceptor apiHandlerInterceptor;
-    private final ApiParamFilter apiParamFilter;
+//    private final ApiHandlerInterceptor apiHandlerInterceptor;
+//    private final ApiParamFilter apiParamFilter;
 
-    public ApiConfiguration(ApiHandlerInterceptor apiHandlerInterceptor, ApiParamFilter apiParamFilter) {
-        this.apiHandlerInterceptor = apiHandlerInterceptor;
-        this.apiParamFilter = apiParamFilter;
-    }
-
-    @Bean
-    public FilterRegistrationBean<ApiParamFilter> servletRegistrationBean() {
-        FilterRegistrationBean<ApiParamFilter> bean = new FilterRegistrationBean<>();
-        bean.setFilter(apiParamFilter);
-        bean.setName(ApiParamFilter.class.getName());
-        bean.addUrlPatterns("/*");
-        bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
-        return bean;
-    }
+//    @Bean
+//    public FilterRegistrationBean<ApiParamFilter> servletRegistrationBean() {
+//        FilterRegistrationBean<ApiParamFilter> bean = new FilterRegistrationBean<>();
+//        bean.setFilter(apiParamFilter);
+//        bean.setName(ApiParamFilter.class.getName());
+//        bean.addUrlPatterns("/*");
+//        bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
+//        return bean;
+//    }
 
 
     @Override
@@ -45,14 +36,14 @@ public class ApiConfiguration implements WebMvcConfigurer {
         registry.addResourceHandler("/citrsw/**").addResourceLocations("classpath:/citrsw/");
     }
 
-    /**
-     * 配置拦截器执行顺序
-     */
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(apiHandlerInterceptor)
-                .addPathPatterns("/**")
-                .excludePathPatterns("/citrsw/**")
-                .order(Ordered.HIGHEST_PRECEDENCE);
-    }
+//    /**
+//     * 配置拦截器执行顺序
+//     */
+//    @Override
+//    public void addInterceptors(InterceptorRegistry registry) {
+//        registry.addInterceptor(apiHandlerInterceptor)
+//                .addPathPatterns("/**")
+//                .excludePathPatterns("/citrsw/**")
+//                .order(Ordered.HIGHEST_PRECEDENCE);
+//    }
 }

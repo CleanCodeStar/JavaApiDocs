@@ -6,6 +6,7 @@ import com.citrsw.definition.DocProperty;
 import com.citrsw.exception.ApiParamException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ValueConstants;
@@ -91,6 +92,7 @@ public class ParamHandle {
             Set<Class<?>> repeats = new HashSet<>();
             //json形式入参的标识RequestBody
             RequestBody requestBody = parameter.getAnnotation(RequestBody.class);
+            Validated validated = parameter.getAnnotation(Validated.class);
             DocProperty docProperty = new DocProperty();
             if (requestBody != null) {
                 if (num > 0) {
@@ -99,7 +101,7 @@ public class ParamHandle {
                 }
                 num++;
                 //如果是json,那么肯定不是基本数据类型，直接调用handleModel()
-                docProperty = handleModel.handleModel(docProperty, parameter.getType(), parameter.getParameterizedType(), propertyMap, true, true, repeats, apiModelPropertyMap, null, null, apiMapParamMap, null, null, null);
+                docProperty = handleModel.handleModel(validated,docProperty, parameter.getType(), parameter.getParameterizedType(), propertyMap, true, true, repeats, apiModelPropertyMap, null, null, apiMapParamMap, null, null, null);
                 if (StringUtils.isBlank(docProperty.getName()) && StringUtils.isBlank(docProperty.getType()) && docProperty.getDocModel() == null) {
                     return docModel;
                 }
@@ -124,7 +126,7 @@ public class ParamHandle {
             }
             if (num < 1) {
                 //非json则为form-data形式入参
-                docProperty = handleModel.handleModel(docProperty, parameter.getType(), parameter.getParameterizedType(), propertyMap, true, false, repeats, apiModelPropertyMap, null, null, apiMapParamMap, null, null, null);
+                docProperty = handleModel.handleModel(validated, docProperty, parameter.getType(), parameter.getParameterizedType(), propertyMap, true, false, repeats, apiModelPropertyMap, null, null, apiMapParamMap, null, null, null);
                 if (StringUtils.isBlank(docProperty.getName()) && StringUtils.isBlank(docProperty.getType()) && docProperty.getDocModel() == null) {
                     return docModel;
                 }

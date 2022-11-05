@@ -14,9 +14,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ValueConstants;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.lang.reflect.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -56,6 +60,7 @@ public class ModelHandle {
     /**
      * 处理模型
      *
+     * @param validated                  校验注解
      * @param docProperty                属性类
      * @param aClass                     类
      * @param type                       类
@@ -72,16 +77,7 @@ public class ModelHandle {
      * @param returnGlobalApiPropertyMap 全局配置出参类的属性集合
      * @return 处理后的模型属性
      */
-    public DocProperty handleModel(DocProperty docProperty,
-                                   Class<?> aClass, Type type, Map<String, Boolean> propertyMap,
-                                   boolean isParam, boolean isJson, Set<Class<?>> repeats,
-                                   Map<String, ApiParamModelProperty> apiModelPropertyMap,
-                                   Map<String, ApiReturnModelProperty> apiReturnModelPropertyMap,
-                                   Map<String, ApiMapProperty> apiMapPropertyMap,
-                                   Map<String, ApiParam> apiMapParamMap,
-                                   Map<String, ApiReturn> apiMapReturnMap,
-                                   Map<String, ApiProperty> paramGlobalApiPropertyMap,
-                                   Map<String, ApiProperty> returnGlobalApiPropertyMap) {
+    public DocProperty handleModel(Validated validated, DocProperty docProperty, Class<?> aClass, Type type, Map<String, Boolean> propertyMap, boolean isParam, boolean isJson, Set<Class<?>> repeats, Map<String, ApiParamModelProperty> apiModelPropertyMap, Map<String, ApiReturnModelProperty> apiReturnModelPropertyMap, Map<String, ApiMapProperty> apiMapPropertyMap, Map<String, ApiParam> apiMapParamMap, Map<String, ApiReturn> apiMapReturnMap, Map<String, ApiProperty> paramGlobalApiPropertyMap, Map<String, ApiProperty> returnGlobalApiPropertyMap) {
         //先判断是否为循环依赖
         if (repeats.contains(aClass)) {
             //如为循环依赖则直接返回
@@ -89,15 +85,15 @@ public class ModelHandle {
         }
         if (Map.class.isAssignableFrom(aClass)) {
             //处理Map
-            return handleMap(docProperty, type, propertyMap, isParam, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, apiMapParamMap, apiMapReturnMap, paramGlobalApiPropertyMap, returnGlobalApiPropertyMap);
+            return handleMap(validated, docProperty, type, propertyMap, isParam, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, apiMapParamMap, apiMapReturnMap, paramGlobalApiPropertyMap, returnGlobalApiPropertyMap);
         } else if (Collection.class.isAssignableFrom(aClass)) {
             //处理集合
             docProperty.setType(docProperty.getType() + "[0]");
-            return handleGeneric(docProperty, type, propertyMap, isParam, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, apiMapParamMap, apiMapReturnMap, paramGlobalApiPropertyMap, returnGlobalApiPropertyMap);
+            return handleGeneric(validated, docProperty, type, propertyMap, isParam, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, apiMapParamMap, apiMapReturnMap, paramGlobalApiPropertyMap, returnGlobalApiPropertyMap);
         } else if (aClass.isArray()) {
             //处理数组
             docProperty.setType(docProperty.getType() + "[0]");
-            return handleGeneric(docProperty, aClass.getComponentType(), propertyMap, isParam, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, apiMapParamMap, apiMapReturnMap, paramGlobalApiPropertyMap, returnGlobalApiPropertyMap);
+            return handleGeneric(validated, docProperty, aClass.getComponentType(), propertyMap, isParam, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, apiMapParamMap, apiMapReturnMap, paramGlobalApiPropertyMap, returnGlobalApiPropertyMap);
         } else if (aClass.isEnum()) {
             //处理枚举
             Object[] enums = aClass.getEnumConstants();
@@ -128,19 +124,7 @@ public class ModelHandle {
             docProperty.setType("enum" + typeString);
             docProperty.setClassName(aClass.getSimpleName());
             return docProperty;
-        } else if (int.class.isAssignableFrom(aClass)
-                || long.class.isAssignableFrom(aClass)
-                || double.class.isAssignableFrom(aClass)
-                || float.class.isAssignableFrom(aClass)
-                || short.class.isAssignableFrom(aClass)
-                || boolean.class.isAssignableFrom(aClass)
-                || aClass.getPackage().getName().startsWith("java.lang")
-                || Date.class.isAssignableFrom(aClass)
-                || LocalDateTime.class.isAssignableFrom(aClass)
-                || BigDecimal.class.isAssignableFrom(aClass)
-                || LocalDate.class.isAssignableFrom(aClass)
-                || MultipartFile.class.isAssignableFrom(aClass)
-                || LocalTime.class.isAssignableFrom(aClass)) {
+        } else if (int.class.isAssignableFrom(aClass) || long.class.isAssignableFrom(aClass) || double.class.isAssignableFrom(aClass) || float.class.isAssignableFrom(aClass) || short.class.isAssignableFrom(aClass) || boolean.class.isAssignableFrom(aClass) || aClass.getPackage().getName().startsWith("java.lang") || Date.class.isAssignableFrom(aClass) || LocalDateTime.class.isAssignableFrom(aClass) || BigDecimal.class.isAssignableFrom(aClass) || LocalDate.class.isAssignableFrom(aClass) || MultipartFile.class.isAssignableFrom(aClass) || LocalTime.class.isAssignableFrom(aClass)) {
             //处理基本数据类型
             String typeString = docProperty.getType();
             docProperty.setType(ApiConstant.baseTypeMap.get(aClass) + typeString);
@@ -254,6 +238,8 @@ public class ModelHandle {
                         }
                     }
                 }
+
+
                 //全局针对多级配置
                 Map<String, ApiProperty> childReturnGlobalApiPropertyMap = new HashMap<>(256);
                 if (returnGlobalApiPropertyMap != null && !returnGlobalApiPropertyMap.isEmpty()) {
@@ -419,6 +405,55 @@ public class ModelHandle {
                 JsonFormat jsonFormat = method.getAnnotation(JsonFormat.class);
                 //jsonProperty注解
                 JsonProperty jsonProperty = method.getAnnotation(JsonProperty.class);
+
+                Boolean validatedRequited = false;
+                if (validated != null) {
+                    Class<?>[] groupClass = validated.value();
+                    try {
+                        //因为validation只认get方法和属性上的注解，set上的不认，所以只能这样取了
+                        Method returnMethod = aClass.getMethod("get" + StringUtils.capitalize(methodName));
+                        NotBlank[] notBlanks = returnMethod.getAnnotationsByType(NotBlank.class);
+                        for (NotBlank notBlank : notBlanks) {
+                            if (groupClass.length == 0 && notBlank.groups().length == 0) {
+                                validatedRequited = true;
+                                break;
+                            }
+                            if (!Collections.disjoint(Arrays.asList(notBlank.groups()), Arrays.asList(groupClass))) {
+                                validatedRequited = true;
+                                break;
+                            }
+                        }
+                        if (validatedRequited == null) {
+                            NotEmpty[] notEmptys = returnMethod.getAnnotationsByType(NotEmpty.class);
+                            for (NotEmpty notEmpty : notEmptys) {
+                                if (groupClass.length == 0 && notEmpty.groups().length == 0) {
+                                    validatedRequited = true;
+                                    break;
+                                }
+                                if (!Collections.disjoint(Arrays.asList(notEmpty.groups()), Arrays.asList(groupClass))) {
+                                    validatedRequited = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (validatedRequited == null) {
+                            NotNull[] notNulls = returnMethod.getAnnotationsByType(NotNull.class);
+                            for (NotNull notNull : notNulls) {
+                                if (groupClass.length == 0 && notNull.groups().length == 0) {
+                                    validatedRequited = true;
+                                    break;
+                                }
+                                if (!Collections.disjoint(Arrays.asList(notNull.groups()), Arrays.asList(groupClass))) {
+                                    validatedRequited = true;
+                                    break;
+                                }
+                            }
+                        }
+                    } catch (NoSuchMethodException ignored) {
+                    }
+                }
+
+
                 if (ApiConstant.underscore) {
                     //如果启用下划线命名，则转换为下划线命名
                     property.setName(humpToLine(methodName));
@@ -483,6 +518,50 @@ public class ModelHandle {
                             property.setExample(example);
                         }
                     }
+                    Boolean tempBoolean = false;
+                    if (validated != null) {
+                        Class<?>[] groupClass = validated.value();
+                        if (!tempBoolean) {
+                            NotBlank[] notBlanks = field.getAnnotationsByType(NotBlank.class);
+                            for (NotBlank notBlank : notBlanks) {
+                                if (groupClass.length == 0 && notBlank.groups().length == 0) {
+                                    tempBoolean = true;
+                                    break;
+                                }
+                                if (!Collections.disjoint(Arrays.asList(notBlank.groups()), Arrays.asList(groupClass))) {
+                                    tempBoolean = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!tempBoolean) {
+                            NotEmpty[] notEmptys = field.getAnnotationsByType(NotEmpty.class);
+                            for (NotEmpty notEmpty : notEmptys) {
+                                if (groupClass.length == 0 && notEmpty.groups().length == 0) {
+                                    tempBoolean = true;
+                                    break;
+                                }
+                                if (!Collections.disjoint(Arrays.asList(notEmpty.groups()), Arrays.asList(groupClass))) {
+                                    tempBoolean = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!tempBoolean) {
+                            NotNull[] notNulls = field.getAnnotationsByType(NotNull.class);
+                            for (NotNull notNull : notNulls) {
+                                if (groupClass.length == 0 && notNull.groups().length == 0) {
+                                    tempBoolean = true;
+                                    break;
+                                }
+                                if (!Collections.disjoint(Arrays.asList(notNull.groups()), Arrays.asList(groupClass))) {
+                                    tempBoolean = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    property.setRequited(validatedRequited || tempBoolean);
                     //jsonProperty注解
                     if (jsonProperty == null) {
                         jsonProperty = method.getAnnotation(JsonProperty.class);
@@ -544,9 +623,9 @@ public class ModelHandle {
                                 paramClass = (Class<?>) realType;
                             }
 
-                            returnDocProperty = handleModel(property, paramClass, realType, childPropertyMap, isParam, isJson, copyRepeats, childApiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, childApiMapParamMap, childApiMapReturnMap, childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
+                            returnDocProperty = handleModel(validated, property, paramClass, realType, childPropertyMap, isParam, isJson, copyRepeats, childApiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, childApiMapParamMap, childApiMapReturnMap, childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
                         } else {
-                            returnDocProperty = handleModel(property, parameters[0].getType(), parameters[0].getParameterizedType(), childPropertyMap, isParam, isJson, copyRepeats, childApiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, childApiMapParamMap, childApiMapReturnMap, childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
+                            returnDocProperty = handleModel(validated, property, parameters[0].getType(), parameters[0].getParameterizedType(), childPropertyMap, isParam, isJson, copyRepeats, childApiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, childApiMapParamMap, childApiMapReturnMap, childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
                         }
                         if (returnDocProperty.getType().contains("date") || returnDocProperty.getType().contains("time")) {
                             if (isJson && jsonFormat != null) {
@@ -613,9 +692,9 @@ public class ModelHandle {
                             } else if (realType instanceof Class) {
                                 returnType = (Class<?>) realType;
                             }
-                            property = handleModel(property, returnType, realType, childPropertyMap, isParam, isJson, copyRepeats, apiModelPropertyMap, childApiReturnModelPropertyMap, apiMapPropertyMap, childApiMapParamMap, childApiMapReturnMap, childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
+                            property = handleModel(validated, property, returnType, realType, childPropertyMap, isParam, isJson, copyRepeats, apiModelPropertyMap, childApiReturnModelPropertyMap, apiMapPropertyMap, childApiMapParamMap, childApiMapReturnMap, childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
                         } else {
-                            property = handleModel(property, returnType, ApiUtils.regenerateType(genericReturnType), childPropertyMap, isParam, isJson, copyRepeats, apiModelPropertyMap, childApiReturnModelPropertyMap, apiMapPropertyMap, childApiMapParamMap, childApiMapReturnMap, childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
+                            property = handleModel(validated, property, returnType, ApiUtils.regenerateType(genericReturnType), childPropertyMap, isParam, isJson, copyRepeats, apiModelPropertyMap, childApiReturnModelPropertyMap, apiMapPropertyMap, childApiMapParamMap, childApiMapReturnMap, childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
                         }
                         if (property.getType().contains("date") || property.getType().contains("time")) {
                             if (isJson && jsonFormat != null) {
@@ -709,9 +788,9 @@ public class ModelHandle {
                             } else if (realType instanceof Class) {
                                 paramClass = (Class<?>) realType;
                             }
-                            returnDocProperty = handleModel(property, paramClass, realType, childPropertyMap, isParam, isJson, copyRepeats, childApiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, childApiMapParamMap, childApiMapReturnMap, childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
+                            returnDocProperty = handleModel(validated, property, paramClass, realType, childPropertyMap, isParam, isJson, copyRepeats, childApiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, childApiMapParamMap, childApiMapReturnMap, childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
                         } else {
-                            returnDocProperty = handleModel(property, parameters[0].getType(), parameters[0].getParameterizedType(), childPropertyMap, isParam, isJson, copyRepeats, childApiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, childApiMapParamMap, childApiMapReturnMap, childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
+                            returnDocProperty = handleModel(validated, property, parameters[0].getType(), parameters[0].getParameterizedType(), childPropertyMap, isParam, isJson, copyRepeats, childApiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, childApiMapParamMap, childApiMapReturnMap, childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
                         }
                         if (returnDocProperty.getType().contains("date") || returnDocProperty.getType().contains("time")) {
                             if (isJson && jsonFormat != null) {
@@ -774,9 +853,9 @@ public class ModelHandle {
                             } else if (realType instanceof Class) {
                                 returnType = (Class<?>) realType;
                             }
-                            property = handleModel(property, returnType, realType, childPropertyMap, isParam, isJson, copyRepeats, apiModelPropertyMap, childApiReturnModelPropertyMap, apiMapPropertyMap, childApiMapParamMap, childApiMapReturnMap, childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
+                            property = handleModel(validated, property, returnType, realType, childPropertyMap, isParam, isJson, copyRepeats, apiModelPropertyMap, childApiReturnModelPropertyMap, apiMapPropertyMap, childApiMapParamMap, childApiMapReturnMap, childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
                         } else {
-                            property = handleModel(property, returnType, ApiUtils.regenerateType(genericReturnType), childPropertyMap, isParam, isJson, copyRepeats, apiModelPropertyMap, childApiReturnModelPropertyMap, apiMapPropertyMap, childApiMapParamMap, childApiMapReturnMap, childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
+                            property = handleModel(validated, property, returnType, ApiUtils.regenerateType(genericReturnType), childPropertyMap, isParam, isJson, copyRepeats, apiModelPropertyMap, childApiReturnModelPropertyMap, apiMapPropertyMap, childApiMapParamMap, childApiMapReturnMap, childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
                         }
                         if (property.getType().contains("date") || property.getType().contains("time")) {
                             if (isJson && jsonFormat != null) {
@@ -841,7 +920,8 @@ public class ModelHandle {
      * @return 包装后的真实类型
      */
     public Type realType(Type type, TypeVariable<? extends Class<?>>[] typeParameters, Type genericType) {
-        if (type instanceof ParameterizedType pType) {
+        if (type instanceof ParameterizedType) {
+            ParameterizedType pType = (ParameterizedType) type;
             // 强制类型转换
             Type rawType = pType.getRawType();
             List<Type> types = new ArrayList<>();
@@ -877,12 +957,7 @@ public class ModelHandle {
      * @param returnGlobalApiPropertyMap 全局配置出参类的属性集合
      * @return 处理后的模型属性
      */
-    public DocProperty handleGeneric(DocProperty docProperty, Type gType,
-                                     Map<String, Boolean> propertyMap, boolean isParam, boolean isJson,
-                                     Set<Class<?>> repeats, Map<String, ApiParamModelProperty> apiModelPropertyMap,
-                                     Map<String, ApiReturnModelProperty> apiReturnModelPropertyMap,
-                                     Map<String, ApiMapProperty> apiMapPropertyMap,
-                                     Map<String, ApiParam> apiMapParamMap, Map<String, ApiReturn> apiMapReturnMap, Map<String, ApiProperty> paramGlobalApiPropertyMap, Map<String, ApiProperty> returnGlobalApiPropertyMap) {
+    public DocProperty handleGeneric(Validated validated, DocProperty docProperty, Type gType, Map<String, Boolean> propertyMap, boolean isParam, boolean isJson, Set<Class<?>> repeats, Map<String, ApiParamModelProperty> apiModelPropertyMap, Map<String, ApiReturnModelProperty> apiReturnModelPropertyMap, Map<String, ApiMapProperty> apiMapPropertyMap, Map<String, ApiParam> apiMapParamMap, Map<String, ApiReturn> apiMapReturnMap, Map<String, ApiProperty> paramGlobalApiPropertyMap, Map<String, ApiProperty> returnGlobalApiPropertyMap) {
         // 如果gType类型是ParameterizedType对象
         if (gType instanceof ParameterizedType) {
             // 强制类型转换
@@ -893,11 +968,11 @@ public class ModelHandle {
             if (tArg instanceof Class && ((Class<?>) tArg).isArray()) {
                 //处理数组
                 docProperty.setType(docProperty.getType() + "[0]");
-                return handleGeneric(docProperty, ((Class<?>) tArg).getComponentType(), propertyMap, isParam, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, apiMapParamMap, apiMapReturnMap, paramGlobalApiPropertyMap, returnGlobalApiPropertyMap);
+                return handleGeneric(validated, docProperty, ((Class<?>) tArg).getComponentType(), propertyMap, isParam, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, apiMapParamMap, apiMapReturnMap, paramGlobalApiPropertyMap, returnGlobalApiPropertyMap);
             } else if (tArg instanceof ParameterizedType && Collection.class.isAssignableFrom((Class<?>) ((ParameterizedType) tArg).getRawType())) {
                 //处理集合
                 docProperty.setType(docProperty.getType() + "[0]");
-                return handleGeneric(docProperty, tArg, propertyMap, isParam, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, apiMapParamMap, apiMapReturnMap, paramGlobalApiPropertyMap, returnGlobalApiPropertyMap);
+                return handleGeneric(validated, docProperty, tArg, propertyMap, isParam, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, apiMapParamMap, apiMapReturnMap, paramGlobalApiPropertyMap, returnGlobalApiPropertyMap);
             } else {
                 if (!(tArg instanceof Class) && !(tArg instanceof ParameterizedType)) {
                     //泛型不为类也不是基本数据类型的不作处理
@@ -905,10 +980,10 @@ public class ModelHandle {
                 }
                 //处理类
                 Class<?> aClass = (tArg instanceof Class) ? (Class<?>) tArg : (Class<?>) ((ParameterizedType) tArg).getRawType();
-                return handleModel(docProperty, aClass, tArg, propertyMap, isParam, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, apiMapParamMap, apiMapReturnMap, paramGlobalApiPropertyMap, returnGlobalApiPropertyMap);
+                return handleModel(validated, docProperty, aClass, tArg, propertyMap, isParam, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, apiMapParamMap, apiMapReturnMap, paramGlobalApiPropertyMap, returnGlobalApiPropertyMap);
             }
         } else {
-            return handleModel(docProperty, (Class<?>) gType, gType, propertyMap, isParam, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, apiMapParamMap, apiMapReturnMap, paramGlobalApiPropertyMap, returnGlobalApiPropertyMap);
+            return handleModel(validated, docProperty, (Class<?>) gType, gType, propertyMap, isParam, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, apiMapParamMap, apiMapReturnMap, paramGlobalApiPropertyMap, returnGlobalApiPropertyMap);
         }
     }
 
@@ -930,12 +1005,7 @@ public class ModelHandle {
      * @param returnGlobalApiPropertyMap 全局配置出参类的属性集合
      * @return 处理后的模型属性
      */
-    public DocProperty handleMap(DocProperty docProperty,
-                                 Type gType, Map<String, Boolean> propertyMap, boolean isParam, boolean isJson,
-                                 Set<Class<?>> repeats, Map<String, ApiParamModelProperty> apiModelPropertyMap,
-                                 Map<String, ApiReturnModelProperty> apiReturnModelPropertyMap,
-                                 Map<String, ApiMapProperty> apiMapPropertyMap,
-                                 Map<String, ApiParam> apiMapParamMap, Map<String, ApiReturn> apiMapReturnMap, Map<String, ApiProperty> paramGlobalApiPropertyMap, Map<String, ApiProperty> returnGlobalApiPropertyMap) {
+    public DocProperty handleMap(Validated validated, DocProperty docProperty, Type gType, Map<String, Boolean> propertyMap, boolean isParam, boolean isJson, Set<Class<?>> repeats, Map<String, ApiParamModelProperty> apiModelPropertyMap, Map<String, ApiReturnModelProperty> apiReturnModelPropertyMap, Map<String, ApiMapProperty> apiMapPropertyMap, Map<String, ApiParam> apiMapParamMap, Map<String, ApiReturn> apiMapReturnMap, Map<String, ApiProperty> paramGlobalApiPropertyMap, Map<String, ApiProperty> returnGlobalApiPropertyMap) {
         DocModel docModel = new DocModel();
         docModel.setClassName("Map");
         docModel.setDescription(docProperty.getDescription());
@@ -957,7 +1027,7 @@ public class ModelHandle {
             }
         }
         if ((apiMapPropertyMap == null || apiMapPropertyMap.isEmpty()) && (apiMapParamMap == null || apiMapParamMap.isEmpty()) && (apiMapReturnMap == null || apiMapReturnMap.isEmpty())) {
-            return handleModel(docProperty, keyClass, keyClass, propertyMap, isParam, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, apiMapParamMap, apiMapReturnMap, paramGlobalApiPropertyMap, returnGlobalApiPropertyMap);
+            return handleModel(validated, docProperty, keyClass, keyClass, propertyMap, isParam, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, apiMapParamMap, apiMapReturnMap, paramGlobalApiPropertyMap, returnGlobalApiPropertyMap);
         }
         //全局针对多级配置
         Map<String, ApiProperty> childParamGlobalApiPropertyMap = new HashMap<>(256);
@@ -1050,7 +1120,7 @@ public class ModelHandle {
                 for (DocProperty property : docProperties) {
                     String type = property.getType();
                     property.setType("");
-                    property = handleModel(property, keyClass, gType, propertyMap, true, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, mapMap.get(property.getName()), apiMapReturnMap, childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
+                    property = handleModel(validated, property, keyClass, gType, propertyMap, true, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, mapMap.get(property.getName()), apiMapReturnMap, childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
                     if (StringUtils.isNotBlank(type) && StringUtils.isBlank(property.getType())) {
                         property.setType(type);
                     }
@@ -1066,7 +1136,7 @@ public class ModelHandle {
                 for (String key : childKeySet) {
                     DocProperty childProperty = new DocProperty();
                     childProperty.setName(key);
-                    childProperty = handleModel(childProperty, keyClass, gType, propertyMap, true, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, mapMap.get(key), apiMapReturnMap, childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
+                    childProperty = handleModel(validated, childProperty, keyClass, gType, propertyMap, true, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, apiMapPropertyMap, mapMap.get(key), apiMapReturnMap, childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
                     apiProperties.add(childProperty);
                 }
             }
@@ -1119,7 +1189,7 @@ public class ModelHandle {
                 for (DocProperty property : docProperties) {
                     String type = property.getType();
                     property.setType("");
-                    property = handleModel(property, keyClass, gType, propertyMap, false, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, copyApiMapPropertyMap, apiMapParamMap, mapMap.get(property.getName()), childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
+                    property = handleModel(validated, property, keyClass, gType, propertyMap, false, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, copyApiMapPropertyMap, apiMapParamMap, mapMap.get(property.getName()), childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
                     if (StringUtils.isNotBlank(type) && StringUtils.isBlank(property.getType())) {
                         property.setType(type);
                     }
@@ -1135,7 +1205,7 @@ public class ModelHandle {
                 for (String key : childKeySet) {
                     DocProperty childProperty = new DocProperty();
                     childProperty.setName(key);
-                    childProperty = handleModel(childProperty, keyClass, gType, propertyMap, false, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, copyApiMapPropertyMap, apiMapParamMap, mapMap.get(key), childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
+                    childProperty = handleModel(validated, childProperty, keyClass, gType, propertyMap, false, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, copyApiMapPropertyMap, apiMapParamMap, mapMap.get(key), childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
                     apiProperties.add(childProperty);
                 }
             }
@@ -1229,7 +1299,7 @@ public class ModelHandle {
                 for (DocProperty property : docProperties) {
                     String type = property.getType();
                     property.setType("");
-                    property = handleModel(property, keyClass, gType, propertyMap, isParam, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, mapMap.get(property.getName()), null, null, childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
+                    property = handleModel(validated, property, keyClass, gType, propertyMap, isParam, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, mapMap.get(property.getName()), null, null, childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
                     if (StringUtils.isNotBlank(type) && StringUtils.isBlank(property.getType())) {
                         property.setType(type);
                     }
@@ -1245,7 +1315,7 @@ public class ModelHandle {
                 for (String key : childKeySet) {
                     DocProperty childProperty = new DocProperty();
                     childProperty.setName(key);
-                    childProperty = handleModel(childProperty, keyClass, gType, propertyMap, isParam, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, mapMap.get(key), childApiMapParamMap, childApiMapReturnMap, childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
+                    childProperty = handleModel(validated, childProperty, keyClass, gType, propertyMap, isParam, isJson, repeats, apiModelPropertyMap, apiReturnModelPropertyMap, mapMap.get(key), childApiMapParamMap, childApiMapReturnMap, childParamGlobalApiPropertyMap, childReturnGlobalApiPropertyMap);
                     apiProperties.add(childProperty);
                 }
             }
