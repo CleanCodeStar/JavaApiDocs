@@ -1,7 +1,6 @@
 package com.citrsw.annatation;
 
 import com.citrsw.configuration.ApiConfiguration;
-import com.citrsw.enums.ApiParamHandle;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;
@@ -37,23 +36,9 @@ public @interface ApiEnable {
     String[] actives() default {};
 
     /**
-     * 参数校验
+     * header中token的名称
+     * @return
      */
-    boolean paramVerification() default true;
-
-    /**
-     * 校验结果处理方式
-     * 默认处理返回示例:
-     * {
-     * code: 400,
-     * msg:"参数[roomName]（直播间的名称）为空"
-     * }
-     */
-    ApiParamHandle paramHandle() default ApiParamHandle.DEFAULT;
-
-    /**
-     * 打印请求参数
-     */
-    boolean paramOutput() default true;
+    String tokenName() default "authorization";
 
 }

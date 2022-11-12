@@ -22,6 +22,11 @@ public class Doc {
     private String name;
 
     /**
+     * header中token的名称
+     */
+    private String tokenName;
+
+    /**
      * 类集合
      */
     @JsonProperty("doc_classes")
