@@ -74,6 +74,7 @@ v1.6.4-jdk1.8
 2. 移除参数校验
 3. 支持hibernate-validator请求参数校验
 4. 更新vue页面
+5. 增加可配置Header中token的名称
 
 ## 访问ApiDocs页面方式
 
