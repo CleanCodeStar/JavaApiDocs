@@ -154,14 +154,12 @@ ip:端口/项目名/citrsw/index.html
    | name       | 项目名称                      |
    | actives | 适用环境                      |
    | underscore | 是否使用下划线名称 (过期属性，未来版本将会删除) |
-   | paramVerification | 是否启用参数校验                  |
-   | paramHandle | 校验结果处理方式                  |
-   | paramOutput | 打印请求参数                  |
+   | tokenName  | Header中token的名称                  |
 
 4. **使用示例**
 
    ```java
-   @ApiEnable(name = "中国IT资源分享网站", underscore = true, actives = {"dev"}, paramVerification = true, paramHandle = ApiParamHandle.DEFAULT, paramOutput = true)
+   @ApiEnable(name = "中国IT资源分享网站", underscore = true, actives = {"dev"}, tokenName="authorization")
    @SpringBootApplication
    public class ApiExampleApplication {
        public static void main(String[] args) {
