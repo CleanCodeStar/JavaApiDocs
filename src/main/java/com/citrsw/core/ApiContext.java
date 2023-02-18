@@ -53,6 +53,12 @@ public class ApiContext implements CommandLineRunner {
     @Value("${spring.mvc.servlet.path:}")
     private String servletPath;
 
+    /**
+     * ssl是否激活
+     */
+    @Value("${server.ssl.enabled:false}")
+    private Boolean sslEnabled;
+
     private final ControllerHandle controllerHandle;
 
     /**
@@ -104,38 +110,36 @@ public class ApiContext implements CommandLineRunner {
                     ApiConstant.underscore = apiEnable.underscore();
                     //获取全局类配置
                     ApiGlobalClass[] apiGlobalClasses = mainApplicationClass.getAnnotationsByType(ApiGlobalClass.class);
-                    if (apiGlobalClasses.length > 0) {
-                        for (ApiGlobalClass apiGlobalClass : apiGlobalClasses) {
-                            String description = apiGlobalClass.description();
-                            if (TypeEnum.PARAM.equals(apiGlobalClass.type())) {
-                                if (StringUtils.isNotBlank(description)) {
-                                    ApiConstant.PARAM_GLOBAL_CLASS_DESCRIPTION_MAP.put(apiGlobalClass.name(), description);
+                    for (ApiGlobalClass apiGlobalClass : apiGlobalClasses) {
+                        String description = apiGlobalClass.description();
+                        if (TypeEnum.PARAM.equals(apiGlobalClass.type())) {
+                            if (StringUtils.isNotBlank(description)) {
+                                ApiConstant.PARAM_GLOBAL_CLASS_DESCRIPTION_MAP.put(apiGlobalClass.name(), description);
+                            }
+                            for (ApiProperty property : apiGlobalClass.properties()) {
+                                Map<String, ApiProperty> apiPropertyMap;
+                                if (ApiConstant.PARAM_GLOBAL_CLASS_MAP.containsKey(apiGlobalClass.name())) {
+                                    apiPropertyMap = ApiConstant.PARAM_GLOBAL_CLASS_MAP.get(apiGlobalClass.name());
+                                    apiPropertyMap.put(property.name(), property);
+                                } else {
+                                    apiPropertyMap = new HashMap<>(256);
+                                    apiPropertyMap.put(property.name(), property);
+                                    ApiConstant.PARAM_GLOBAL_CLASS_MAP.put(apiGlobalClass.name(), apiPropertyMap);
                                 }
-                                for (ApiProperty property : apiGlobalClass.properties()) {
-                                    Map<String, ApiProperty> apiPropertyMap;
-                                    if (ApiConstant.PARAM_GLOBAL_CLASS_MAP.containsKey(apiGlobalClass.name())) {
-                                        apiPropertyMap = ApiConstant.PARAM_GLOBAL_CLASS_MAP.get(apiGlobalClass.name());
-                                        apiPropertyMap.put(property.name(), property);
-                                    } else {
-                                        apiPropertyMap = new HashMap<>(256);
-                                        apiPropertyMap.put(property.name(), property);
-                                        ApiConstant.PARAM_GLOBAL_CLASS_MAP.put(apiGlobalClass.name(), apiPropertyMap);
-                                    }
-                                }
-                            } else {
-                                if (StringUtils.isNotBlank(description)) {
-                                    ApiConstant.RETURN_GLOBAL_CLASS_DESCRIPTION_MAP.put(apiGlobalClass.name(), description);
-                                }
-                                for (ApiProperty property : apiGlobalClass.properties()) {
-                                    Map<String, ApiProperty> apiPropertyMap;
-                                    if (ApiConstant.RETURN_GLOBAL_CLASS_MAP.containsKey(apiGlobalClass.name())) {
-                                        apiPropertyMap = ApiConstant.RETURN_GLOBAL_CLASS_MAP.get(apiGlobalClass.name());
-                                        apiPropertyMap.put(property.name(), property);
-                                    } else {
-                                        apiPropertyMap = new HashMap<>(256);
-                                        apiPropertyMap.put(property.name(), property);
-                                        ApiConstant.RETURN_GLOBAL_CLASS_MAP.put(apiGlobalClass.name(), apiPropertyMap);
-                                    }
+                            }
+                        } else {
+                            if (StringUtils.isNotBlank(description)) {
+                                ApiConstant.RETURN_GLOBAL_CLASS_DESCRIPTION_MAP.put(apiGlobalClass.name(), description);
+                            }
+                            for (ApiProperty property : apiGlobalClass.properties()) {
+                                Map<String, ApiProperty> apiPropertyMap;
+                                if (ApiConstant.RETURN_GLOBAL_CLASS_MAP.containsKey(apiGlobalClass.name())) {
+                                    apiPropertyMap = ApiConstant.RETURN_GLOBAL_CLASS_MAP.get(apiGlobalClass.name());
+                                    apiPropertyMap.put(property.name(), property);
+                                } else {
+                                    apiPropertyMap = new HashMap<>(256);
+                                    apiPropertyMap.put(property.name(), property);
+                                    ApiConstant.RETURN_GLOBAL_CLASS_MAP.put(apiGlobalClass.name(), apiPropertyMap);
                                 }
                             }
                         }
@@ -183,18 +187,18 @@ public class ApiContext implements CommandLineRunner {
                             "/ /_/ / /_/ /| |/ / /_/ / ___ |/ /_/ / / /_/ / /_/ / /__(__  ) \n" +
                             "\\____/\\__,_/ |___/\\__,_/_/  |_/ .___/_/_____/\\____/\\___/____/  \n" +
                             "                             /_/                               \n" +
-                            "                                                  1.6.4-jdk1.8   \n");
+                            "                                                  1.6.5-jdk1.8   \n");
                     //获取本机地址及端口号
                     try {
                         String ip = ApiUtils.getLocalIp();
                         String uri = ip + ":" + port + contextPath + servletPath + "/citrsw/index.html";
                         uri = uri.replaceAll("//", "/");
-                        System.out.println("内网Api访问地址：  http://" + uri);
+                        System.out.println("内网Api访问地址：  " + (sslEnabled ? "https" : "http") + "://" + uri);
                     } catch (Exception ignored) {
                     }
                     String uri = port + contextPath + servletPath + "/citrsw/index.html";
                     uri = uri.replaceAll("//", "/");
-                    System.out.println("本地Api访问地址：  http://127.0.0.1" + ":" + uri);
+                    System.out.println("本地Api访问地址：  " + (sslEnabled ? "https" : "http") + "://127.0.0.1" + ":" + uri);
                 }
             }
         } catch (Exception exception) {

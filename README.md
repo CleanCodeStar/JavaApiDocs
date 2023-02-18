@@ -76,6 +76,9 @@ v1.6.4-jdk1.8
 4. 更新vue页面
 5. 增加可配置Header中token的名称
 
+v1.6.5-jdk1.8
+1. 新增根据项目配置ssl输出http或https访问日志
+
 ## 访问ApiDocs页面方式
 
 ip:端口/项目名/citrsw/index.html
