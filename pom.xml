@@ -9,7 +9,7 @@
     </parent>
     <groupId>com.citrsw</groupId>
     <artifactId>java-api-docs</artifactId>
-    <version>1.6.5-jdk1.8</version>
+    <version>1.6.6-jdk1.8</version>
 
     <properties>
         <java.version>8</java.version>

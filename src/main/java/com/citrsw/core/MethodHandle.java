@@ -9,6 +9,7 @@ import com.citrsw.definition.TempMethod;
 import com.citrsw.exception.ApiParamException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
@@ -66,13 +67,13 @@ public class MethodHandle {
         }
         for (Method method : methods) {
             Set<String> modeSet = new TreeSet<>(parentModeSet);
-            if (method.getAnnotation(ApiIgnore.class) != null) {
+            if (AnnotationUtils.findAnnotation(method,ApiIgnore.class) != null) {
                 //不处理添加过滤注解的方法
                 continue;
             }
             TempMethod tempMethod = new TempMethod();
             //方法上的注解
-            ApiMethod methodAnnotation = method.getAnnotation(ApiMethod.class);
+            ApiMethod methodAnnotation = AnnotationUtils.findAnnotation(method,ApiMethod.class);
             if (methodAnnotation != null && StringUtils.isNotBlank(methodAnnotation.value())) {
                 //从注解获取描述
                 tempMethod.setDescription(methodAnnotation.value());
@@ -80,11 +81,11 @@ public class MethodHandle {
                 //注解获取不到描述则使用方法名称
                 tempMethod.setDescription(method.getName());
             }
-            GetMapping getMapping = method.getAnnotation(GetMapping.class);
-            PostMapping postMapping = method.getAnnotation(PostMapping.class);
-            PutMapping putMapping = method.getAnnotation(PutMapping.class);
-            DeleteMapping deleteMapping = method.getAnnotation(DeleteMapping.class);
-            RequestMapping requestMappingAnnotation = method.getAnnotation(RequestMapping.class);
+            GetMapping getMapping = AnnotationUtils.findAnnotation(method, GetMapping.class);
+            PostMapping postMapping = AnnotationUtils.findAnnotation(method, PostMapping.class);
+            PutMapping putMapping = AnnotationUtils.findAnnotation(method, PutMapping.class);
+            DeleteMapping deleteMapping = AnnotationUtils.findAnnotation(method, DeleteMapping.class);
+            RequestMapping requestMappingAnnotation = AnnotationUtils.findAnnotation(method, RequestMapping.class);
             if (getMapping == null && postMapping == null && putMapping == null && deleteMapping == null && requestMappingAnnotation == null) {
                 //这四种注解都不存在则直接跳过，不作处理
                 continue;
@@ -148,9 +149,9 @@ public class MethodHandle {
             tempMethod.setModeSet(modeSet);
             tempMethod.setUriSet(uriSet);
             //方法上自定义入参的注解(两种)
-            ApiMapParam apiMapParam = method.getAnnotation(ApiMapParam.class);
+            ApiMapParam apiMapParam = AnnotationUtils.findAnnotation(method,ApiMapParam.class);
             //指定对象属性的注解
-            ApiAppointParam apiAppointParam = method.getAnnotation(ApiAppointParam.class);
+            ApiAppointParam apiAppointParam = AnnotationUtils.findAnnotation(method,ApiAppointParam.class);
             //重新配置属性信息注解
             ApiParamModelProperty[] apiModelProperties = method.getAnnotationsByType(ApiParamModelProperty.class);
             //获取入参 jdk8以上开始支持
@@ -166,9 +167,9 @@ public class MethodHandle {
                 continue;
             }
             //方法上自定义出参的注解
-            ApiMapReturn apiMapReturn = method.getAnnotation(ApiMapReturn.class);
+            ApiMapReturn apiMapReturn = AnnotationUtils.findAnnotation(method,ApiMapReturn.class);
             //出参为基本数据类型的注解
-            ApiBasicReturn apiBasicReturn = method.getAnnotation(ApiBasicReturn.class);
+            ApiBasicReturn apiBasicReturn = AnnotationUtils.findAnnotation(method,ApiBasicReturn.class);
             //重新配置出参属性信息注解
             ApiReturnModelProperty[] apiReturnModelProperties = method.getAnnotationsByType(ApiReturnModelProperty.class);
             //获取出参

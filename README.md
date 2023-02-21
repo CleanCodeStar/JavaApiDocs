@@ -79,6 +79,9 @@ v1.6.4-jdk1.8
 v1.6.5-jdk1.8
 1. 新增根据项目配置ssl输出http或https访问日志
 
+v1.6.6-jdk1.8
+1. 支持获取Controller继承类及接口上各个方法的注解
+
 ## 访问ApiDocs页面方式
 
 ip:端口/项目名/citrsw/index.html

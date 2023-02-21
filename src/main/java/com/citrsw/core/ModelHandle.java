@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
@@ -151,7 +152,7 @@ public class ModelHandle {
             //处理类类型
             Method[] methods = aClass.getMethods();
             for (Method method : methods) {
-                ApiIgnore apiIgnore = method.getAnnotation(ApiIgnore.class);
+                ApiIgnore apiIgnore = AnnotationUtils.findAnnotation(method,ApiIgnore.class);
                 if (apiIgnore != null) {
                     //不处理添加过滤注解的属性
                     continue;
@@ -391,20 +392,20 @@ public class ModelHandle {
                 //方法上的Map注解
                 apiMapPropertyMap = new HashMap<>(256);
                 ApiMapProperty[] apiMapProperties = method.getAnnotationsByType(ApiMapProperty.class);
-                if (apiMapProperties != null && apiMapProperties.length > 0) {
+                if (apiMapProperties != null) {
                     for (ApiMapProperty apiMapProperty : apiMapProperties) {
                         String value = apiMapProperty.name();
                         apiMapPropertyMap.put(value, apiMapProperty);
                     }
                 }
                 //方法上的注解
-                ApiProperty apiPropertyAnnotation = method.getAnnotation(ApiProperty.class);
+                ApiProperty apiPropertyAnnotation = AnnotationUtils.findAnnotation(method,ApiProperty.class);
                 //format-data形式的时间格式化注解
-                DateTimeFormat dateTimeFormat = method.getAnnotation(DateTimeFormat.class);
+                DateTimeFormat dateTimeFormat = AnnotationUtils.findAnnotation(method,DateTimeFormat.class);
                 //json形式的时间格式化注解
-                JsonFormat jsonFormat = method.getAnnotation(JsonFormat.class);
+                JsonFormat jsonFormat = AnnotationUtils.findAnnotation(method,JsonFormat.class);
                 //jsonProperty注解
-                JsonProperty jsonProperty = method.getAnnotation(JsonProperty.class);
+                JsonProperty jsonProperty = AnnotationUtils.findAnnotation(method,JsonProperty.class);
 
                 Boolean validatedRequited = false;
                 if (validated != null) {
@@ -564,7 +565,7 @@ public class ModelHandle {
                     property.setRequited(validatedRequited || tempBoolean);
                     //jsonProperty注解
                     if (jsonProperty == null) {
-                        jsonProperty = method.getAnnotation(JsonProperty.class);
+                        jsonProperty = AnnotationUtils.findAnnotation(method,JsonProperty.class);
                     }
                     if (jsonProperty != null) {
                         String value = jsonProperty.value();
