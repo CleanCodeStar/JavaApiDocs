@@ -82,6 +82,12 @@ v1.6.5-jdk1.8
 v1.6.6-jdk1.8
 1. 支持获取Controller继承类及接口上各个方法的注解
 
+v1.6.7-jdk1.8
+1. 支持byte类型
+
+v1.6.8-jdk1.8
+1. 修复已知BUG
+
 ## 访问ApiDocs页面方式
 
 ip:端口/项目名/citrsw/index.html

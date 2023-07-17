@@ -146,17 +146,15 @@ public class ApiContext implements CommandLineRunner {
                     }
                     //获取全局状态码配置
                     ApiGlobalCode[] apiGlobalCodes = mainApplicationClass.getAnnotationsByType(ApiGlobalCode.class);
-                    if (apiGlobalClasses.length > 0) {
-                        for (ApiGlobalCode apiGlobalCode : apiGlobalCodes) {
-                            String name = apiGlobalCode.name();
-                            String value = apiGlobalCode.value();
-                            String description = apiGlobalCode.description();
-                            DocCode docCode = new DocCode();
-                            docCode.setName(name);
-                            docCode.setValue(value);
-                            docCode.setDescription(description);
-                            ApiConstant.DOC_GLOBAL_CODES.add(docCode);
-                        }
+                    for (ApiGlobalCode apiGlobalCode : apiGlobalCodes) {
+                        String name = apiGlobalCode.name();
+                        String value = apiGlobalCode.value();
+                        String description = apiGlobalCode.description();
+                        DocCode docCode = new DocCode();
+                        docCode.setName(name);
+                        docCode.setValue(value);
+                        docCode.setDescription(description);
+                        ApiConstant.DOC_GLOBAL_CODES.add(docCode);
                     }
                     //获取需要扫描的包
                     List<String> packages = controllerHandle.takePackages(mainApplicationClass);
@@ -187,7 +185,7 @@ public class ApiContext implements CommandLineRunner {
                             "/ /_/ / /_/ /| |/ / /_/ / ___ |/ /_/ / / /_/ / /_/ / /__(__  ) \n" +
                             "\\____/\\__,_/ |___/\\__,_/_/  |_/ .___/_/_____/\\____/\\___/____/  \n" +
                             "                             /_/                               \n" +
-                            "                                                  1.6.6-jdk1.8   \n");
+                            "                                                  1.6.8-jdk1.8   \n");
                     //获取本机地址及端口号
                     try {
                         String ip = ApiUtils.getLocalIp();

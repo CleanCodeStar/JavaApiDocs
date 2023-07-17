@@ -41,6 +41,8 @@ public class ApiConstant {
     public static Map<Class<?>, String> baseTypeMap = new HashMap<>(256);
 
     static {
+        baseTypeMap.put(Byte.class, "byte");
+        baseTypeMap.put(byte.class, "byte");
         baseTypeMap.put(Integer.class, "int");
         baseTypeMap.put(int.class, "int");
         baseTypeMap.put(Long.class, "long");

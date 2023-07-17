@@ -125,7 +125,7 @@ public class ModelHandle {
             docProperty.setType("enum" + typeString);
             docProperty.setClassName(aClass.getSimpleName());
             return docProperty;
-        } else if (int.class.isAssignableFrom(aClass) || long.class.isAssignableFrom(aClass) || double.class.isAssignableFrom(aClass) || float.class.isAssignableFrom(aClass) || short.class.isAssignableFrom(aClass) || boolean.class.isAssignableFrom(aClass) || aClass.getPackage().getName().startsWith("java.lang") || Date.class.isAssignableFrom(aClass) || LocalDateTime.class.isAssignableFrom(aClass) || BigDecimal.class.isAssignableFrom(aClass) || LocalDate.class.isAssignableFrom(aClass) || MultipartFile.class.isAssignableFrom(aClass) || LocalTime.class.isAssignableFrom(aClass)) {
+        } else if (byte.class.isAssignableFrom(aClass) || int.class.isAssignableFrom(aClass) || long.class.isAssignableFrom(aClass) || double.class.isAssignableFrom(aClass) || float.class.isAssignableFrom(aClass) || short.class.isAssignableFrom(aClass) || boolean.class.isAssignableFrom(aClass) || aClass.getPackage().getName().startsWith("java.lang") || Date.class.isAssignableFrom(aClass) || LocalDateTime.class.isAssignableFrom(aClass) || BigDecimal.class.isAssignableFrom(aClass) || LocalDate.class.isAssignableFrom(aClass) || MultipartFile.class.isAssignableFrom(aClass) || LocalTime.class.isAssignableFrom(aClass)) {
             //处理基本数据类型
             String typeString = docProperty.getType();
             docProperty.setType(ApiConstant.baseTypeMap.get(aClass) + typeString);
