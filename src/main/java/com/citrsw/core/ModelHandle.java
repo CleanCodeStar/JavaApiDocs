@@ -152,7 +152,7 @@ public class ModelHandle {
             //处理类类型
             Method[] methods = aClass.getMethods();
             for (Method method : methods) {
-                ApiIgnore apiIgnore = AnnotationUtils.findAnnotation(method,ApiIgnore.class);
+                ApiIgnore apiIgnore = AnnotationUtils.findAnnotation(method, ApiIgnore.class);
                 if (apiIgnore != null) {
                     //不处理添加过滤注解的属性
                     continue;
@@ -399,13 +399,13 @@ public class ModelHandle {
                     }
                 }
                 //方法上的注解
-                ApiProperty apiPropertyAnnotation = AnnotationUtils.findAnnotation(method,ApiProperty.class);
+                ApiProperty apiPropertyAnnotation = AnnotationUtils.findAnnotation(method, ApiProperty.class);
                 //format-data形式的时间格式化注解
-                DateTimeFormat dateTimeFormat = AnnotationUtils.findAnnotation(method,DateTimeFormat.class);
+                DateTimeFormat dateTimeFormat = AnnotationUtils.findAnnotation(method, DateTimeFormat.class);
                 //json形式的时间格式化注解
-                JsonFormat jsonFormat = AnnotationUtils.findAnnotation(method,JsonFormat.class);
+                JsonFormat jsonFormat = AnnotationUtils.findAnnotation(method, JsonFormat.class);
                 //jsonProperty注解
-                JsonProperty jsonProperty = AnnotationUtils.findAnnotation(method,JsonProperty.class);
+                JsonProperty jsonProperty = AnnotationUtils.findAnnotation(method, JsonProperty.class);
 
                 Boolean validatedRequited = false;
                 if (validated != null) {
@@ -453,14 +453,7 @@ public class ModelHandle {
                     } catch (NoSuchMethodException ignored) {
                     }
                 }
-
-
-                if (ApiConstant.underscore) {
-                    //如果启用下划线命名，则转换为下划线命名
-                    property.setName(humpToLine(methodName));
-                } else {
-                    property.setName(methodName);
-                }
+                property.setName(methodName);
                 try {
                     Field field = getParentField(aClass, methodName);
                     if (field == null) {
@@ -475,7 +468,7 @@ public class ModelHandle {
                         //对于map类型的属性
                         //属性上的Map注解
                         apiMapProperties = field.getAnnotationsByType(ApiMapProperty.class);
-                        if (apiMapProperties != null && apiMapProperties.length > 0) {
+                        if (apiMapProperties != null) {
                             for (ApiMapProperty apiMapProperty : apiMapProperties) {
                                 String value = apiMapProperty.name();
                                 apiMapPropertyMap.put(value, apiMapProperty);
@@ -565,7 +558,7 @@ public class ModelHandle {
                     property.setRequited(validatedRequited || tempBoolean);
                     //jsonProperty注解
                     if (jsonProperty == null) {
-                        jsonProperty = AnnotationUtils.findAnnotation(method,JsonProperty.class);
+                        jsonProperty = AnnotationUtils.findAnnotation(method, JsonProperty.class);
                     }
                     if (jsonProperty != null) {
                         String value = jsonProperty.value();
@@ -1324,21 +1317,5 @@ public class ModelHandle {
         docModel.setApiProperties(apiProperties);
         docProperty.setDocModel(docModel);
         return docProperty;
-    }
-
-    /**
-     * 驼峰转下划线
-     *
-     * @param str 原始字符串
-     * @return 下滑线格式的字符串
-     */
-    public String humpToLine(String str) {
-        Matcher matcher = pattern.matcher(str);
-        StringBuffer sb = new StringBuffer();
-        while (matcher.find()) {
-            matcher.appendReplacement(sb, "_" + matcher.group(0).toLowerCase());
-        }
-        matcher.appendTail(sb);
-        return sb.toString();
     }
 }

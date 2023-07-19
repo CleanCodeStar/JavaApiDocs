@@ -106,8 +106,6 @@ public class ApiContext implements CommandLineRunner {
                     } else {
                         log.warn("未配置启动环境,已适用全部环境");
                     }
-                    //是否使用下划线命名
-                    ApiConstant.underscore = apiEnable.underscore();
                     //获取全局类配置
                     ApiGlobalClass[] apiGlobalClasses = mainApplicationClass.getAnnotationsByType(ApiGlobalClass.class);
                     for (ApiGlobalClass apiGlobalClass : apiGlobalClasses) {
@@ -169,7 +167,7 @@ public class ApiContext implements CommandLineRunner {
                         log.info("已获取applicationClassAnnotation配置中需要扫描的类:{}", Arrays.toString(scanClasses));
                         classes.addAll(Arrays.asList(scanClasses));
                     }
-                    log.info("已获取到所有需要扫描的Controller类({})个：{}", classes.size(), classes);
+                    log.info("已获取到所有需要扫描的Controller类({})个:{}", classes.size(), classes);
                     //处理Controller类
                     Set<DocClass> docClasses = controllerHandle.handleClass(classes);
                     doc = new Doc().setDocClasses(docClasses);
@@ -185,18 +183,20 @@ public class ApiContext implements CommandLineRunner {
                             "/ /_/ / /_/ /| |/ / /_/ / ___ |/ /_/ / / /_/ / /_/ / /__(__  ) \n" +
                             "\\____/\\__,_/ |___/\\__,_/_/  |_/ .___/_/_____/\\____/\\___/____/  \n" +
                             "                             /_/                               \n" +
-                            "                                                  1.6.8-jdk1.8   \n");
+                            "                                                  1.6.9-jdk1.8   \n");
                     //获取本机地址及端口号
                     try {
-                        String ip = ApiUtils.getLocalIp();
-                        String uri = ip + ":" + port + contextPath + servletPath + "/citrsw/index.html";
-                        uri = uri.replaceAll("//", "/");
-                        System.out.println("内网Api访问地址：  " + (sslEnabled ? "https" : "http") + "://" + uri);
+                        List<String> ips = ApiUtils.getLocalIps();
+                        for (String ip : ips) {
+                            String uri = ip + ":" + port + contextPath + servletPath + "/citrsw/index.html";
+                            uri = uri.replaceAll("//", "/");
+                            System.out.println("内网Api访问地址:  " + (sslEnabled ? "https" : "http") + "://" + uri);
+                        }
                     } catch (Exception ignored) {
                     }
                     String uri = port + contextPath + servletPath + "/citrsw/index.html";
                     uri = uri.replaceAll("//", "/");
-                    System.out.println("本地Api访问地址：  " + (sslEnabled ? "https" : "http") + "://127.0.0.1" + ":" + uri);
+                    System.out.println("本地Api访问地址:  " + (sslEnabled ? "https" : "http") + "://127.0.0.1" + ":" + uri);
                 }
             }
         } catch (Exception exception) {

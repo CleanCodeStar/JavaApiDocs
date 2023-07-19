@@ -76,8 +76,9 @@ public class ApiUtils {
      * @return
      * @throws Exception
      */
-    public static String getLocalIp() throws Exception {
+    public static List<String> getLocalIps() throws Exception {
         // 本地IP，如果没有配置外网IP则返回它
+        List<String> localIps = new ArrayList<>();
         String localip = null;
         // 外网IP
         String netip = null;
@@ -91,25 +92,23 @@ public class ApiUtils {
             Enumeration<InetAddress> address = ni.getInetAddresses();
             while (address.hasMoreElements()) {
                 ip = address.nextElement();
-                if (!ip.isSiteLocalAddress()
-                        && !ip.isLoopbackAddress()
-                        // 外网IP
-                        && !ip.getHostAddress().contains(":")) {
+                if (!ip.isSiteLocalAddress() && !ip.isLoopbackAddress() && !ip.getHostAddress().contains(":")) {
+                    // 外网IP
                     netip = ip.getHostAddress();
                     finded = true;
                     break;
-                } else if (ip.isSiteLocalAddress()
-                        && !ip.isLoopbackAddress()
-                        // 内网IP
-                        && !ip.getHostAddress().contains(":")) {
+                } else if (ip.isSiteLocalAddress() && !ip.isLoopbackAddress() && !ip.getHostAddress().contains(":")) {
+                    // 内网IP
                     localip = ip.getHostAddress();
+                    localIps.add(localip);
                 }
             }
         }
         if (netip != null && !"".equals(netip)) {
-            return netip;
+            localIps.add(netip);
         } else {
-            return localip;
+            localIps.add(localip);
         }
+        return localIps;
     }
 }

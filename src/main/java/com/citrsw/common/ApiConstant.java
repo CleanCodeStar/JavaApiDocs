@@ -21,11 +21,6 @@ import java.util.*;
 public class ApiConstant {
 
     /**
-     * 是否使用下滑线命名方式
-     */
-    public static boolean underscore;
-
-    /**
      * Api是否可用
      */
     public static boolean apiEnable = true;

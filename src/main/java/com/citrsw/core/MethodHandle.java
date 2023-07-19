@@ -55,10 +55,8 @@ public class MethodHandle {
             if (requestMapping.value().length > 0) {
                 parentUriSet.addAll(Arrays.asList(requestMapping.value()));
             }
-            if (requestMapping.method().length > 0) {
-                for (RequestMethod requestMethod : requestMapping.method()) {
-                    parentModeSet.add(requestMethod.name());
-                }
+            for (RequestMethod requestMethod : requestMapping.method()) {
+                parentModeSet.add(requestMethod.name());
             }
         }
         if (parentUriSet.isEmpty()) {
@@ -67,13 +65,13 @@ public class MethodHandle {
         }
         for (Method method : methods) {
             Set<String> modeSet = new TreeSet<>(parentModeSet);
-            if (AnnotationUtils.findAnnotation(method,ApiIgnore.class) != null) {
+            if (AnnotationUtils.findAnnotation(method, ApiIgnore.class) != null) {
                 //不处理添加过滤注解的方法
                 continue;
             }
             TempMethod tempMethod = new TempMethod();
             //方法上的注解
-            ApiMethod methodAnnotation = AnnotationUtils.findAnnotation(method,ApiMethod.class);
+            ApiMethod methodAnnotation = AnnotationUtils.findAnnotation(method, ApiMethod.class);
             if (methodAnnotation != null && StringUtils.isNotBlank(methodAnnotation.value())) {
                 //从注解获取描述
                 tempMethod.setDescription(methodAnnotation.value());
@@ -149,9 +147,9 @@ public class MethodHandle {
             tempMethod.setModeSet(modeSet);
             tempMethod.setUriSet(uriSet);
             //方法上自定义入参的注解(两种)
-            ApiMapParam apiMapParam = AnnotationUtils.findAnnotation(method,ApiMapParam.class);
+            ApiMapParam apiMapParam = AnnotationUtils.findAnnotation(method, ApiMapParam.class);
             //指定对象属性的注解
-            ApiAppointParam apiAppointParam = AnnotationUtils.findAnnotation(method,ApiAppointParam.class);
+            ApiAppointParam apiAppointParam = AnnotationUtils.findAnnotation(method, ApiAppointParam.class);
             //重新配置属性信息注解
             ApiParamModelProperty[] apiModelProperties = method.getAnnotationsByType(ApiParamModelProperty.class);
             //获取入参 jdk8以上开始支持
@@ -167,9 +165,9 @@ public class MethodHandle {
                 continue;
             }
             //方法上自定义出参的注解
-            ApiMapReturn apiMapReturn = AnnotationUtils.findAnnotation(method,ApiMapReturn.class);
+            ApiMapReturn apiMapReturn = AnnotationUtils.findAnnotation(method, ApiMapReturn.class);
             //出参为基本数据类型的注解
-            ApiBasicReturn apiBasicReturn = AnnotationUtils.findAnnotation(method,ApiBasicReturn.class);
+            ApiBasicReturn apiBasicReturn = AnnotationUtils.findAnnotation(method, ApiBasicReturn.class);
             //重新配置出参属性信息注解
             ApiReturnModelProperty[] apiReturnModelProperties = method.getAnnotationsByType(ApiReturnModelProperty.class);
             //获取出参
@@ -184,18 +182,16 @@ public class MethodHandle {
             //获取method上的状态码配置集合
             Set<DocCode> docCodes = new TreeSet<>();
             ApiCode[] apiCodeAnnotations = method.getAnnotationsByType(ApiCode.class);
-            if (apiCodeAnnotations.length > 0) {
-                for (ApiCode apiCodeAnnotation : apiCodeAnnotations) {
-                    String name = apiCodeAnnotation.name();
-                    String value = apiCodeAnnotation.value();
-                    String description = apiCodeAnnotation.description();
-                    DocCode docCode = new DocCode();
-                    docCode.setName(name);
-                    docCode.setValue(value);
-                    docCode.setDescription(description);
-                    docCodes.add(docCode);
+            for (ApiCode apiCodeAnnotation : apiCodeAnnotations) {
+                String name = apiCodeAnnotation.name();
+                String value = apiCodeAnnotation.value();
+                String description = apiCodeAnnotation.description();
+                DocCode docCode = new DocCode();
+                docCode.setName(name);
+                docCode.setValue(value);
+                docCode.setDescription(description);
+                docCodes.add(docCode);
 
-                }
             }
             //合并全局状态码
             docCodes.addAll(ApiConstant.DOC_GLOBAL_CODES);

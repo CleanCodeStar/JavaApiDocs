@@ -46,7 +46,7 @@ public class ReturnHandle {
     public DocModel handleReturn(ApiMapReturn apiMapReturn, ApiBasicReturn
             apiBasicReturn, Class<?> returnType, Type genericReturnType, ApiReturnModelProperty[] apiReturnModelProperties) {
         Map<String, ApiReturnModelProperty> apiReturnModelPropertyMap = new HashMap<>(256);
-        if (apiReturnModelProperties != null && apiReturnModelProperties.length > 0) {
+        if (apiReturnModelProperties != null) {
             for (ApiReturnModelProperty apiReturnModelProperty : apiReturnModelProperties) {
                 String name = apiReturnModelProperty.name();
                 apiReturnModelPropertyMap.put(name, apiReturnModelProperty);
@@ -54,7 +54,7 @@ public class ReturnHandle {
         }
         //对于map类型的出参 用ApiMapParam 来处理
         Map<String, ApiReturn> apiMapReturnMap = new HashMap<>(256);
-        if (apiMapReturn != null && apiMapReturn.value().length > 0) {
+        if (apiMapReturn != null) {
             for (ApiReturn apiReturn : apiMapReturn.value()) {
                 String value = apiReturn.name();
                 apiMapReturnMap.put(value, apiReturn);
