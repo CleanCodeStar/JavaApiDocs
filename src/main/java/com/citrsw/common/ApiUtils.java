@@ -76,38 +76,26 @@ public class ApiUtils {
      * @return
      * @throws Exception
      */
-    public static List<String> getLocalIps() throws Exception {
-        // 本地IP，如果没有配置外网IP则返回它
+    public static List<String> getLocalIps(List<String> inIps) throws Exception {
+        //IP
         List<String> localIps = new ArrayList<>();
-        String localip = null;
-        // 外网IP
-        String netip = null;
         Enumeration<NetworkInterface> netInterfaces;
         netInterfaces = NetworkInterface.getNetworkInterfaces();
         InetAddress ip;
         // 是否找到外网IP
-        boolean finded = false;
-        while (netInterfaces.hasMoreElements() && !finded) {
+        while (netInterfaces.hasMoreElements()) {
             NetworkInterface ni = netInterfaces.nextElement();
             Enumeration<InetAddress> address = ni.getInetAddresses();
             while (address.hasMoreElements()) {
                 ip = address.nextElement();
                 if (!ip.isSiteLocalAddress() && !ip.isLoopbackAddress() && !ip.getHostAddress().contains(":")) {
                     // 外网IP
-                    netip = ip.getHostAddress();
-                    finded = true;
-                    break;
+                    localIps.add(ip.getHostAddress());
                 } else if (ip.isSiteLocalAddress() && !ip.isLoopbackAddress() && !ip.getHostAddress().contains(":")) {
                     // 内网IP
-                    localip = ip.getHostAddress();
-                    localIps.add(localip);
+                    inIps.add(ip.getHostAddress());
                 }
             }
-        }
-        if (netip != null && !"".equals(netip)) {
-            localIps.add(netip);
-        } else {
-            localIps.add(localip);
         }
         return localIps;
     }

@@ -186,8 +186,14 @@ public class ApiContext implements CommandLineRunner {
                             "                                                  1.6.9-jdk1.8   \n");
                     //获取本机地址及端口号
                     try {
-                        List<String> ips = ApiUtils.getLocalIps();
-                        for (String ip : ips) {
+                        List<String> inIps = new ArrayList<>();
+                        List<String> outIps = ApiUtils.getLocalIps(inIps);
+                        for (String ip : outIps) {
+                            String uri = ip + ":" + port + contextPath + servletPath + "/citrsw/index.html";
+                            uri = uri.replaceAll("//", "/");
+                            System.out.println("外网Api访问地址:  " + (sslEnabled ? "https" : "http") + "://" + uri);
+                        }
+                        for (String ip : inIps) {
                             String uri = ip + ":" + port + contextPath + servletPath + "/citrsw/index.html";
                             uri = uri.replaceAll("//", "/");
                             System.out.println("内网Api访问地址:  " + (sslEnabled ? "https" : "http") + "://" + uri);
