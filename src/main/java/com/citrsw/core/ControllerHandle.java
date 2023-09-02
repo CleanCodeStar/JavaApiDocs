@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.net.JarURLConnection;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -73,7 +75,7 @@ public class ControllerHandle {
      *
      * @param packageName 目录名
      */
-    public void scanner(String packageName, Set<Class<?>> classes) {
+    public void scanner(String packageName, Set<Class<?>> classes) throws UnsupportedEncodingException {
         String s = packageName.replace(".", "/");
         URL url = ApiContext.class.getClassLoader().getResource(s);
         if (url == null) {
@@ -84,7 +86,7 @@ public class ControllerHandle {
         // 得到协议的名称
         String protocol = url.getProtocol();
         if ("file".equals(protocol)) {
-            File[] files = new File(url.getFile()).listFiles();
+            File[] files = new File(URLDecoder.decode(url.getFile(),"UTF-8")).listFiles();
             assert files != null;
             for (File classFile : files) {
                 if (classFile.isDirectory()) {

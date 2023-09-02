@@ -56,8 +56,8 @@ public class ApiContext implements CommandLineRunner {
     /**
      * ssl是否激活
      */
-    @Value("${server.ssl.enabled:false}")
-    private Boolean sslEnabled;
+    @Value("${server.ssl.key-store:}")
+    private String sslEnabled;
 
     private final ControllerHandle controllerHandle;
 
@@ -183,20 +183,20 @@ public class ApiContext implements CommandLineRunner {
                             "/ /_/ / /_/ /| |/ / /_/ / ___ |/ /_/ / / /_/ / /_/ / /__(__  ) \n" +
                             "\\____/\\__,_/ |___/\\__,_/_/  |_/ .___/_/_____/\\____/\\___/____/  \n" +
                             "                             /_/                               \n" +
-                            "                                                  1.6.9-jdk1.8   \n");
+                            "                                                  1.6.10-jdk1.8   \n");
                     //获取本机地址及端口号
                     try {
                         List<String> outIps = ApiUtils.getLocalIps();
                         for (String ip : outIps) {
                             String uri = ip + ":" + port + contextPath + servletPath + "/citrsw/index.html";
                             uri = uri.replaceAll("//", "/");
-                            System.out.println("Api访问地址:  " + (sslEnabled ? "https" : "http") + "://" + uri);
+                            System.out.println("Api访问地址:  " + (StringUtils.isNotBlank(sslEnabled) ? "https" : "http") + "://" + uri);
                         }
                     } catch (Exception ignored) {
                     }
                     String uri = port + contextPath + servletPath + "/citrsw/index.html";
                     uri = uri.replaceAll("//", "/");
-                    System.out.println("Api访问地址:  " + (sslEnabled ? "https" : "http") + "://127.0.0.1" + ":" + uri);
+                    System.out.println("Api访问地址:  " + (StringUtils.isNotBlank(sslEnabled) ? "https" : "http") + "://127.0.0.1" + ":" + uri);
                 }
             }
         } catch (Exception exception) {

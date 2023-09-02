@@ -91,6 +91,10 @@ v1.6.8-jdk1.8
 v1.6.9-jdk1.8
 1. 修复存在多个网卡时，控制台输出API访问页面IP不全的问题
 
+v1.6.10-jdk1.8
+1. 修复项目路径存在空格时无法扫描Controller的问题
+2. 修复项目ssl类型判断标识
+
 ## 访问ApiDocs页面方式
 
 ip:端口/项目名/citrsw/index.html
