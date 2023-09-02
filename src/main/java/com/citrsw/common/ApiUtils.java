@@ -76,7 +76,7 @@ public class ApiUtils {
      * @return
      * @throws Exception
      */
-    public static List<String> getLocalIps(List<String> inIps) throws Exception {
+    public static List<String> getLocalIps() throws Exception {
         //IP
         List<String> localIps = new ArrayList<>();
         Enumeration<NetworkInterface> netInterfaces;
@@ -93,7 +93,7 @@ public class ApiUtils {
                     localIps.add(ip.getHostAddress());
                 } else if (ip.isSiteLocalAddress() && !ip.isLoopbackAddress() && !ip.getHostAddress().contains(":")) {
                     // 内网IP
-                    inIps.add(ip.getHostAddress());
+                    localIps.add(ip.getHostAddress());
                 }
             }
         }
