@@ -95,6 +95,9 @@ v1.6.10-jdk1.8
 1. 修复项目路径存在空格时无法扫描Controller的问题
 2. 修复项目ssl类型判断标识
 
+v1.6.10-jdk1.8
+1. 修改前端页面请求失败时显示错误信息
+
 ## 访问ApiDocs页面方式
 
 ip:端口/项目名/citrsw/index.html
@@ -118,7 +121,7 @@ ip:端口/项目名/citrsw/index.html
 <dependency>
     <groupId>com.citrsw</groupId>
    <artifactId>java-api-docs</artifactId>
-   <version>1.6.4-jdk1.8</version>
+   <version>1.6.11-jdk1.8</version>
 </dependency>
 ```
 
