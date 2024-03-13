@@ -6,16 +6,21 @@ import com.citrsw.annatation.ApiGlobalCode;
 import com.citrsw.annatation.ApiProperty;
 import com.citrsw.common.ApiConstant;
 import com.citrsw.common.ApiUtils;
+import com.citrsw.controller.ApiController;
 import com.citrsw.definition.Doc;
 import com.citrsw.definition.DocClass;
 import com.citrsw.definition.DocCode;
 import com.citrsw.enumeration.TypeEnum;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController;
 import org.springframework.stereotype.Component;
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.util.*;
 
@@ -29,6 +34,8 @@ import java.util.*;
 @Slf4j
 @Component
 public class ApiContext implements CommandLineRunner {
+
+    private final RequestMappingHandlerMapping handlerMapping;
 
     /**
      * 当前的环境
@@ -64,14 +71,12 @@ public class ApiContext implements CommandLineRunner {
     /**
      * 最终的Api文档类
      */
+    @Getter
     private Doc doc;
 
-    public ApiContext(ControllerHandle controllerHandle) {
+    public ApiContext(RequestMappingHandlerMapping handlerMapping, ControllerHandle controllerHandle) {
+        this.handlerMapping = handlerMapping;
         this.controllerHandle = controllerHandle;
-    }
-
-    public Doc getDoc() {
-        return doc;
     }
 
     @Override
@@ -155,18 +160,25 @@ public class ApiContext implements CommandLineRunner {
                         ApiConstant.DOC_GLOBAL_CODES.add(docCode);
                     }
                     //获取需要扫描的包
-                    List<String> packages = controllerHandle.takePackages(mainApplicationClass);
+//                    List<String> packages = controllerHandle.takePackages(mainApplicationClass);
                     Set<Class<?>> classes = new HashSet<>();
-                    for (String packageName : packages) {
-                        controllerHandle.scanner(packageName, classes);
+                    Map<RequestMappingInfo, HandlerMethod> handlerMethods = handlerMapping.getHandlerMethods();
+                    for (HandlerMethod handlerMethod : handlerMethods.values()) {
+                        Class<?> controllerClass = handlerMethod.getBeanType();
+                        if (controllerClass != BasicErrorController.class && controllerClass != ApiController.class) {
+                            classes.add(controllerClass);
+                        }
                     }
+//                    for (String packageName : packages) {
+//                        controllerHandle.scanner(packageName, classes);
+//                    }
                     //springboot中配置需要扫描的类
-                    SpringBootApplication applicationClassAnnotation = mainApplicationClass.getAnnotation(SpringBootApplication.class);
-                    Class<?>[] scanClasses = applicationClassAnnotation.scanBasePackageClasses();
-                    if (scanClasses.length > 0) {
-                        log.info("已获取applicationClassAnnotation配置中需要扫描的类:{}", Arrays.toString(scanClasses));
-                        classes.addAll(Arrays.asList(scanClasses));
-                    }
+//                    SpringBootApplication applicationClassAnnotation = mainApplicationClass.getAnnotation(SpringBootApplication.class);
+//                    Class<?>[] scanClasses = applicationClassAnnotation.scanBasePackageClasses();
+//                    if (scanClasses.length > 0) {
+//                        log.info("已获取applicationClassAnnotation配置中需要扫描的类:{}", Arrays.toString(scanClasses));
+//                        classes.addAll(Arrays.asList(scanClasses));
+//                    }
                     log.info("已获取到所有需要扫描的Controller类({})个:{}", classes.size(), classes);
                     //处理Controller类
                     Set<DocClass> docClasses = controllerHandle.handleClass(classes);
@@ -183,7 +195,7 @@ public class ApiContext implements CommandLineRunner {
                             "/ /_/ / /_/ /| |/ / /_/ / ___ |/ /_/ / / /_/ / /_/ / /__(__  ) \n" +
                             "\\____/\\__,_/ |___/\\__,_/_/  |_/ .___/_/_____/\\____/\\___/____/  \n" +
                             "                             /_/                               \n" +
-                            "                                                  1.6.11-jdk1.8   \n");
+                            "                                                  1.6.12-jdk1.8   \n");
                     //获取本机地址及端口号
                     try {
                         List<String> outIps = ApiUtils.getLocalIps();

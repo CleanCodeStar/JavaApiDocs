@@ -7,12 +7,14 @@ import com.citrsw.definition.DocMethod;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.net.JarURLConnection;
 import java.net.URL;
@@ -155,7 +157,35 @@ public class ControllerHandle {
         }
         return null;
     }
+    // 辅助方法，递归查找接口上的注解
+    private <T extends Annotation> T findAnnotationOnInterfaces(Class<?> clazz, Class<T> annotationType) {
+        for (Class<?> iface : clazz.getInterfaces()) {
+            T annotation = AnnotationUtils.findAnnotation(iface, annotationType);
+            if (annotation != null) {
+                return annotation;
+            } else {
+                T inheritedAnnotation = findAnnotationOnInterfaces(iface, annotationType);
+                if (inheritedAnnotation != null) {
+                    return inheritedAnnotation;
+                }
+            }
+        }
+        return null;
+    }
 
+    // 辅助方法，递归查找父类上的注解
+    private <T extends Annotation> T findAnnotationOnSuperclass(Class<?> clazz, Class<T> annotationType) {
+        Class<?> superclass = clazz.getSuperclass();
+        if (superclass != null) {
+            T annotation = AnnotationUtils.findAnnotation(superclass, annotationType);
+            if (annotation != null) {
+                return annotation;
+            } else {
+                return findAnnotationOnSuperclass(superclass, annotationType);
+            }
+        }
+        return null;
+    }
     /**
      * 处理扫描到的类
      *
@@ -168,8 +198,16 @@ public class ControllerHandle {
                 //不处理添加过滤注解的类
                 continue;
             }
+
             DocClass docClass = new DocClass();
             ApiClass aClassAnnotation = aClass.getAnnotation(ApiClass.class);
+            if (aClassAnnotation == null) {
+                // 如果注解为空，说明控制器类被代理了，尝试从其接口或父类上获取注解
+                aClassAnnotation = findAnnotationOnInterfaces(aClass, ApiClass.class);
+                if (aClassAnnotation == null) {
+                    aClassAnnotation = findAnnotationOnSuperclass(aClass, ApiClass.class);
+                }
+            }
             if (aClassAnnotation != null && StringUtils.isNotBlank(aClassAnnotation.value())) {
                 //从注解获取描述
                 docClass.setDescription(aClassAnnotation.value());
