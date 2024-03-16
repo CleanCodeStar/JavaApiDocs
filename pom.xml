@@ -147,6 +147,8 @@
                     <docencoding>UTF-8</docencoding>
                     <failOnError>false</failOnError>
                     <additionalparam>-Xdoclint:none</additionalparam>
+                    <!-- 解决控制台乱码 -->
+                    <additionalJOptions>-Xdoclint:none -J-Dfile.encoding=utf-8</additionalJOptions>
                 </configuration>
                 <executions>
                     <execution>
