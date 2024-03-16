@@ -8,7 +8,6 @@ import org.apache.commons.lang3.StringUtils;
  *
  * @author 李振峰
  * @version 1.0
- * @date 2020-10-01 20:27
  */
 public class MarkdownHandler {
     private final StringBuffer buffer = new StringBuffer();

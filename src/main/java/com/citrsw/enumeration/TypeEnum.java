@@ -5,7 +5,6 @@ package com.citrsw.enumeration;
  *
  * @author 李振峰
  * @version 1.0
- * @date 2020-09-26 16:13
  */
 public enum TypeEnum {
     /**

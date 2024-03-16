@@ -11,7 +11,6 @@ import java.util.*;
  *
  * @author 李振峰
  * @version 1.0
- * @date 2020-10-29 1:24
  */
 public class ApiUtils {
     private static final Map<String, String> TYPE_MAP = new HashMap<>();
@@ -42,7 +41,7 @@ public class ApiUtils {
      * java类型转Ios类型
      *
      * @param className
-     * @return
+     * @return 返回类型名
      */
     public static String javaToIosType(String className) {
         return TYPE_MAP.get(className);
@@ -73,8 +72,7 @@ public class ApiUtils {
     /**
      * 获取内网IP
      *
-     * @return
-     * @throws Exception
+     * @return 返回Ip列表
      */
     public static List<String> getLocalIps() throws Exception {
         //IP

@@ -10,7 +10,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  *
  * @author 李振峰
  * @version 1.0
- * @date 2020-09-27 6:29
  */
 @Data
 @Accessors(chain = true)

@@ -7,7 +7,6 @@ import java.lang.annotation.*;
  * 使用场景：不需要类中全部的属性
  *
  * @author 李振峰
- * @date 2020-01-10 19:02:32
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

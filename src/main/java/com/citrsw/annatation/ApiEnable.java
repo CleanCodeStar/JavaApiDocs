@@ -23,12 +23,9 @@ public @interface ApiEnable {
     String name();
 
     /**
-     * 下划线（蛇形）命名
-     *
-     * @deprecated 因为在实际开发中“下划线（蛇形）命名”会给前后端联调带来极大不便，故不建议采用此种形式，此属性也将会在未来版本中移除。
+     * 全局并配置不需要生成api的类
      */
-    @Deprecated
-    boolean underscore() default false;
+    Class<?>[] excludedClasses() default {};
 
     /**
      * 环境，不配置则默认所有环境

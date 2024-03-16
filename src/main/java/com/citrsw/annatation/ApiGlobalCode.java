@@ -7,7 +7,6 @@ import java.lang.annotation.*;
  *
  * @author 李振峰
  * @version 1.0
- * @date 2020-09-27 4:46
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

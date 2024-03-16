@@ -1,9 +1,6 @@
 package com.citrsw.core;
 
-import com.citrsw.annatation.ApiEnable;
-import com.citrsw.annatation.ApiGlobalClass;
-import com.citrsw.annatation.ApiGlobalCode;
-import com.citrsw.annatation.ApiProperty;
+import com.citrsw.annatation.*;
 import com.citrsw.common.ApiConstant;
 import com.citrsw.common.ApiUtils;
 import com.citrsw.controller.ApiController;
@@ -29,7 +26,6 @@ import java.util.*;
  *
  * @author 李振峰
  * @version 1.0
- * @date 2020-09-23 20:14
  */
 @Slf4j
 @Component
@@ -159,15 +155,20 @@ public class ApiContext implements CommandLineRunner {
                         docCode.setDescription(description);
                         ApiConstant.DOC_GLOBAL_CODES.add(docCode);
                     }
+                    //获取需要忽略的类
+                    List<Class<?>> excludedClasses = Arrays.asList(apiEnable.excludedClasses());
+                    excludedClasses.add(BasicErrorController.class);
+                    excludedClasses.add(ApiController.class);
                     //获取需要扫描的包
 //                    List<String> packages = controllerHandle.takePackages(mainApplicationClass);
                     Set<Class<?>> classes = new HashSet<>();
                     Map<RequestMappingInfo, HandlerMethod> handlerMethods = handlerMapping.getHandlerMethods();
                     for (HandlerMethod handlerMethod : handlerMethods.values()) {
                         Class<?> controllerClass = handlerMethod.getBeanType();
-                        if (controllerClass != BasicErrorController.class && controllerClass != ApiController.class) {
-                            classes.add(controllerClass);
+                        if (excludedClasses.contains(controllerClass) || controllerClass.getAnnotation(ApiIgnore.class) != null) {
+                            continue;
                         }
+                        classes.add(controllerClass);
                     }
 //                    for (String packageName : packages) {
 //                        controllerHandle.scanner(packageName, classes);
@@ -211,7 +212,8 @@ public class ApiContext implements CommandLineRunner {
                     System.out.println("Api访问地址:  " + (StringUtils.isNotBlank(sslEnabled) ? "https" : "http") + "://127.0.0.1" + ":" + uri);
                 }
             }
-        } catch (Exception exception) {
+        } catch (
+                Exception exception) {
             exception.printStackTrace();
             log.error("======Api解析异常======");
         }

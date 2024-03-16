@@ -77,29 +77,39 @@ v1.6.4-jdk1.8
 5. 增加可配置Header中token的名称
 
 v1.6.5-jdk1.8
+
 1. 新增根据项目配置ssl输出http或https访问日志
 
 v1.6.6-jdk1.8
+
 1. 支持获取Controller继承类及接口上各个方法的注解
 
 v1.6.7-jdk1.8
+
 1. 支持byte类型
 
 v1.6.8-jdk1.8
+
 1. 修复已知BUG
 
 v1.6.9-jdk1.8
+
 1. 修复存在多个网卡时，控制台输出API访问页面IP不全的问题
 
 v1.6.10-jdk1.8
+
 1. 修复项目路径存在空格时无法扫描Controller的问题
 2. 修复项目ssl类型判断标识
 
 v1.6.11-jdk1.8
+
 1. 修改前端页面请求失败时显示错误信息
 
 v1.6.12-jdk1.8
+
 1. 修改扫描Controller的方式
+2. 移除ApiEnable中underscore下划线命名属性
+3. 新增ApiEnable中excludedClasses全局配置忽略扫描的类
 
 ## 访问ApiDocs页面方式
 
@@ -121,6 +131,7 @@ ip:端口/项目名/citrsw/index.html
 ## maven配置
 
 ```xml
+
 <dependency>
     <groupId>com.citrsw</groupId>
    <artifactId>java-api-docs</artifactId>
@@ -176,7 +187,7 @@ ip:端口/项目名/citrsw/index.html
 2. **参数说明**
 
    | 参数名     | 说明                        |
-   |---------------------------| ------------------ |
+         |---------------------------| ------------------ |
    | name       | 项目名称                      |
    | actives | 适用环境                      |
    | underscore | 是否使用下划线名称 (过期属性，未来版本将会删除) |
@@ -204,7 +215,7 @@ ip:端口/项目名/citrsw/index.html
 2. **参数说明**
 
    | 参数名 | 说明             |
-   | ------ | ---------------- |
+         | ------ | ---------------- |
    | value  | Controller类描述 |
 
 3. **使用示例**
@@ -225,7 +236,7 @@ ip:端口/项目名/citrsw/index.html
 2. **参数说明**
 
    | 参数名 | 说明                     |
-   | ------ | ------------------------ |
+         | ------ | ------------------------ |
    | value  | Controller类中方法的描述 |
 
 3. **使用示例**
@@ -248,7 +259,7 @@ ip:端口/项目名/citrsw/index.html
 2. **参数说明**
 
    | 参数名 | 说明       |
-   | ------ | ---------- |
+         | ------ | ---------- |
    | value  | 实体类描述 |
 
 3. **使用示例**
@@ -273,7 +284,7 @@ ip:端口/项目名/citrsw/index.html
 2. **参数说明**
 
    | 参数名       | 说明     |
-   | ------------ | -------- |
+         | ------------ | -------- |
    | description  | 属性描述 |
    | name         | 属性别名 |
    | required     | 是否必须 |
@@ -304,7 +315,7 @@ ip:端口/项目名/citrsw/index.html
 2. **参数说明**
 
    | 参数名       | 说明                                                         |
-   | ------------ | ------------------------------------------------------------ |
+         | ------------ | ------------------------------------------------------------ |
    | name         | 别名                                                         |
    | description  | 描述                                                         |
    | required     | 是否必须                                                     |
@@ -318,7 +329,7 @@ ip:端口/项目名/citrsw/index.html
    ```java
    @ApiMethod("根据条件分页查询")
    @GetMapping("/user/page/all")
-   public Result<Page<User>> pageAll(User user, @RequestParam(default"1")@ApiParam(description = "当前页", default"1") Integer page, @RequestParam(default"10") @ApiParam(description = "每页数据条数", default"10") Integer pageSize) {
+   public Result<Page<User>> pageAll(User user, @RequestParam(defaultValue = "1")@ApiParam(description = "当前页", default"1") Integer page, @RequestParam(default"10") @ApiParam(description = "每页数据条数", default"10") Integer pageSize) {
        LambdaQueryWrapper<User> wrapper = Wrappers.lambdaQuery();
        return Result.buildQueryOk(userService.page(new Page<>(page, pageSize), wrapper));
    }
@@ -339,7 +350,7 @@ ip:端口/项目名/citrsw/index.html
 2. **参数说明**
 
    | 参数名      | 说明 |
-   | ----------- | ---- |
+         | ----------- | ---- |
    | description | 描述 |
 
 3. **使用示例**
@@ -366,7 +377,7 @@ ip:端口/项目名/citrsw/index.html
 2. **参数说明**
 
    | 参数名       | 说明                                                    |
-   | ------------ | ------------------------------------------------------- |
+         | ------------ | ------------------------------------------------------- |
    | name         | Map类型的key名称（支持多级配置，例如：user.info.level） |
    | description  | 描述                                                    |
    | required     | 是否必须                                                |
@@ -396,7 +407,7 @@ ip:端口/项目名/citrsw/index.html
 2. **参数说明**
 
    | 参数名     | 说明                     |
-   | ---------- | ------------------------ |
+         | ---------- | ------------------------ |
    | require    | 必须传入的属性名称数组   |
    | nonRequire | 非必须传入的属性名称数组 |
 
@@ -415,7 +426,6 @@ ip:端口/项目名/citrsw/index.html
    *
    * @author 李振峰
    * @version 1.0.0
-   * @date 2020-10-02 08:59:51
    */
    @TableName("tb_student")
    @Accessors(chain = true)
@@ -482,7 +492,7 @@ ip:端口/项目名/citrsw/index.html
 2. **参数说明**
 
    | 参数名      | 说明                                               |
-   | ----------- | -------------------------------------------------- |
+         | ----------- | -------------------------------------------------- |
    | name        | 类名                                               |
    | description | 类描述                                             |
    | type        | 类型（入参：TypeEnum.PARAM,响应：TypeEnum.RETURN） |
@@ -495,8 +505,8 @@ ip:端口/项目名/citrsw/index.html
    @SpringBootApplication
    @ApiEnable(name = "中国IT资源分享网站", underscore = true)
    @ApiGlobalClass(name = Page.class, type = TypeEnum.PARAM, properties = {
-           @ApiProperty(name = "current", description = "当前页", default"1"),
-           @ApiProperty(name = "size", description = "每页显示条数", default"10"),
+           @ApiProperty(name = "current", description = "当前页", defaultValue = "1"),
+           @ApiProperty(name = "size", description = "每页显示条数", defaultValue = "10"),
            @ApiProperty(name = "orders.asc", description = "排序方式"),
            @ApiProperty(name = "orders.column", description = "排序字段")
    })
@@ -537,7 +547,7 @@ ip:端口/项目名/citrsw/index.html
 2. **参数说明**
 
    | 参数名      | 说明   |
-   | ----------- | ------ |
+         | ----------- | ------ |
    | name        | 参数名 |
    | value       | 值     |
    | description | 描述   |
@@ -547,10 +557,10 @@ ip:端口/项目名/citrsw/index.html
    ```java
    @SpringBootApplication
    @ApiEnable(name = "中国IT资源分享网站", underscore = true)
-   @ApiGlobalCode(name = "code", "200", description = "成功")
-   @ApiGlobalCode(name = "code", "300", description = "失败")
-   @ApiGlobalCode(name = "code", "400", description = "token失效")
-   @ApiGlobalCode(name = "code", "500", description = "系统内部异常")
+   @ApiGlobalCode(name = "code", value = "200", description = "成功")
+   @ApiGlobalCode(name = "code", value = "300", description = "失败")
+   @ApiGlobalCode(name = "code", value = "400", description = "token失效")
+   @ApiGlobalCode(name = "code", value = "500", description = "系统内部异常")
    public class ApiExampleApplication {
        public static void main(String[] args) {
            SpringApplication.run(ApiExampleApplication.class, args);
@@ -571,7 +581,7 @@ ip:端口/项目名/citrsw/index.html
 2. **参数说明**
 
    | 参数名      | 说明   |
-   | ----------- | ------ |
+         | ----------- | ------ |
    | name        | 参数名 |
    | value       | 值     |
    | description | 描述   |
@@ -581,9 +591,9 @@ ip:端口/项目名/citrsw/index.html
    ```java
    @ApiMethod("增加状态码/覆盖全局状态码")
    @GetMapping("/add/code")
-   @ApiCode(name = "code", "200", description = "用户保存成功")
-   @ApiCode(name = "code", "300", description = "用户保存失败")
-   @ApiCode(name = "code", "310", description = "用户名或密码为空")
+   @ApiCode(name = "code", value = "200", description = "用户保存成功")
+   @ApiCode(name = "code", value = "300", description = "用户保存失败")
+   @ApiCode(name = "code", value = "310", description = "用户名或密码为空")
    public Student save(Student student) {
        return student;
    }
@@ -606,7 +616,7 @@ ip:端口/项目名/citrsw/index.html
 2. **参数说明**
 
    | 参数名       | 说明                                            |
-   | ------------ | ----------------------------------------------- |
+         | ------------ | ----------------------------------------------- |
    | name         | 属性名称（支持多级配置，例如：user.info.level） |
    | description  | 描述                                            |
    | required     | 是否必须                                        |
@@ -633,7 +643,6 @@ ip:端口/项目名/citrsw/index.html
     *
     * @author 李振峰
     * @version 1.0.0
-    * @date 2020-10-02 08:59:51
     */
    @TableName("tb_user")
    @Accessors(chain = true)
@@ -693,7 +702,7 @@ ip:端口/项目名/citrsw/index.html
 2. **参数说明**
 
    | 参数名 | 说明         |
-   | ------ | ------------ |
+         | ------ | ------------ |
    | value  | ApiParam数组 |
 
 3. **使用示例**
@@ -721,7 +730,7 @@ ip:端口/项目名/citrsw/index.html
 2. **参数说明**
 
    | 参数名       | 说明                                                    |
-   | ------------ | ------------------------------------------------------- |
+         | ------------ | ------------------------------------------------------- |
    | name         | Map类型的key名称（支持多级配置，例如：user.info.level） |
    | description  | 描述                                                    |
    | required     | 是否必须                                                |
@@ -736,7 +745,7 @@ ip:端口/项目名/citrsw/index.html
    //入门：Controller类public方法上的入参参数
    @ApiMethod("根据条件分页查询")
    @GetMapping("/user/page/all")
-   public Result<Page<User>> pageAll(User user, @RequestParam(default"1")@ApiParam(description = "当前页", default"1") Integer page, @RequestParam(default"10") @ApiParam(description = "每页数据条数", default"10") Integer pageSize) {
+   public Result<Page<User>> pageAll(User user, @RequestParam(defaultValue = "1")@ApiParam(description = "当前页", defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") @ApiParam(description = "每页数据条数", defaultValue = "10") Integer pageSize) {
        LambdaQueryWrapper<User> wrapper = Wrappers.lambdaQuery();
        return Result.buildQueryOk(userService.page(new Page<>(page, pageSize), wrapper));
    }
@@ -766,7 +775,7 @@ ip:端口/项目名/citrsw/index.html
 2. **参数说明**
 
    | 参数名      | 说明                                            |
-   | ----------- | ----------------------------------------------- |
+         | ----------- | ----------------------------------------------- |
    | name        | 属性名称（支持多级配置，例如：user.info.level） |
    | description | 描述                                            |
 
@@ -866,7 +875,7 @@ ip:端口/项目名/citrsw/index.html
 2. **参数说明**
 
    | 参数名 | 说明          |
-   | ------ | ------------- |
+         | ------ | ------------- |
    | value  | ApiReturn数组 |
 
 3. **使用示例**
@@ -894,7 +903,7 @@ ip:端口/项目名/citrsw/index.html
 2. **参数说明**
 
    | 参数名      | 说明                                                    |
-   | ----------- | ------------------------------------------------------- |
+         | ----------- | ------------------------------------------------------- |
    | name        | Map类型的key名称（支持多级配置，例如：user.info.level） |
    | description | 描述                                                    |
    | type        | 类型（在实际类型为Object时生效）                        |

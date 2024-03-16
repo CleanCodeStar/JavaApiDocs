@@ -13,7 +13,6 @@ import java.util.StringJoiner;
  *
  * @author 李振峰
  * @version 1.0
- * @date 2020-10-29 1:24
  */
 public class ParameterizedTypeImpl implements ParameterizedType {
     private final Type[] actualTypeArguments;

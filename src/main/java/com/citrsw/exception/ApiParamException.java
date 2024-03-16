@@ -10,7 +10,6 @@ import lombok.experimental.Accessors;
  *
  * @author 李振峰
  * @version 1.0
- * @date 2020-09-24 2:33
  */
 @EqualsAndHashCode(callSuper = true)
 @Data

@@ -11,7 +11,6 @@ import java.lang.annotation.Target;
  * Model属性注解
  *
  * @author 李振峰
- * @date 2020-01-10 19:53:31
  */
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

@@ -5,7 +5,6 @@ package com.citrsw.enums;
  *
  * @author 李振峰
  * @version 1.0
- * @date 2022-01-27 14:00
  */
 public enum ApiParamHandle {
     /**

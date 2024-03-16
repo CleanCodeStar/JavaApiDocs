@@ -23,7 +23,6 @@ import java.nio.charset.StandardCharsets;
  *
  * @author 李振峰
  * @version 1.0
- * @date 2020-01-13 20:19
  */
 @RestController
 public class ApiController {
