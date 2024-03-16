@@ -9,7 +9,6 @@ import java.lang.annotation.*;
  * 激活注解
  *
  * @author 李振峰
- * @date 2020-01-10 09:29:15
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -34,7 +33,6 @@ public @interface ApiEnable {
 
     /**
      * header中token的名称
-     * @return
      */
     String tokenName() default "authorization";
 
