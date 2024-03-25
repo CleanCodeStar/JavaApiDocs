@@ -111,6 +111,10 @@ v1.6.12-jdk1.8
 2. 移除ApiEnable中underscore下划线命名属性
 3. 新增ApiEnable中excludedClasses全局配置忽略扫描的类
 
+v1.6.13-jdk1.8
+
+1. 修复EnableApi注解中新增属性报错的问题
+
 ## 访问ApiDocs页面方式
 
 ip:端口/项目名/citrsw/index.html
@@ -135,7 +139,7 @@ ip:端口/项目名/citrsw/index.html
 <dependency>
     <groupId>com.citrsw</groupId>
    <artifactId>java-api-docs</artifactId>
-   <version>1.6.12-jdk1.8</version>
+   <version>1.6.13-jdk1.8</version>
 </dependency>
 ```
 
